@@ -1,0 +1,5 @@
+django
+django-import-export
+xlrd
+xlwt
+xlutils
