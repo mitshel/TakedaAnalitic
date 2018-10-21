@@ -40,7 +40,7 @@ class Hs(models.Model):
     delivery_year = models.PositiveIntegerField(null=False, blank=False, db_index=True)  # Год поставки
     winner_name = models.CharField(max_length=124, null=True, blank=True, db_index=True)  # Победитель тендера
     consignees_n = models.PositiveIntegerField(null=True, blank=True, )  # Количество грузополучателей
-    inn_winner = models.PositiveIntegerField(null=True, blank=True, db_index=True)  # ИНН Победителя
+    inn_winner = models.CharField(max_length=28,null=True, blank=True, db_index=True)  # ИНН Победителя
     trade_name = models.CharField(max_length=50, null=False, blank=False, db_index=True)  # Торговое наименование
     interl_name = models.CharField(max_length=65, null=False, blank=False,db_index=True)  # Международное непатентованное наименование
     goods_name = models.CharField(max_length=293, null=True, blank=True,db_index=True)  # Наименование товара (по документации к заказу)
@@ -62,8 +62,8 @@ class Hs(models.Model):
     info_source = models.CharField(max_length=144, null=True, blank=True)  # Источник информации
     lot_pos_part = models.FloatField(null=True, blank=True)  # Доля позиции в лоте (руб.)
     lotspec_id = models.PositiveIntegerField(null=False, blank=False)  # Lotspec_id
-    с_package_avg_price = models.FloatField(null=False, blank=False)  # Средняя цена за упак.(контракт)
-    с_date = models.DateTimeField(null=False, blank=False, db_index=True)  # Дата заключения контракта
+    с_package_avg_price = models.FloatField(null=True, blank=True)  # Средняя цена за упак.(контракт)
+    с_date = models.DateTimeField(null=True, blank=True, db_index=True)  # Дата заключения контракта
     units = models.CharField(max_length=16, null=True, blank=True, db_index=True)  # Единица измерения
     с_goods_spec = models.CharField(max_length=1010, null=True, blank=True)  # Характеристика товара (контракт)
     c_dosage_form = models.CharField(max_length=63, null=True, blank=True)  # Лекарственная форма (контракт)
@@ -81,7 +81,7 @@ class Hs(models.Model):
     c_package_price = models.FloatField(null=True, blank=True)  # Цена за упаковку (контракт)
     c_package_count = models.PositiveIntegerField(null=True, blank=True)  # Количество упаковок (контракт)
     c_status = models.CharField(max_length=31, null=True, blank=True, db_index=True)  # Статус контракта
-    c_inn_shipper = models.PositiveIntegerField(null=True, blank=True, db_index=True)  # ИНН поставщика (исполнителя, подрядчика) по контракту
+    c_inn_shipper = models.CharField(max_length=26,null=True, blank=True, db_index=True)  # ИНН поставщика (исполнителя, подрядчика) по контракту
     c_kpp_shipper = models.CharField(max_length=34, null=True,blank=True)  # КПП Поставщика  (исполнителя, подрядчика) по контракту
     c_trade_name = models.CharField(max_length=54, null=True, blank=True,db_index=True)  # Торговое наименование (контракт)
     c_interl_name = models.CharField(max_length=65, null=True, blank=True, db_index=True)  # Международное непатентованное наименование (контракт)

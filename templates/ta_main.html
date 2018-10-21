@@ -1,0 +1,111 @@
+{% load staticfiles %}
+{% load cache %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Такеда-Аналитика</title>
+    <link rel="stylesheet" type="text/css" href="{% static "bootstrap/css/bootstrap.min.css" %}">
+    <link rel="stylesheet" type="text/css"  href="{% static "dataTables/jquery.dataTables.min.css" %}">
+    <link rel="stylesheet" href="{% static "fonts/css/all.css" %}">
+    <link rel="stylesheet" type="text/css"  href="{% static "jquery-ui/jquery-ui.structure.min.css" %}">
+    <link rel="stylesheet" type="text/css"  href="{% static "jquery-ui/jquery-ui.theme.min.css" %}">
+
+    <script type="text/javascript" src="{% static "jquery/jquery-1.12.4.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "bootstrap/js/bootstrap.bundle.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "dataTables/jquery.dataTables.min.js" %}"></script>
+    <script type="text/javascript" src="{% static "jquery-ui/jquery-ui-1.12.1.min.js" %}"></script>
+
+    <style type="text/css">
+        #container {
+            min-width: 310px;
+            max-width: 800px;
+            height: 400px;
+            margin: 0 auto
+        }
+    </style>
+</head>
+<body style="padding-top:60px;">
+    <div class="container-fluid">
+    <div class="row">
+    <div class="col-sm-12">
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #0a76bf;">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarLeft" aria-controls="navbarLeft" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="{% url 'home' %}"><b>TakedaAnalitics</b></a>
+
+      <div class="collapse navbar-collapse" id="navbarLeft">
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item active">
+            <a class="nav-link" href="#">Данные <span class="sr-only">(current)</span></a>
+          </li>
+          <li class="nav-item dropdown active">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Аналитика <span class="sr-only">(current)</span></a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href="{% url 'widgetpages:salesshedule' %}">График продаж</a>
+              <a class="dropdown-item" href="#">Анализ упаковок</a>
+              <a class="dropdown-item" href="#">Анализ средней цены</a>
+              <a class="dropdown-item" href="#">Конкурентный анализ</a>
+              <a class="dropdown-item" href="#">Каналы финансирования</a>
+              <a class="dropdown-item" href="#">Доля</a>
+              <a class="dropdown-item" href="#">Анализ продаж</a>
+              <a class="dropdown-item" href="#">Анализ учреждений</a>
+            </div>
+          </li>
+        </ul>
+
+        <ul class="navbar-nav mr-left">
+          {% if mb_auth %}
+              <li class="nav-item active">
+            {% if user.is_authenticated %}
+                <a class="nav-link" href="{% url "logout" %}"><i class="fa fa-torsos"></i>Выход ({{ user.username }})</a>
+            {% else %}
+                <a class="nav-link" href="{% url "login" %}"><i class="fa fa-torsos"></i>Вход</a>
+            {% endif %}
+              </li>
+          {% endif %}
+
+          {% if user.is_superuser or user.is_staff %}
+              <li class="nav-item active">
+                <a class="nav-link" href="{% url 'admin:index' %}"><i class="fa fa-cogs"></i></a>
+              </li>
+          {% endif %}
+         </ul>
+      </div>
+    </nav>
+
+    {% if system_message %}
+    <div class="alert {{ system_message.type }} alert-dismissible fade show" role="alert">
+      <span>{{ system_message.text }}</span>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    {% endif %}
+
+    {% block content %}
+
+    <main role="main">
+      {% block main-content %}
+      {% block body %} {% endblock %}  {# body #}
+          <br>
+      {% endblock %}  {# main-content #}
+
+        <!-- Example row of columns -->
+    </main>
+    {% endblock %}  {# content #}
+    <hr class="my-3">
+    <footer class="container">
+      <p>&copy; Takeda 2018</p>
+    </footer>
+    </div> <!-- /container -->
+    </div> <!-- /container -->
+    </div> <!-- /container -->
+    {% block js-block0 %}    {% endblock %}
+    {% block js-block1 %}    {% endblock %}
+    {% block js-block2 %}    {% endblock %}
+
+</body>
+</html>

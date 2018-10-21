@@ -1,0 +1,14 @@
+{% extends "ta_main.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row">
+         <div class="col-9">
+              {% block page %}{% endblock %}
+         </div>
+         <div class="col-3">
+             {% block filter %}{% include 'ta_filter.html' %}{% endblock %}
+         </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,116 @@
+<div class="accordion" id="accordionFilter">
+  <div class="card">
+
+    <div class="card-header" id="headingOne" style="padding-top:0.2rem;padding-bottom:0.2rem;">
+      <h5 class="mb-0">
+        <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+          Таргет
+        </button>
+      </h5>
+    </div>
+
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionFilter">
+      <div class="card-body">
+              {% for t in target %}
+                <button type="button" class="btn btn-primary btn-sm inline" style="margin-top:2px">{{ t.employee }}</button>
+              {% endfor %}
+          </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingTwo" style="padding-top:0.2rem;padding-bottom:0.2rem;">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+          Рынок
+        </button>
+      </h5>
+    </div>
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionFilter">
+      <div class="card-body">
+              {% for m in market %}
+                <button type="button" class="btn btn-primary btn-sm" style="margin-top:2px">{{ m.market }}</button>
+              {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingThree" style="padding-top:0.2rem;padding-bottom:0.2rem;">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+          Год поставки
+        </button>
+      </h5>
+    </div>
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionFilter">
+      <div class="card-body">
+              {% for y in year %}
+                <button type="button" class="btn btn-primary btn-sm" style="margin-top:2px">{{ y.delivery_year}}</button>
+              {% endfor %}
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header" id="headingFour" style="padding-top:0.2rem;padding-bottom:0.2rem;">
+      <h5 class="mb-0">
+        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+          Грузополучатель
+        </button>
+      </h5>
+    </div>
+    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionFilter">
+      <div class="card-body">
+          <div class="btn-group-vertical">
+              <table class="table table-sm table-hover display w-100" width="100%" id="entityTable">
+                <thead>
+                <tr>
+                  <th scope="col">Отм.</th>
+                  <th scope="col" width="100%">ЛПУ</th>
+                </tr>
+              </thead>
+              <tbody>
+              {% for e in entity %}
+                <tr>
+                    <td><input type="checkbox"></td>
+                    <td  width="100%"><span title="{{ e.entity }}">{{ e.entity|slice:"0:35" }}</span></td>
+                </tr>
+              {% endfor %}
+              </tbody>
+              </table>
+          </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready( function () {
+    $('#entityTable').DataTable({
+            ordering:  true,
+            "language": {
+                          "processing": "Подождите...",
+                          "search": "Поиск:",
+                          "lengthMenu": "_MENU_",
+                          "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+                          "infoEmpty": "Записи с 0 до 0 из 0 записей",
+                          "infoFiltered": "(отфильтровано из _MAX_ записей)",
+                          "infoPostFix": "",
+                          "loadingRecords": "Загрузка записей...",
+                          "zeroRecords": "Записи отсутствуют.",
+                          "emptyTable": "В таблице отсутствуют данные",
+                          "paginate": {
+                            "first": "Первая",
+                            "previous": "Пред.",
+                            "next": "След.",
+                            "last": "Посл."
+                          },
+                          "aria": {
+                            "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                            "sortDescending": ": активировать для сортировки столбца по убыванию"
+                          }
+                        }
+        });
+});
+</script>
