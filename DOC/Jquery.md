@@ -1,0 +1,1 @@
+http://snipp.ru/view/49

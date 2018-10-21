@@ -13,7 +13,7 @@ def sales_shedule(request):
     market_items = Hs.objects.values('market').distinct().order_by('market')
     target_items = Target.objects.values('employee').distinct().order_by('employee')
     year_items = Hs.objects.values('delivery_year').distinct().order_by('delivery_year')
-    entity_items = Target.objects.exclude(employee__isnull=True).values('inn','entity').distinct().order_by('entity')
+    entity_items = Target.objects.exclude(employee__isnull=True).values('inn','entity','id').distinct().order_by('entity')
     pivot = []
 
     for market in market_items:

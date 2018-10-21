@@ -1,11 +1,6 @@
-<style>
-.btn-primary:not(:disabled):not(.disabled).active, .btn-primary:not(:disabled):not(.disabled):active, .show > .btn-primary.dropdown-toggle {
-    color: #fff;
-    background-color: #003090;
-    border-color: #005cbf;
-}
-</style>
+<div class="accordion" id="accordionFilter">
   <div class="card">
+
     <div class="card-header" id="headingOne" style="padding-top:0.2rem;padding-bottom:0.2rem;">
       <h5 class="mb-0">
         <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -14,10 +9,10 @@
       </h5>
     </div>
 
-    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
+    <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionFilter">
       <div class="card-body">
               {% for t in target %}
-                <button type="button" class="btn btn-primary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ t.employee }}</button>
+                <button type="button" class="btn btn-primary btn-sm inline" style="margin-top:2px">{{ t.employee }}</button>
               {% endfor %}
           </div>
     </div>
@@ -31,10 +26,10 @@
         </button>
       </h5>
     </div>
-    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo">
+    <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionFilter">
       <div class="card-body">
               {% for m in market %}
-                <button type="button" class="btn btn-primary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ m.market }}</button>
+                <button type="button" class="btn btn-primary btn-sm" style="margin-top:2px">{{ m.market }}</button>
               {% endfor %}
       </div>
     </div>
@@ -48,10 +43,10 @@
         </button>
       </h5>
     </div>
-    <div id="collapseThree" class="collapse" aria-labelledby="headingThree">
+    <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionFilter">
       <div class="card-body">
               {% for y in year %}
-                <button type="button" class="btn btn-primary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ y.delivery_year}}</button>
+                <button type="button" class="btn btn-primary btn-sm" style="margin-top:2px">{{ y.delivery_year}}</button>
               {% endfor %}
       </div>
     </div>
@@ -65,7 +60,7 @@
         </button>
       </h5>
     </div>
-    <div id="collapseFour" class="collapse" aria-labelledby="headingFour">
+    <div id="collapseFour" class="collapse" aria-labelledby="headingFour" data-parent="#accordionFilter">
       <div class="card-body">
           <div class="btn-group-vertical">
               <table class="table table-sm table-hover display w-100" width="100%" id="entityTable">
@@ -90,6 +85,7 @@
       </div>
     </div>
   </div>
+</div>
 
 <script type="text/javascript">
 $(document).ready( function () {
