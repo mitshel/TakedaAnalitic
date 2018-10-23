@@ -5,6 +5,7 @@
     border-color: #005cbf;
 }
 </style>
+<form method="post" action="{% url 'widgetpages:fltrsupd' %}">
   <div class="card">
     <div class="card-header" id="headingOne" style="padding-top:0.2rem;padding-bottom:0.2rem;">
       <h5 class="mb-0">
@@ -17,7 +18,7 @@
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
       <div class="card-body">
               {% for t in target %}
-                <button type="button" class="btn btn-primary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ t.employee }}</button>
+                <button type="button" id='empl_{{ t.id }}' class="btn btn-primary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ t.name }}</button>
               {% endfor %}
           </div>
     </div>
@@ -90,6 +91,7 @@
       </div>
     </div>
   </div>
+</form>
 
 <script type="text/javascript">
 $(document).ready( function () {

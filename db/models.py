@@ -1,9 +1,14 @@
 from django.db import models
 
+
+class Employee(models.Model):
+    name = models.CharField(max_length=128, null=True, blank=True)
+
 class Target(models.Model):
     inn = models.IntegerField(db_index=True, null=False, blank=False)
     entity = models.CharField(max_length=128, null=False, blank=False)
-    employee = models.CharField(max_length=128, null=True, blank=True)
+    employee_name = models.CharField(max_length=128, null=True, blank=True)
+    employee = models.ManyToManyField(Employee, null=True, blank=True)
 
     def __str__(self):
          return  self.entity

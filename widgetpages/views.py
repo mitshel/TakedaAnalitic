@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from db.models import Hs, Target
+from db.models import Hs, Target, Employee
 from django.db.models import Count, Sum, Min
 
 # Create your views here.
@@ -11,7 +11,8 @@ def sales_shedule(request):
     args={}
     market_items = ['Дорипрекс', 'Тахокомб','Фендивия','Феринжект']
     market_items = Hs.objects.values('market').distinct().order_by('market')
-    target_items = Target.objects.values('employee').distinct().order_by('employee')
+    # target_items = Target.objects.values('employee_name').distinct().order_by('employee_name')
+    target_items = Employee.objects.order_by('name')
     year_items = Hs.objects.values('delivery_year').distinct().order_by('delivery_year')
     entity_items = Target.objects.exclude(employee__isnull=True).values('inn','entity','id').distinct().order_by('entity')
     pivot = []
@@ -28,3 +29,7 @@ def sales_shedule(request):
     args['entity'] = entity_items
 
     return render(request,'ta_salesshedule.html', args)
+
+def filters_update(request):
+    data = {}
+    return data

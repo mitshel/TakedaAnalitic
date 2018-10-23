@@ -15,7 +15,7 @@ class TargetResource(resources.ModelResource):
         skip_unchanged = True
         report_skipped = False
         import_id_fields = ('inn',)
-        fields = ('inn', 'entity', 'employee',)
+        fields = ('inn', 'entity', 'employee_name',)
 
 class Target_admin(ImportExportModelAdmin):
     resource_class = TargetResource
