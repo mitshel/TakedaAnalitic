@@ -54,7 +54,7 @@
     <div id="collapseThree" class="collapse" aria-labelledby="headingThree">
       <div class="card-body">
               {% for y in year %}
-                <button type="button" class="btn btn-primary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ y.delivery_year}}</button>
+                <button type="button" id='year_{{ y.delivery_year }}' data-id="{{ y.delivery_year }}" class="btn btn-primary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ y.delivery_year }}</button>
               {% endfor %}
       </div>
     </div>
@@ -136,6 +136,26 @@ $('#checkAll').click(function() {
     $('input[type="checkbox"]').prop('checked',$(this).prop('checked'));
 });
 
+function processAjaxData(data) {
+    //var data = jQuery.parseJSON( jsondata );
+    // process market list
+    year_list = data.year_active;
+    $('button[id^=year_].active').each(function() {
+        var y = $(this).attr('data-id');
+        var disable_flag = true
+        for (var i in year_list){
+            if (year_list[i].delivery_year==y) { disable_flag = false; }
+        }
+        if (disable_flag) {
+           $(this).addClass('disabled');
+        } else {
+           $(this).removeClass('disabled') ;
+        };
+
+    });
+
+}
+
 // Handle some 'empl_* button click
 //$('button[id^=empl_]').on('click', function(event) {
 $(document).on('click', 'button[id^=empl_]', function() {
@@ -146,8 +166,7 @@ $(document).on('click', 'button[id^=empl_]', function() {
     $('button[id^=empl_].active').each(function() {
         arr.push($(this).attr('data-id'))
     });
-    // then to get the JSON string
-    // var jsonString = JSON.stringify(array);
+
     var empl_active = arr.join(',');
 
     $.ajax({
@@ -156,8 +175,13 @@ $(document).on('click', 'button[id^=empl_]', function() {
         data: {'empl_active' : empl_active,
                'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
-        success: function (data) {},
-        error: function (xhr, str) {}
+        success: function (data) {
+            //alert('Load was performed.');
+            processAjaxData(data) ;
+        },
+        error: function (xhr, str) {
+            alert('Error loading data. '+str);
+        }
     });
     return true;
 });
