@@ -5,7 +5,6 @@
     border-color: #005cbf;
 }
 </style>
-<form method="post" action="{% url 'widgetpages:fltrsupd' %}">
   <div class="card">
     <div class="card-header" id="headingOne" style="padding-top:0.2rem;padding-bottom:0.2rem;">
       <h5 class="mb-0">
@@ -17,9 +16,12 @@
 
     <div id="collapseOne" class="collapse show" aria-labelledby="headingOne">
       <div class="card-body">
+            <form id="empl_form" method="post" action="{% url 'widgetpages:f_emplsupd' %}">
+             {% csrf_token %}
               {% for t in target %}
-                <button type="button" id='empl_{{ t.id }}' class="btn btn-primary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ t.name }}</button>
+                <button type="button" id='empl_{{ t.id }}' data-id="{{ t.id }}" class="btn btn-primary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ t.name }}</button>
               {% endfor %}
+            </form>
           </div>
     </div>
   </div>
@@ -91,7 +93,6 @@
       </div>
     </div>
   </div>
-</form>
 
 <script type="text/javascript">
 $(document).ready( function () {
@@ -130,8 +131,35 @@ $(document).ready( function () {
         });
 });
 
+// Установка/снятие всех чекбоксов в зависимотси от состояния чекбокса в заголовке
 $('#checkAll').click(function() {
     $('input[type="checkbox"]').prop('checked',$(this).prop('checked'));
+});
+
+// Handle some 'empl_* button click
+//$('button[id^=empl_]').on('click', function(event) {
+$(document).on('click', 'button[id^=empl_]', function() {
+    //msg = $('#empl_form').serialize();
+    action_url = $('#empl_form').attr("action");
+
+    var arr = [];
+    $('button[id^=empl_].active').each(function() {
+        arr.push($(this).attr('data-id'))
+    });
+    // then to get the JSON string
+    // var jsonString = JSON.stringify(array);
+    var empl_active = arr.join(',');
+
+    $.ajax({
+        type: 'POST',
+        url: action_url,
+        data: {'empl_active' : empl_active,
+               'csrfmiddlewaretoken': '{{ csrf_token }}'
+        },
+        success: function (data) {},
+        error: function (xhr, str) {}
+    });
+    return true;
 });
 
 </script>
