@@ -47,6 +47,7 @@ def filters_employee(request):
                 #print(">>>>",request.POST)
                 empl_active = request.POST.get('empl_active','')
                 empl_active = [int(e) for e in empl_active.split(',')]  if empl_active else []
+
                 lpu_items = Target.objects.filter(employee__in=empl_active)
                 inn_active = lpu_items.values('inn')
                 hs_active = Hs.objects.filter(inn_lpu__in=inn_active)
