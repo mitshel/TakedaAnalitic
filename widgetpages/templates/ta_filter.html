@@ -4,6 +4,7 @@
     background-color: #003090;
     border-color: #005cbf;
 }
+
 .btn-secondary:not(:disabled):not(.disabled).active, .btn-secondary:not(:disabled):not(.disabled):active, .show > .btn-secondary.dropdown-toggle {
     color: #fff;
     background-color: #007bff;
@@ -12,7 +13,10 @@
 #entityTable tr {
     font-size: 0.9rem;
     font-weight: 400;
-    line-height: 0.8rem;
+    line-height: 0.9rem;
+}
+.buttons-select-all, .buttons-select-none {
+    line-height: 1; !important;
 }
 
 </style>
@@ -82,24 +86,7 @@
     <div id="collapseFour" class="collapse" aria-labelledby="headingFour">
       <div class="card-body">
           <div class="btn-group-vertical">
-              <!--<input type="checkbox" id="checkAll">-->
               <table class="table table-sm table-hover display w-100" width="100%" id="entityTable">
-                <thead>
-                <tr style="font-size: 0.9rem; font-weight: 400; line-height: 0.8rem;">
-                  <th scope="col" style="width:20px;text-align:left;padding-left:10px;">id</th>
-                  <th scope="col" style="width:100%;">entity</th>
-                  <th scope="col" >inn</th>
-                </tr>
-              </thead>
-              <tbody>
-{#              {% for e in entity %}#}
-{#                <tr style="font-size: 0.9rem; font-weight: 400; line-height: 0.8rem;" onclick="$('#lpu_{{ e.id }}').prop('checked',!$('#lpu_{{ e.id }}').prop('checked'));">#}
-{#                    <td style="width:20px;"><input type="checkbox" id="lpu_{{ e.id }}" name="lpu_{{ e.id }}" checked></td>#}
-{#                    <td style="width:100%;"><span title="{{ e.inn }} {{ e.entity }}">{{ e.entity }}</span></td>#}
-{#                    <td style="pading-bottom:0;padding-top:0;">{{ e.inn }}</td>#}
-{#                </tr>#}
-{#              {% endfor %} #}
-              </tbody>
               </table>
           </div>
       </div>
@@ -108,47 +95,46 @@
 
 <script type="text/javascript">
 
+var entityes = [
+                    {% for e in entity %} {DT_RowId:'entity_id_{{ e.id }}', entity:'{{ e.entity }}', inn:'{{ e.inn }}', disabled:'0' } {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]
 var table = $('#entityTable').DataTable({
+                "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+                buttons: [
+                    'selectAll',
+                    'selectNone',
+                ],
                 ordering:  true,
                 "pageLength": 10,
                 "columnDefs": [
                     {
-                        "targets": [ 2 ],
+                        "targets": [ 1 ],
                         "visible": false,
                         "searchable": true
                     },
                     {
-                        "targets": [ 3 ],
+                        "targets": [ 2 ],
                         "visible": false,
                         "searchable": false
-                    },
-                    {
-                        "targets": [ 0 ],
-                        "visible": true,
-                        "searchable": false,
-                        "orderable": false
                     }
                 ],
+                data: entityes,
                 columns: [
-                { data: 'id' },
                 { data: 'entity' },
                 { data: 'inn' },
-                { data: 'disabled' },
+                { data: 'disabled' }
                 ],
-                data: [
-                    {% for e in entity %} {id:'{{ e.id }}', entity:'{{ e.entity }}', inn:'{{ e.inn }}', disabled:0 } {% if not forloop.last %},{% endif %}{% endfor %}
-                ],
-                "rowCallback": function( row, data ) {
-                    $(row).attr('data-id',data.id);
-                    $(row).addClass('entity');
-                    $('td:eq(0)', row).html('<input type="checkbox" id="lpu_'+data.id+'" name="lpu_'+data.id+'" checked>');
-                    $('td:eq(1)', row).attr('style','width:100%;');
-                    $('td:eq(1)', row).html('<span title="'+data.inn+' '+data.entity+'">'+data.entity+'</span>');
-                },
+//                "rowCallback": function( row, data ) {
+//                    $(row).attr('data-id',data.id);
+//                    $(row).addClass('entity');
+//                    $('td:eq(1)', row).attr('style','width:100%;');
+//                    $('td:eq(1)', row).html('<span title="'+data.id+' '+data.entity+'">'+data.entity+'</span>');
+//                },
                 "language": {
                               "processing": "Подождите...",
                               "search": "Поиск:",
-                              "lengthMenu": "_MENU_",
+                              "lengthMenu": "&nbsp;&nbsp;_MENU_&nbsp;&nbsp;",
                               "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
                               "infoEmpty": "Записи с 0 до 0 из 0 записей",
                               "infoFiltered": "(отфильтровано из _MAX_ записей)",
@@ -165,28 +151,37 @@ var table = $('#entityTable').DataTable({
                               "aria": {
                                 "sortAscending": ": активировать для сортировки столбца по возрастанию",
                                 "sortDescending": ": активировать для сортировки столбца по убыванию"
+                              },
+                              "buttons": {
+                                "selectAll": "Выбрать все",
+                                "selectNone": "Снять выбор"
                               }
                             }
             });
 
-$(table.column(0).header()).html('<input type="checkbox" id="checkAll" checked>');
-$(table.column(1).header()).html('<b>ЛПУ</b>');
+$(table.column(0).header()).html('<b>ЛПУ</b>');
+table.rows().select();
 
-// Установка/снятие всех чекбоксов в зависимотси от состояния чекбокса в заголовке
-$('#checkAll').click(function() {
-    $('input[type="checkbox"]').prop('checked',$(this).prop('checked'));
-});
 
-$('tr.entity').click(function() {
-    var id = $(this).attr('data-id');
-    $('#lpu_'+id ).prop('checked',!$('#lpu_'+id ).prop('checked'));
-});
+$('#entityTable tbody').on( 'click', 'tr', function () {
+    $(this).toggleClass('selected');
+} );
+
+$.fn.dataTable.ext.search.push(
+    function( settings, data, DataIndex ) {
+        var disabled = settings.aoData[DataIndex]._aData.disabled;
+        if (disabled == '0')
+            return true
+        else
+            return false;
+    }
+);
 
 function processAjaxData(data) {
-    //var data = jQuery.parseJSON( jsondata );
-    // process market list
     var year_list = data.year_active;
     var market_list = data.market_active;
+    var entity_list = data.lpu;
+    var i = 0;
 
     $('button[id^=year_]').addClass('disabled');
     for (var i in year_list) $('#year_'+year_list[i].delivery_year).removeClass('disabled');
@@ -194,15 +189,19 @@ function processAjaxData(data) {
     $('button[id^=market_]').addClass('disabled');
     for (var i in market_list) $('#market_'+market_list[i].market).removeClass('disabled');
 
-    table.clear();
-    table.rows.add(data.lpu);
+    table.data().each( function (d) {
+        d.disabled = '1';
+    } );
+
+    for (var i in entity_list) {
+        d = table.row('#entity_id_'+entity_list[i].id);
+        if ( d && d.data() ) d.data().disabled = '0';
+    }
+
     table.draw();
 }
 
-// Handle some 'empl_* button click
-//$('button[id^=empl_]').on('click', function(event) {
 $(document).on('click', 'button[id^=empl_]', function() {
-    //msg = $('#empl_form').serialize();
     action_url = $('#empl_form').attr("action");
 
     var arr = [];
