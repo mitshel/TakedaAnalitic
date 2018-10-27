@@ -42,7 +42,7 @@ def sales_shedule(request):
     args['year'] = year_items
     args['entity'] = entity_items
 
-    return render(request,'ta_salesshedule.html', args)
+    return render(request,'ta_sales.html', args)
 
 def filters_update(request):
     data = {}
