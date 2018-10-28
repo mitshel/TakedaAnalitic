@@ -3,49 +3,102 @@
 {% load i18n %}
 
 {% block page %}
-  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-  <div id="chart_div"></div>
 
-<script type="text/javascript">
-google.charts.load('current', {packages: ['corechart', 'line']});
-google.charts.setOnLoadCallback(drawLineColors);
+	<script type="text/javascript" src="{% static 'chartjs\Chart.bundle.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'chartjs\utils.js' %}"></script>
+	<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
 
-function drawLineColors() {
-      var data = new google.visualization.DataTable();
-      data.addColumn('number', 'X');
-      {% for p in pivot %}
-          data.addColumn('number', '{{ p.name }}');
-      {% endfor %}
+	<div class="col-12">
+		<canvas id="canvas"></canvas>
+	</div>
+	<br>
+	<br>
+	<script>
+		//var MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+		var config = {
+			type: 'line',
+			data: {
+				labels: [{% for y in year %}{{ y.delivery_year }}{% if not forloop.last %},{% endif %}{% endfor %}],
+				datasets: [
+				    {% regroup pivot by market as market_list %}
+                    {% for market in market_list %}
+				    {
+                        label: '{{ market.grouper }}',
+                        backgroundColor: window.listColors[{{ forloop.counter0 }}],
+                        borderColor: window.listColors[{{ forloop.counter0 }}],
+                        data: [
+                            {% for m in market.list %}{ x:{{ m.delivery_year }}, y:{{ m.product_cost_sum|floatformat:"0" }} }{% if not forloop.last %},{% endif %}
+                            {% endfor %}
+                        ],
+                        fill: false,
+                        tension: 0
+				    }{% if not forloop.last %},{% endif %}
+                {% endfor %}
+                ]
+			},
+			options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'График продаж по рынку'
+				},
+				tooltips: {
+					mode: 'index',
+					intersect: false,
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Год'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Стоимость продукта (суммарно по годам)'
+						}
+					}]
+				}
+			}
+		};
 
-      data.addRows([
-          {% for p in pivot %}
-          {% endfor %}
-        [0, 0, 0],    [1, 10, 5],   [2, 23, 15],  [3, 17, 9],   [4, 18, 10],  [5, 9, 5],
-        [6, 11, 3],   [7, 27, 19],  [8, 33, 25],  [9, 40, 32],  [10, 32, 24], [11, 35, 27],
-        [12, 30, 22], [13, 40, 32], [14, 42, 34], [15, 47, 39], [16, 44, 36], [17, 48, 40],
-        [18, 52, 44], [19, 54, 46], [20, 42, 34], [21, 55, 47], [22, 56, 48], [23, 57, 49],
-        [24, 60, 52], [25, 50, 42], [26, 52, 44], [27, 51, 43], [28, 49, 41], [29, 53, 45],
-        [30, 55, 47], [31, 60, 52], [32, 61, 53], [33, 59, 51], [34, 62, 54], [35, 65, 57],
-        [36, 62, 54], [37, 58, 50], [38, 55, 47], [39, 61, 53], [40, 64, 56], [41, 65, 57],
-        [42, 63, 55], [43, 66, 58], [44, 67, 59], [45, 69, 61], [46, 69, 61], [47, 70, 62],
-        [48, 72, 64], [49, 68, 60], [50, 66, 58], [51, 65, 57], [52, 67, 59], [53, 70, 62],
-        [54, 71, 63], [55, 72, 64], [56, 73, 65], [57, 75, 67], [58, 70, 62], [59, 68, 60],
-        [60, 64, 56], [61, 60, 52], [62, 65, 57], [63, 67, 59], [64, 68, 60], [65, 69, 61],
-        [66, 70, 62], [67, 72, 64], [68, 75, 67], [69, 80, 72]
-      ]);
+		window.onload = function() {
+			var ctx = document.getElementById('canvas').getContext('2d');
+			window.myLine = new Chart(ctx, config);
+		};
 
-      var options = {
-        hAxis: {
-          title: 'Год'
-        },
-        vAxis: {
-          title: 'Popularity'
-        },
-        colors: ['#a52714', '#097138']
-      };
+		function ChartsUpdate(data) {
+		    labels_data = []
+            data.year_active.forEach(function(year_active) {
+               labels_data.push(year_active.delivery_year)
+            });
+		    config.data.labels = labels_data;
+		    config.data.datasets.forEach(function(dataset) {
+		        chart_data = [];
+                for (var i in data.pivot) {
+                    if (data.pivot[i].market==dataset.label) {
+                        chart_data.push({x:data.pivot[i].delivery_year,y:data.pivot[i].product_cost_sum})
+                    }
+                }
+				dataset.data = chart_data;
+			});
 
-      var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
-      chart.draw(data, options);
-    }
-</script>
+			window.myLine.update();
+        }
+
+	</script>
+
 {%  endblock %}

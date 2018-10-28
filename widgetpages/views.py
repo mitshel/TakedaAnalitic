@@ -30,17 +30,21 @@ def sales_shedule(request):
     year_enabled = list(year_items)
     lpu_list = list(lpu_items.values('inn', 'entity', 'id').distinct().order_by('entity'))
 
-    pivot = []
-    for market in market_items:
-        data = Hs.objects.filter(market=market['market']).values('delivery_year').annotate(product_cost_sum=Sum('product_cost')).values('delivery_year','product_cost_sum')
-        pivot.append({'name':market['market'],'data':data})
 
-    args['pivot'] = pivot
+    pivot_data = Hs.objects.values('delivery_year','market').annotate(product_cost_sum=Sum('product_cost')).\
+        values('delivery_year', 'market', 'product_cost_sum').order_by('market','delivery_year')
+
+    #pivot = []
+    #for market in market_items:
+    #    pivot.append({'name':market['market'],'data':data})
+
+    args['pivot'] = pivot_data
     args['year_min'] = hs_active.aggregate(delivery_year_min=Min('delivery_year'))['delivery_year_min']
     args['market'] = market_items
     args['target'] = target_items
     args['year'] = year_items
     args['entity'] = entity_items
+    print(args)
 
     return render(request,'ta_sales.html', args)
 
@@ -67,8 +71,14 @@ def filters_employee(request):
                 print(market_enabled)
                 print(year_enabled)
                 print(lpu_list)
-                data = {'entity_len':len(lpu_list), 'status':1, 'market_active':market_enabled, 'year_active':year_enabled,'lpu':lpu_list}
+
+                pivot_data = hs_active.values('market','delivery_year').annotate(
+                    product_cost_sum=Sum('product_cost')). \
+                    values('market','delivery_year', 'product_cost_sum').order_by('market', 'delivery_year')
+
+                data = {'entity_len':len(lpu_list), 'status':1, 'market_active':market_enabled, 'year_active':year_enabled,'lpu':lpu_list, 'pivot':list(pivot_data)}
                 print(data)
+
 
                 # response = HttpResponse()
                 # response['Content-Type'] = "text/javascript"

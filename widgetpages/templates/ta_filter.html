@@ -199,6 +199,8 @@ function processAjaxData(data) {
     }
 
     table.draw();
+
+    ChartsUpdate(data);
 }
 
 $(document).on('click', 'button[id^=empl_]', function() {
