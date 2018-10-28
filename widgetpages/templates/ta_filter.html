@@ -203,21 +203,31 @@ function processAjaxData(data) {
     ChartsUpdate(data);
 }
 
-$(document).on('click', 'button[id^=empl_], #entityTable tbody', function() {
+$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #entityTable tbody, .buttons-select-all, .buttons-select-none', function() {
     action_url = $('#empl_form').attr("action");
 
     var arr = [];
     $('button[id^=empl_].active').each(function() {
         arr.push($(this).attr('data-id'))
     });
-
     var empl_active = arr.join(',');
+
+    var arr = [];
+    $('button[id^=market_].active').each(function() {
+        arr.push($(this).attr('data-id'))
+    });
+    var market_active = arr.join(',');
+
+    var arr = [];
+    $('button[id^=year_].active').each(function() {
+        arr.push($(this).attr('data-id'))
+    });
+    var year_active = arr.join(',');
 
     arr = [];
     table.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
         if (this.data().disabled==0) arr.push(this.data().inn);
     } );
-
     var entity_active = arr.join(',');
 
     $.ajax({
@@ -225,6 +235,8 @@ $(document).on('click', 'button[id^=empl_], #entityTable tbody', function() {
         url: action_url,
         data: {'empl_active' : empl_active,
                'entity_active': entity_active,
+               'year_active': year_active,
+               'market_active':market_active,
                'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function (data) {
