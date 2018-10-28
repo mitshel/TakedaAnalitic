@@ -203,7 +203,7 @@ function processAjaxData(data) {
     ChartsUpdate(data);
 }
 
-$(document).on('click', 'button[id^=empl_]', function() {
+$(document).on('click', 'button[id^=empl_], #entityTable tbody', function() {
     action_url = $('#empl_form').attr("action");
 
     var arr = [];
@@ -213,10 +213,18 @@ $(document).on('click', 'button[id^=empl_]', function() {
 
     var empl_active = arr.join(',');
 
+    arr = [];
+    table.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+        if (this.data().disabled==0) arr.push(this.data().inn);
+    } );
+
+    var entity_active = arr.join(',');
+
     $.ajax({
         type: 'POST',
         url: action_url,
         data: {'empl_active' : empl_active,
+               'entity_active': entity_active,
                'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function (data) {
