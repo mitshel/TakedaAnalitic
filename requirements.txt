@@ -3,3 +3,4 @@ django-import-export
 xlrd
 xlwt
 xlutils
+django-pyodbc-azure

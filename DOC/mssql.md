@@ -5,7 +5,8 @@ GO
 -- Предполагаю, что InnR - это как раз международное непатентованое название,
 -- а InnNx его код
 -- DB Cursor: 3:30
--- DB Local: 10:35
+-- DB Local (2Core, 8Gb RAM): 10:35
+-- DB Local (4Core, 16Gb RAM): 10:28
 CREATE NONCLUSTERED INDEX [idxInnNx] ON [dbo].[ComplexRpt_CACHE]
 (
 	[InnNx] ASC

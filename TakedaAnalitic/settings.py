@@ -77,12 +77,30 @@ WSGI_APPLICATION = 'TakedaAnalitic.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
+#DATABASES = {
+#    'default': {
+#        'ENGINE': 'django.db.backends.sqlite3',
+#        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#    }
+#}
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': 'CursorTest',
+        'USER': 'cursor',
+        'PASSWORD': 'cursor2018',
+        'HOST': '192.168.7.130',
+        'PORT': '',
+
+        'OPTIONS': {
+            'driver': 'ODBC Driver 13 for SQL Server',
+        },
+    },
 }
+
+# set this to False if you want to turn off pyodbc's connection pooling
+#DATABASE_CONNECTION_POOLING = False
 
 
 # Password validation
