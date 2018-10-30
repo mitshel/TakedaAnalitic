@@ -28,7 +28,7 @@ class Lpu(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'lpu'
+        db_table = 'db_lpu'
 
     def __str__(self):
          return  self.name
@@ -37,7 +37,29 @@ class Target(models.Model):
     pass
 
 class Hs(models.Model):
-    pass
+    Tender_ID = models.IntegerField(db_column='Tender_ID', null=False)
+    ProcDt = models.DateTimeField(db_column='ProcDt', null=False)
+    TenderPrice = models.FloatField(db_column='TenderPrice', null=True)
+    StatusT_ID = models.IntegerField(db_column='StatusT_ID', null=False)
+    FormT_ID = models.IntegerField(db_column='FormT_ID', null=False)
+    cust_id = models.ForeignKey(Lpu, db_column='Cust_ID', db_index=True, null=True, on_delete=models.SET_NULL)
+    ClaimDtBeg = models.DateTimeField(db_column='ClaimDtBeg', null=True)
+    TendSYSDATE = models.DateTimeField(db_column='TendSYSDATE', null=False)
+    Lot_ID = models.IntegerField(db_column='Lot_ID', null=False)
+    PlanTYear = models.IntegerField(db_column='PlanTYear', null=True, db_index=True)
+    InnNx = models.IntegerField(db_column='InnNx', null=True, db_index=True)
+    TradeNx = models.IntegerField(db_column='TradeNx', null=True)
+    Order_Price = models.FloatField(db_column='Order_Price', null=True)
+    Order_Count = models.IntegerField(db_column='Order_Count', null=True)
+    Order_Sum = models.FloatField(db_column='Order_Sum', null=True)
+    Ship_FinalPrice = models.FloatField(db_column='Ship_FinalPrice', null=True)
+
+    market_name = models.CharField(max_length=32, db_column='market_name', null=True)
+    market_id = models.IntegerField(db_column='market_id', db_index=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'Test_CACHE_1'
 
 # class Target(models.Model):
 #     inn = models.IntegerField(db_index=True, null=False, blank=False)

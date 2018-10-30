@@ -10,7 +10,7 @@
     background-color: #007bff;
     border-color: #005cbf;
 }
-#entityTable tr {
+#lpuTable tr {
     font-size: 0.9rem;
     font-weight: 400;
     line-height: 0.9rem;
@@ -33,8 +33,8 @@
       <div class="card-body">
             <form id="empl_form" method="post" action="{% url 'widgetpages:f_emplsupd' %}">
              {% csrf_token %}
-              {% for t in target %}
-                <button type="button" id='empl_{{ t.id }}' data-id="{{ t.id }}" class="btn btn-secondary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ t.name }}</button>
+              {% for e in employee %}
+                <button type="button" id='empl_{{ e.id }}' data-id="{{ e.id }}" class="btn btn-secondary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
               {% endfor %}
             </form>
           </div>
@@ -52,7 +52,7 @@
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo">
       <div class="card-body">
               {% for m in market %}
-                <button type="button" id='market_{{ m.market }}' data-id="{{ m.market }}" class="btn btn-secondary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ m.market }}</button>
+                <button type="button" id='market_{{ m.id }}' data-id="{{ m.id }}" class="btn btn-secondary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ m.name }}</button>
               {% endfor %}
       </div>
     </div>
@@ -69,7 +69,7 @@
     <div id="collapseThree" class="collapse" aria-labelledby="headingThree">
       <div class="card-body">
               {% for y in year %}
-                <button type="button" id='year_{{ y.delivery_year }}' data-id="{{ y.delivery_year }}" class="btn btn-secondary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ y.delivery_year }}</button>
+                <button type="button" id='year_{{ y.PlanTYear }}' data-id="{{ y.PlanTYear }}" class="btn btn-secondary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ y.PlanTYear }}</button>
               {% endfor %}
       </div>
     </div>
@@ -85,7 +85,7 @@
     </div>
     <div id="collapseFour" class="collapse" aria-labelledby="headingFour">
       <div class="card-body">
-              <table class="table table-sm table-hover display w-100" width="100%" id="entityTable">
+              <table class="table table-sm table-hover display w-100" width="100%" id="lpuTable">
               </table>
       </div>
     </div>
@@ -93,11 +93,11 @@
 
 <script type="text/javascript">
 
-var entityes = [
-                    {% for e in entity %} {DT_RowId:'entity_id_{{ e.id }}', entity:'{{ e.entity }}', inn:'{{ e.inn }}', disabled:'0' } {% if not forloop.last %},{% endif %}
+var lpus = [
+                    {% for l in lpu %} {DT_RowId:'lpu_id_{{ l.cust_id }}', cust_id: '{{ l.cust_id }}', name:'{{ l.name }}', inn:'{{ l.inn }}', disabled:'0' } {% if not forloop.last %},{% endif %}
                     {% endfor %}
                 ]
-var table = $('#entityTable').DataTable({
+var table = $('#lpuTable').DataTable({
                 "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
                 buttons: [
                     'selectAll',
@@ -115,12 +115,18 @@ var table = $('#entityTable').DataTable({
                         "targets": [ 2 ],
                         "visible": false,
                         "searchable": false
+                    },
+                    {
+                        "targets": [ 3 ],
+                        "visible": false,
+                        "searchable": false
                     }
                 ],
-                data: entityes,
+                data: lpus,
                 columns: [
-                { data: 'entity' },
+                { data: 'name' },
                 { data: 'inn' },
+                { data: 'cust_id' },
                 { data: 'disabled' }
                 ],
 //                "rowCallback": function( row, data ) {
@@ -161,7 +167,7 @@ $(table.column(0).header()).html('<b>ЛПУ</b>');
 table.rows().select();
 
 
-$('#entityTable tbody').on( 'click', 'tr', function () {
+$('#lpuTable tbody').on( 'click', 'tr', function () {
     $(this).toggleClass('selected');
 } );
 
@@ -176,23 +182,23 @@ $.fn.dataTable.ext.search.push(
 );
 
 function processAjaxData(data) {
-    var year_list = data.year_active;
-    var market_list = data.market_active;
-    var entity_list = data.lpu;
+    var year_list = data.year_enabled;
+    var market_list = data.market_enabled;
+    var lpu_list = data.lpu_enabled;
     var i = 0;
 
     $('button[id^=year_]').addClass('disabled');
-    for (var i in year_list) $('#year_'+year_list[i].delivery_year).removeClass('disabled');
+    for (var i in year_list) $('#year_'+year_list[i].PlanTYear).removeClass('disabled');
 
     $('button[id^=market_]').addClass('disabled');
-    for (var i in market_list) $('#market_'+market_list[i].market).removeClass('disabled');
+    for (var i in market_list) $('#market_'+market_list[i].id).removeClass('disabled');
 
     table.data().each( function (d) {
         d.disabled = '1';
     } );
 
-    for (var i in entity_list) {
-        d = table.row('#entity_id_'+entity_list[i].id);
+    for (var i in lpu_list) {
+        d = table.row('#lpu_id_'+lpu_list[i].cust_id);
         if ( d && d.data() ) d.data().disabled = '0';
     }
 
@@ -201,7 +207,7 @@ function processAjaxData(data) {
     ChartsUpdate(data);
 }
 
-$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #entityTable tbody, .buttons-select-all, .buttons-select-none', function() {
+$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #lpuTable tbody, .buttons-select-all, .buttons-select-none', function() {
     action_url = $('#empl_form').attr("action");
 
     var arr = [];
@@ -224,17 +230,18 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
 
     arr = [];
     table.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
-        if (this.data().disabled==0) arr.push(this.data().inn);
+        //if (this.data().disabled==0)
+            arr.push(this.data().cust_id);
     } );
-    var entity_active = arr.join(',');
+    var lpu_active = arr.join(',');
 
     $.ajax({
         type: 'POST',
         url: action_url,
         data: {'empl_active' : empl_active,
-               'entity_active': entity_active,
+               'lpu_active': lpu_active,
                'year_active': year_active,
-               'market_active':market_active,
+               'market_active': market_active,
                'csrfmiddlewaretoken': '{{ csrf_token }}'
         },
         success: function (data) {

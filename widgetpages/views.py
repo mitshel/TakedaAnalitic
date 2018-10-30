@@ -1,11 +1,11 @@
 import json
 
 from django.shortcuts import render
-from django.db.models import Count, Sum, Min
+from django.db.models import Count, Sum, Min, F
 from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
 
-from db.models import Hs, Target, Employee
+from db.models import Hs, Target, Employee, Lpu, Market
 
 # Create your views here.
 def Home(request):
@@ -13,84 +13,92 @@ def Home(request):
     return render(request,'ta_main.html', args)
 
 def sales_shedule(request):
-    # args={}
-    # args.update(csrf(request))
-    # #market_items = ['Дорипрекс', 'Тахокомб','Фендивия','Феринжект']
-    # #market_items = Hs.objects.values('market').distinct().order_by('market')
-    # target_items = Employee.objects.order_by('name')
-    # entity_items = Target.objects.exclude(employee__isnull=True).values('inn','entity','id').distinct().order_by('entity')
-    # year_items = Hs.objects.values('delivery_year').distinct().order_by('delivery_year')
-    #
-    # lpu_items = Target.objects.exclude(employee__isnull=True)
-    # inn_active = lpu_items.values('inn')
-    # hs_active = Hs.objects.filter(inn_lpu__in=inn_active)
-    # market_items = hs_active.values('market').distinct().order_by('market')
-    # market_enabled = list(market_items)
-    # year_items = hs_active.values('delivery_year').distinct().order_by('delivery_year')
-    # year_enabled = list(year_items)
-    # lpu_list = list(lpu_items.values('inn', 'entity', 'id').distinct().order_by('entity'))
-    #
-    #
-    # pivot_data = Hs.objects.values('delivery_year','market').annotate(product_cost_sum=Sum('product_cost')).\
-    #     values('delivery_year', 'market', 'product_cost_sum').order_by('market','delivery_year')
-    #
-    # #pivot = []
-    # #for market in market_items:
-    # #    pivot.append({'name':market['market'],'data':data})
-    #
-    # args['pivot'] = pivot_data
-    # args['year_min'] = hs_active.aggregate(delivery_year_min=Min('delivery_year'))['delivery_year_min']
-    # args['market'] = market_items
-    # args['target'] = target_items
-    # args['year'] = year_items
-    # args['entity'] = entity_items
-    # print(args)
-    #
-    # return render(request,'ta_sales.html', args)
-    pass
+    args={}
+    args.update(csrf(request))
+    org_id = 1
+
+    employee_items = Employee.objects.filter(org_id=org_id).order_by('name')
+    lpu_items = Lpu.objects.exclude(employee__isnull=True).values('inn','name','cust_id').distinct().order_by('name')
+    year_items = Hs.objects.values('PlanTYear').distinct().order_by('PlanTYear')
+
+    lpu_items_org = Lpu.objects.exclude(employee__isnull=True).filter(employee__org=org_id)
+    lpu_active = lpu_items_org.values('cust_id')
+    hs_active = Hs.objects.filter(cust_id__in=lpu_active)
+    market_items = Market.objects.filter(org_id=org_id).values('id','name').order_by('name')
+    market_enabled = list(market_items)
+    year_items = hs_active.values('PlanTYear').distinct().order_by('PlanTYear')
+    year_enabled = list(year_items)
+    lpu_list = list(lpu_items.values('inn', 'name', 'cust_id').distinct().order_by('name'))
+
+
+    pivot_data = hs_active.values('PlanTYear','market_name').annotate(product_cost_sum=Sum('TenderPrice')).\
+        values('PlanTYear', 'market_name', 'product_cost_sum').order_by('market_name','PlanTYear')
+
+    #pivot = []
+    #for market in market_items:
+    #    pivot.append({'name':market['market'],'data':data})
+
+    args['pivot'] = pivot_data
+    args['year_min'] = hs_active.aggregate(PlanTYear_min=Min('PlanTYear'))['PlanTYear_min']
+    args['market'] = market_items
+    args['employee'] = employee_items
+    args['year'] = year_items
+    args['lpu'] = lpu_items
+    print(args)
+
+    return render(request,'ta_sales.html', args)
 
 def filters_update(request):
     data = {}
     return data
 
 def filters_employee(request):
-    # if request.is_ajax():
-    #     if request.method == 'POST':
-    #         if request.POST:
-    #             #print(">>>>",request.POST)
-    #             empl_active = request.POST.get('empl_active','')
-    #             empl_active = [int(e) for e in empl_active.split(',')]  if empl_active else []
-    #
-    #             entity_active = request.POST.get('entity_active','')
-    #             entity_active = [int(e) for e in entity_active.split(',')] if entity_active else []
-    #
-    #             year_active = request.POST.get('year_active','')
-    #             year_active = [int(e) for e in year_active.split(',')] if year_active else []
-    #
-    #             market_active = request.POST.get('market_active','')
-    #             market_active = [e for e in market_active.split(',')] if market_active else []
-    #
-    #             lpu_items = Target.objects.filter(employee__in=empl_active)
-    #             inn_active = lpu_items.filter(inn__in=entity_active).values('inn')
-    #             hs_active = Hs.objects.filter(inn_lpu__in=inn_active, delivery_year__in=year_active, market__in=market_active)
-    #             market_items = hs_active.values('market').distinct().order_by('market')
-    #             market_enabled = list(market_items)
-    #             year_items = hs_active.values('delivery_year').distinct().order_by('delivery_year')
-    #             year_enabled = list(year_items)
-    #             lpu_list = list(lpu_items.values('inn','entity','id').distinct().order_by('entity'))
-    #             print(entity_active)
-    #             print(market_enabled)
-    #             print(year_enabled)
-    #             print(lpu_list)
-    #
-    #             pivot_data = hs_active.values('market','delivery_year').annotate(
-    #                 product_cost_sum=Sum('product_cost')). \
-    #                 values('market','delivery_year', 'product_cost_sum').order_by('market', 'delivery_year')
-    #
-    #             data = {'entity_len':len(lpu_list), 'status':1, 'market_active':market_enabled, 'year_active':year_enabled,'lpu':lpu_list, 'pivot':list(pivot_data)}
-    #             print(data)
-    #
-    #             return JsonResponse(data)
-    #
-    # return render(request,'ta_home.html', {})
-    pass
+    org_id = 1
+    if request.is_ajax():
+        if request.method == 'POST':
+            if request.POST:
+                #print(">>>>",request.POST)
+                empl_active = request.POST.get('empl_active','')
+                empl_active = [int(e) for e in empl_active.split(',')]  if empl_active else []
+
+                market_active = request.POST.get('market_active','')
+                market_active = [int(e) for e in market_active.split(',')] if market_active else []
+
+                year_active = request.POST.get('year_active','')
+                year_active = [int(e) for e in year_active.split(',')] if year_active else []
+
+                lpu_active = request.POST.get('lpu_active','')
+                lpu_active = [int(e) for e in lpu_active.split(',')] if lpu_active else []
+
+                print('------ From FrontEnd -----')
+                print(empl_active)
+                print(market_active)
+                print(year_active)
+                print(lpu_active)
+
+                # Enabled - Доступны (видны на фильтре) те ЛПУ к которым привязаны выбранные в филтре сотрудники
+                lpu_enabled = Lpu.objects.filter(employee__in=empl_active)
+                hs_enabled = Hs.objects.filter(cust_id__in=lpu_enabled)
+                year_enabled = hs_enabled.values('PlanTYear').distinct().order_by('PlanTYear')
+                market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).values('id')
+
+                print("Prepare chart data")
+                # Chart - данные, сипользующиеся для вывода графиков
+                year_chart = year_enabled.filter(PlanTYear__in=year_active)
+                hs_chart = hs_enabled.filter(cust_id__in=lpu_active, PlanTYear__in=year_active, market_id__in=market_active)
+
+                print("Prepare pivot data")
+                pivot_data = hs_chart.values('market_name','PlanTYear').annotate(product_cost_sum=Sum('TenderPrice')). \
+                    values('market_name', 'PlanTYear',  'product_cost_sum').order_by('market_name', 'PlanTYear')
+
+                data = {'market_enabled':list(market_enabled),
+                        'year_enabled':list(year_enabled),
+                        'year_active': list(year_chart),
+                        'lpu_enabled':list(lpu_enabled.values('inn', 'name', 'cust_id').distinct().order_by('name')),
+                        'pivot':list(pivot_data)}
+
+                print(list(pivot_data))
+
+                return JsonResponse(data)
+
+    return render(request,'ta_home.html', {})

@@ -24,16 +24,16 @@
 		var config = {
 			type: 'line',
 			data: {
-				labels: [{% for y in year %}{{ y.delivery_year }}{% if not forloop.last %},{% endif %}{% endfor %}],
+				labels: [{% for y in year %}{{ y.PlanTYear }}{% if not forloop.last %},{% endif %}{% endfor %}],
 				datasets: [
-				    {% regroup pivot by market as market_list %}
+				    {% regroup pivot by market_name as market_list %}
                     {% for market in market_list %}
 				    {
                         label: '{{ market.grouper }}',
                         backgroundColor: window.listColors[{{ forloop.counter0 }}],
                         borderColor: window.listColors[{{ forloop.counter0 }}],
                         data: [
-                            {% for m in market.list %}{ x:{{ m.delivery_year }}, y:{{ m.product_cost_sum|floatformat:"0" }} }{% if not forloop.last %},{% endif %}
+                            {% for m in market.list %}{ x:{{ m.PlanTYear }}, y:{{ m.product_cost_sum|floatformat:"0" }} }{% if not forloop.last %},{% endif %}
                             {% endfor %}
                         ],
                         fill: false,
@@ -83,14 +83,14 @@
 		function ChartsUpdate(data) {
 		    labels_data = []
             data.year_active.forEach(function(year_active) {
-               labels_data.push(year_active.delivery_year)
+               labels_data.push(year_active.PlanTYear)
             });
 		    config.data.labels = labels_data;
 		    config.data.datasets.forEach(function(dataset) {
 		        chart_data = [];
                 for (var i in data.pivot) {
-                    if (data.pivot[i].market==dataset.label) {
-                        chart_data.push({x:data.pivot[i].delivery_year,y:data.pivot[i].product_cost_sum})
+                    if (data.pivot[i].market_name==dataset.label) {
+                        chart_data.push({x:data.pivot[i].PlanTYear,y:data.pivot[i].product_cost_sum})
                     }
                 }
 				dataset.data = chart_data;
