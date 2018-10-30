@@ -1,0 +1,75 @@
+<script>
+    var config1 = {
+        type: 'line',
+        data: {
+            labels: [{% for y in year %}{{ y.PlanTYear }}{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [
+                {% regroup pivot1 by market_name as market_list %}
+                {% for market in market_list %}
+                {
+                    label: '{{ market.grouper }}',
+                    backgroundColor: window.listColors[{{ forloop.counter0 }}],
+                    borderColor: window.listColors[{{ forloop.counter0 }}],
+                    data: [
+                        {% for m in market.list %}{ x:{{ m.PlanTYear }}, y:{{ m.product_cost_sum|floatformat:"0" }} }{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    fill: false,
+                    tension: 0
+                }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+            ]
+        },
+        options: {
+            responsive: true,
+            title: {
+                display: true,
+                text: 'График продаж по рынку'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Год'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Стоимость продукта (суммарно по годам)'
+                    }
+                }]
+            }
+        }
+    };
+
+    function ChartsUpdate1(data) {
+        labels_data = []
+        data.year_active.forEach(function(year_active) {
+           labels_data.push(year_active.PlanTYear)
+        });
+        config1.data.labels = labels_data;
+        config1.data.datasets.forEach(function(dataset) {
+            chart_data = [];
+            for (var i in data.pivot1) {
+                if (data.pivot1[i].market_name==dataset.label) {
+                    chart_data.push({x:data.pivot1[i].PlanTYear,y:data.pivot1[i].product_cost_sum})
+                }
+            }
+            dataset.data = chart_data;
+        });
+
+        window.myLine1.update();
+    }
+
+</script>

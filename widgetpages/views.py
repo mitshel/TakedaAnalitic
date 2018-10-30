@@ -2,6 +2,7 @@ import json
 
 from django.shortcuts import render
 from django.db.models import Count, Sum, Min, F
+from django.db.models.functions import Extract
 from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
 
@@ -31,14 +32,18 @@ def sales_shedule(request):
     lpu_list = list(lpu_items.values('inn', 'name', 'cust_id').distinct().order_by('name'))
 
 
-    pivot_data = hs_active.values('PlanTYear','market_name').annotate(product_cost_sum=Sum('TenderPrice')).\
+    pivot1_data = hs_active.values('PlanTYear','market_name').annotate(product_cost_sum=Sum('TenderPrice')).\
         values('PlanTYear', 'market_name', 'product_cost_sum').order_by('market_name','PlanTYear')
+    pivot2_data = hs_active.annotate(mon=Extract('ProcDt', 'month')).values('market_name', 'mon'). \
+        annotate(product_cost_sum=Sum('TenderPrice'), product_count=Count('market_id')). \
+        values('market_name', 'mon', 'product_cost_sum','product_count').order_by('market_name', 'mon')
 
     #pivot = []
     #for market in market_items:
     #    pivot.append({'name':market['market'],'data':data})
 
-    args['pivot'] = pivot_data
+    args['pivot1'] = pivot1_data
+    args['pivot2'] = pivot2_data
     args['year_min'] = hs_active.aggregate(PlanTYear_min=Min('PlanTYear'))['PlanTYear_min']
     args['market'] = market_items
     args['employee'] = employee_items
@@ -88,16 +93,22 @@ def filters_employee(request):
                 hs_chart = hs_enabled.filter(cust_id__in=lpu_active, PlanTYear__in=year_active, market_id__in=market_active)
 
                 print("Prepare pivot data")
-                pivot_data = hs_chart.values('market_name','PlanTYear').annotate(product_cost_sum=Sum('TenderPrice')). \
+                pivot1_data = hs_chart.values('market_name','PlanTYear').annotate(product_cost_sum=Sum('TenderPrice')). \
                     values('market_name', 'PlanTYear',  'product_cost_sum').order_by('market_name', 'PlanTYear')
+                pivot2_data = hs_chart.annotate(mon=Extract('ProcDt','month')).values('market_name','mon').\
+                    annotate(product_cost_sum=Sum('TenderPrice'),product_count=Count('market_id')). \
+                    values('market_name', 'mon',  'product_cost_sum','product_count').order_by('market_name', 'mon')
+
 
                 data = {'market_enabled':list(market_enabled),
                         'year_enabled':list(year_enabled),
                         'year_active': list(year_chart),
                         'lpu_enabled':list(lpu_enabled.values('inn', 'name', 'cust_id').distinct().order_by('name')),
-                        'pivot':list(pivot_data)}
+                        'pivot1': list(pivot1_data),
+                        'pivot2': list(pivot2_data)
+                        }
 
-                print(list(pivot_data))
+                print(list(pivot2_data))
 
                 return JsonResponse(data)
 

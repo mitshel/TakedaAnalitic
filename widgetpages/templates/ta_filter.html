@@ -204,7 +204,9 @@ function processAjaxData(data) {
 
     table.draw();
 
-    ChartsUpdate(data);
+    ChartsUpdate1(data);
+    ChartsUpdate2(data);
+    ChartsUpdate3(data);
 }
 
 $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #lpuTable tbody, .buttons-select-all, .buttons-select-none', function() {
