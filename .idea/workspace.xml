@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c2b8078d-8d3a-4a4d-a9ea-38dee01e930e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_sales.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_sales.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_sales_monthcount.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_sales_monthcount.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_sales_monthsum.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_sales_monthsum.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_sales_year.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_sales_year.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TakedaAnalitic/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/TakedaAnalitic/settings.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -109,7 +105,7 @@
           <entry key="html" value="7507" />
           <entry key="js" value="11" />
           <entry key="md" value="2962" />
-          <entry key="py" value="5091" />
+          <entry key="py" value="5123" />
           <entry key="sql" value="62" />
           <entry key="txt" value="2" />
         </counts>
@@ -120,7 +116,7 @@
           <entry key="JavaScript" value="11" />
           <entry key="Markdown" value="2962" />
           <entry key="PLAIN_TEXT" value="2" />
-          <entry key="Python" value="5091" />
+          <entry key="Python" value="5123" />
           <entry key="Scratch" value="63" />
         </counts>
       </usages-collector>
@@ -134,7 +130,7 @@
           <entry key="html" value="26" />
           <entry key="js" value="1" />
           <entry key="md" value="23" />
-          <entry key="py" value="15" />
+          <entry key="py" value="16" />
           <entry key="sql" value="2" />
           <entry key="txt" value="1" />
         </counts>
@@ -147,7 +143,7 @@
           <entry key="JavaScript" value="1" />
           <entry key="Markdown" value="23" />
           <entry key="PLAIN_TEXT" value="1" />
-          <entry key="Python" value="15" />
+          <entry key="Python" value="16" />
           <entry key="Scratch" value="2" />
         </counts>
       </usages-collector>
@@ -164,11 +160,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_sales.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="566">
-              <caret line="40" column="36" selection-start-line="40" selection-start-column="36" selection-end-line="40" selection-end-column="36" />
+            <state relative-caret-position="345">
+              <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/TakedaAnalitic/settings.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="464">
+              <caret line="142" column="22" selection-start-line="142" selection-start-column="22" selection-end-line="142" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -251,7 +256,6 @@
         <option value="$PROJECT_DIR$/DOC/charts.md" />
         <option value="$PROJECT_DIR$/assets/chartjs/utils.js" />
         <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/TakedaAnalitic/settings.py" />
         <option value="$PROJECT_DIR$/DOC/mssql_howt.md" />
         <option value="$PROJECT_DIR$/DOC/mssql_howto.md" />
         <option value="$PROJECT_DIR$/db/management/commands/load_employees.py" />
@@ -268,6 +272,7 @@
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_sales_monthsum.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_sales_year.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_sales.html" />
+        <option value="$PROJECT_DIR$/TakedaAnalitic/settings.py" />
       </list>
     </option>
   </component>
@@ -632,13 +637,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TakedaAnalitic/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1734">
-          <caret line="102" column="1" selection-start-line="102" selection-start-column="1" selection-end-line="102" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1547">
@@ -770,8 +768,15 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_sales.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="566">
-          <caret line="40" column="36" selection-start-line="40" selection-start-column="36" selection-end-line="40" selection-end-column="36" />
+        <state relative-caret-position="345">
+          <caret line="23" lean-forward="true" selection-start-line="23" selection-end-line="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TakedaAnalitic/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="464">
+          <caret line="142" column="22" selection-start-line="142" selection-start-column="22" selection-end-line="142" selection-end-column="22" />
         </state>
       </provider>
     </entry>
