@@ -51,11 +51,18 @@
 
   <div class="card">
     <div class="card-header" id="headingTwo" style="padding-top:0.2rem;padding-bottom:0.2rem;">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
-          Рынок
-        </button>
-      </h5>
+      <div class="row">
+          <div class="col-10">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                  Рынок
+                </button>
+              </h5>
+          </div>
+          <div class="col-2 text-right" style="padding-top:0.2rem;">
+                  <button type="button" id="market-ctrl" class="btn btn-sm btn-outline-primary" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+          </div>
+      </div>
     </div>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo">
       <div class="card-body">
@@ -68,11 +75,18 @@
 
   <div class="card">
     <div class="card-header" id="headingThree" style="padding-top:0.2rem;padding-bottom:0.2rem;">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
-          Год поставки
-        </button>
-      </h5>
+      <div class="row">
+          <div class="col-10">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
+                  Год поставки
+                </button>
+              </h5>
+          </div>
+          <div class="col-2 text-right" style="padding-top:0.2rem;">
+                  <button type="button" id="year-ctrl" class="btn btn-sm btn-outline-primary" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+          </div>
+      </div>
     </div>
     <div id="collapseThree" class="collapse" aria-labelledby="headingThree">
       <div class="card-body">
@@ -85,11 +99,18 @@
 
   <div class="card">
     <div class="card-header" id="headingFour" style="padding-top:0.2rem;padding-bottom:0.2rem;">
-      <h5 class="mb-0">
-        <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
-          Грузополучатель
-        </button>
-      </h5>
+      <div class="row">
+          <div class="col-10">
+              <h5 class="mb-0">
+                <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
+                  Грузополучатель
+                </button>
+              </h5>
+          </div>
+          <div class="col-2 text-right" style="padding-top:0.2rem;">
+                  <button type="button" id="lpu-ctrl" class="btn btn-sm btn-outline-primary" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+          </div>
+      </div>
     </div>
     <div id="collapseFour" class="collapse" aria-labelledby="headingFour">
       <div class="card-body">
@@ -235,12 +256,24 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
     });
     var empl_active = arr.join(',');
 
+    if ((!ctrlPress) & (!$('#market-ctrl').hasClass('active')))
+    if ($(this).attr('id').substr(0,7) == 'market_') {
+       isActive = $(this).hasClass('active');
+       $('button[id^=market_].active').removeClass('active');
+       if (isActive) $(this).addClass('active')
+    }
     var arr = [];
     $('button[id^=market_].active').each(function() {
         arr.push($(this).attr('data-id'))
     });
     var market_active = arr.join(',');
 
+    if ((!ctrlPress) & (!$('#year-ctrl').hasClass('active')))
+    if ($(this).attr('id').substr(0,5) == 'year_') {
+       isActive = $(this).hasClass('active');
+       $('button[id^=year_].active').removeClass('active');
+       if (isActive) $(this).addClass('active')
+    }
     var arr = [];
     $('button[id^=year_].active').each(function() {
         arr.push($(this).attr('data-id'))
@@ -273,7 +306,7 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
             error: function (xhr, str) {
                 alert('Error loading data. ' + str);
             }
-        }) }, 1000);
+        }) }, 500);
     return true;
 });
 
