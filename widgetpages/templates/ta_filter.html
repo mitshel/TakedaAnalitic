@@ -23,15 +23,16 @@
   <div class="card">
     <div class="card-header" id="headingOne" style="padding-top:0.2rem;padding-bottom:0.2rem;">
       <div class="row">
-          <div class="col-10">
+          <div class="col-6">
               <h5 class="mb-0">
                 <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
                   Таргет
                 </button>
               </h5>
           </div>
-          <div class="col-2 text-right" style="padding-top:0.2rem;">
-              <button type="button" id="target-ctrl" class="btn btn-sm btn-outline-primary" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+          <div class="col-6 text-right" style="padding-top:0.2rem;">
+              <button type="button" id="target-ctrl" class="btn btn-sm btn-outline-primary inline" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+              <button type="button" id="target-check" class="btn btn-sm btn-outline-primary buttons-select-all inline" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -249,7 +250,11 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
        isActive = $(this).hasClass('active');
        $('button[id^=empl_].active').removeClass('active');
        if (isActive) $(this).addClass('active')
-    }
+    };
+    if ($(this).attr('id') == 'target-check')
+        if ($('#target-check').hasClass('active')) $('button[id^=empl_]').addClass('active')
+        else $('button[id^=empl_]').removeClass('active');
+
     var arr = [];
     $('button[id^=empl_].active').each(function() {
         arr.push($(this).attr('data-id'))
