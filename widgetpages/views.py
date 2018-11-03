@@ -17,12 +17,11 @@ def sales_shedule(request):
     args={}
     args.update(csrf(request))
     org_id = 1
-
+    print('start sales shedule')
     employee_items = Employee.objects.filter(org_id=org_id).order_by('name')
     lpu_items = Lpu.objects.exclude(employee__isnull=True).values('inn','name','cust_id').distinct().order_by('name')
     year_items = Hs.objects.values('PlanTYear').distinct().order_by('PlanTYear')
 
-    #lpu_items_org = Lpu.objects.exclude(employee__isnull=True).filter(employee__org=org_id)
     lpu_items_org = Lpu.objects.exclude(employee__isnull=True).filter(employee__org=org_id)
     lpu_active = lpu_items_org.values('cust_id')
     hs_active = Hs.objects.filter(cust_id__in=lpu_active)
@@ -32,15 +31,13 @@ def sales_shedule(request):
     year_enabled = list(year_items)
     lpu_list = list(lpu_items.values('inn', 'name', 'cust_id').distinct().order_by('name'))
 
-
+    print('start pivot')
     pivot1_data = hs_active.values('PlanTYear','market_name').annotate(product_cost_sum=Sum('TenderPrice')).\
         values('PlanTYear', 'market_name', 'product_cost_sum').order_by('market_name','PlanTYear')
     pivot2_data = hs_active.annotate(mon=Extract('ProcDt', 'month')).values('market_name', 'mon'). \
         annotate(product_cost_sum=Sum('TenderPrice'), product_count=Count('market_id')). \
         values('market_name', 'mon', 'product_cost_sum','product_count').order_by('market_name', 'mon')
 
-    #pivot1_data = []
-    #pivot2_data = []
     #pivot = []
     #for market in market_items:
     #    pivot.append({'name':market['market'],'data':data})
