@@ -1,7 +1,7 @@
 import json
 
 from django.shortcuts import render
-from django.db.models import Count, Sum, Min, F
+from django.db.models import Count, Sum, Min, F, Q
 from django.db.models.functions import Extract
 from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
@@ -22,6 +22,7 @@ def sales_shedule(request):
     lpu_items = Lpu.objects.exclude(employee__isnull=True).values('inn','name','cust_id').distinct().order_by('name')
     year_items = Hs.objects.values('PlanTYear').distinct().order_by('PlanTYear')
 
+    #lpu_items_org = Lpu.objects.exclude(employee__isnull=True).filter(employee__org=org_id)
     lpu_items_org = Lpu.objects.exclude(employee__isnull=True).filter(employee__org=org_id)
     lpu_active = lpu_items_org.values('cust_id')
     hs_active = Hs.objects.filter(cust_id__in=lpu_active)
@@ -38,6 +39,8 @@ def sales_shedule(request):
         annotate(product_cost_sum=Sum('TenderPrice'), product_count=Count('market_id')). \
         values('market_name', 'mon', 'product_cost_sum','product_count').order_by('market_name', 'mon')
 
+    #pivot1_data = []
+    #pivot2_data = []
     #pivot = []
     #for market in market_items:
     #    pivot.append({'name':market['market'],'data':data})
@@ -81,16 +84,24 @@ def filters_employee(request):
                 print(year_active)
                 print(lpu_active)
 
-                # Enabled - Доступны (видны на фильтре) те ЛПУ к которым привязаны выбранные в филтре сотрудники
+                notarget_flag = (0 in empl_active)
+
+                # Enabled - Доступны (видны на фильтре) те ЛПУ к которым привязаны выбранные в фильтре сотрудники
                 lpu_enabled = Lpu.objects.filter(employee__in=empl_active)
-                hs_enabled = Hs.objects.filter(cust_id__in=lpu_enabled)
+                if notarget_flag:
+                    hs_enabled = Hs.objects.all()
+                else:
+                    hs_enabled = Hs.objects.filter(cust_id__in=lpu_enabled)
                 year_enabled = hs_enabled.values('PlanTYear').distinct().order_by('PlanTYear')
                 market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).values('id')
 
                 print("Prepare chart data")
-                # Chart - данные, сипользующиеся для вывода графиков
+                # Chart - данные, иcпользующиеся для вывода графиков
                 year_chart = year_enabled.filter(PlanTYear__in=year_active)
-                hs_chart = hs_enabled.filter(cust_id__in=lpu_active, PlanTYear__in=year_active, market_id__in=market_active)
+                if notarget_flag:
+                    hs_chart = hs_enabled.filter(PlanTYear__in=year_active, market_id__in=market_active)
+                else:
+                    hs_chart = hs_enabled.filter(cust_id__in=lpu_active, PlanTYear__in=year_active, market_id__in=market_active)
 
                 print("Prepare pivot data")
                 pivot1_data = hs_chart.values('market_name','PlanTYear').annotate(product_cost_sum=Sum('TenderPrice')). \
@@ -99,7 +110,9 @@ def filters_employee(request):
                     annotate(product_cost_sum=Sum('TenderPrice'),product_count=Count('market_id')). \
                     values('market_name', 'mon',  'product_cost_sum','product_count').order_by('market_name', 'mon')
 
-
+                #pivot1_data = []
+                #pivot2_data = []
+                print("Prepare JSON")
                 data = {'market_enabled':list(market_enabled),
                         'year_enabled':list(year_enabled),
                         'year_active': list(year_chart),
@@ -107,9 +120,7 @@ def filters_employee(request):
                         'pivot1': list(pivot1_data),
                         'pivot2': list(pivot2_data)
                         }
-
-                print(list(pivot2_data))
-
+                print("Return DATA")
                 return JsonResponse(data)
 
     return render(request,'ta_home.html', {})

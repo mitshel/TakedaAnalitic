@@ -33,6 +33,7 @@
       <div class="card-body">
             <form id="empl_form" method="post" action="{% url 'widgetpages:f_emplsupd' %}">
              {% csrf_token %}
+                <button type="button" id='empl_0' data-id="0" class="btn btn-secondary btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">Без учета Таргет</button>
               {% for e in employee %}
                 <button type="button" id='empl_{{ e.id }}' data-id="{{ e.id }}" class="btn btn-secondary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
               {% endfor %}
@@ -209,9 +210,17 @@ function processAjaxData(data) {
     ChartsUpdate3(data);
 }
 
-$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #lpuTable tbody, .buttons-select-all, .buttons-select-none', function() {
+$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #lpuTable tbody, .buttons-select-all, .buttons-select-none', function(event) {
     action_url = $('#empl_form').attr("action");
 
+    ctrlPress = (event.ctrlKey == true);
+
+    if (!ctrlPress)
+    if ($(this).attr('id').substr(0,5) == 'empl_') {
+       isActive = $(this).hasClass('active');
+       $('button[id^=empl_].active').removeClass('active');
+       if (isActive) $(this).addClass('active')
+    }
     var arr = [];
     $('button[id^=empl_].active').each(function() {
         arr.push($(this).attr('data-id'))

@@ -87,14 +87,14 @@ WSGI_APPLICATION = 'TakedaAnalitic.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'CursorTest',
+        'NAME': 'BIMonitor',
         'USER': 'cursor',
         'PASSWORD': 'cursor2018',
-        'HOST': '192.168.7.130',
+        'HOST': 'DESKTOP-VUDOG20\SQLEXPRESS',
         'PORT': '',
 
         'OPTIONS': {
-            'driver': 'ODBC Driver 13 for SQL Server',
+            'driver': 'ODBC Driver 11 for SQL Server',
         },
     },
 }
