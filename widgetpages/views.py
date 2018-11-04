@@ -90,7 +90,7 @@ def filters_employee(request):
                 else:
                     hs_enabled = Hs.objects.filter(cust_id__in=lpu_enabled)
                 year_enabled = hs_enabled.values('PlanTYear').distinct().order_by('PlanTYear')
-                market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).values('id')
+                market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).distinct().values('id')
 
                 print("Prepare chart data")
                 # Chart - данные, иcпользующиеся для вывода графиков
@@ -118,6 +118,7 @@ def filters_employee(request):
                         'pivot2': list(pivot2_data)
                         }
                 print("Return DATA")
+                print(data)
                 return JsonResponse(data)
 
     return render(request,'ta_home.html', {})
