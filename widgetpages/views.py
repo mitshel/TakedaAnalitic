@@ -113,7 +113,7 @@ def filters_employee(request):
                 data = {'market_enabled':list(market_enabled),
                         'year_enabled':list(year_enabled),
                         'year_active': list(year_chart),
-                        'lpu_enabled':list(lpu_enabled.values('inn', 'name', 'cust_id').distinct().order_by('name')),
+                        'lpu_enabled':list(lpu_enabled.order_by('name').values('cust_id').distinct()),
                         'pivot1': list(pivot1_data),
                         'pivot2': list(pivot2_data)
                         }
