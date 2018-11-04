@@ -84,7 +84,7 @@ def filters_employee(request):
                 notarget_flag = (0 in empl_active)
 
                 # Enabled - Доступны (видны на фильтре) те ЛПУ к которым привязаны выбранные в фильтре сотрудники
-                lpu_enabled = Lpu.objects.filter(employee__in=empl_active)
+                lpu_enabled = Lpu.objects.filter(employee__in=empl_active).exclude(cust_id=0)
                 if notarget_flag:
                     hs_enabled = Hs.objects.all()
                 else:
