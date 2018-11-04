@@ -258,20 +258,11 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
 
     ctrlPress = (event.ctrlKey == true);
 
-    if ((!ctrlPress) & (!$('#lpu-ctrl').hasClass('active'))) {
-        table.rows().deselect();
-        $(this).addClass('selected');
-    }
-    else $(this).toggleClass('selected');
-    if ($(this).attr('id') == 'lpu-check')
-        if ($('#lpu-check').hasClass('active')) table.rows().select();
-        else table.rows().deselect();
-
     // Если щелкнули по сотруднику, то снова выделяем все записи в таблице ЛПУ
-    if ($(this).attr('id').substr(0,5) == 'empl_') {
-        table.rows().select();
-        $('#lpu-check').addClass('active');
-    }
+    //if ($(this).attr('id').substr(0,5) == 'empl_') {
+    //    table.rows().select();
+    //    $('#lpu-check').addClass('active');
+    //}
     // С нажатой ctrl работает мультивыделение кнопок выбора сотрудников
     if ((!ctrlPress) & (!$('#target-ctrl').hasClass('active')))
     if ($(this).attr('id').substr(0,5) == 'empl_') {
@@ -317,6 +308,19 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
     });
     var year_active = arr.join(',');
 
+        // Если щелкнули по таблице с ЛПУ
+    if ($(this).attr('id').substr(0,7) == 'lpu_id_') {
+        if ((!ctrlPress) & (!$('#lpu-ctrl').hasClass('active'))) {
+            table.rows().deselect();
+            $(this).addClass('selected');
+        }
+        else $(this).toggleClass('selected');
+    };
+    // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех ЛПУ
+    if ($(this).attr('id') == 'lpu-check') {
+        if ($('#lpu-check').hasClass('active')) table.rows().select();
+        else table.rows().deselect();
+    };
     arr = [];
     table.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
         //if (this.data().disabled==0)
