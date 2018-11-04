@@ -132,7 +132,7 @@
       </div>
     </div>
   </div>
-    <p id="textError"></p>
+
 
 <script type="text/javascript">
 var timerID = 0;
@@ -323,16 +323,10 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
                 //alert('Load was performed.');
                 processAjaxData(data);
             },
-            error:
-            function(XMLHttpRequest, textStatus, errorThrown)
-                {
-                    $('#textError').val('ERROR'+ XMLHttpRequest +" "+ errorThrown);
-                    alert(textStatus);
-                }
-            //    function (xhr, str) {
-            //    alert('Error loading data. ' + str);
-            //    alert(xhr.status);
-            //}
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+                    $('#textError').val(xhr.responseText);
+            }
         }) }, 500);
     return true;
 });
