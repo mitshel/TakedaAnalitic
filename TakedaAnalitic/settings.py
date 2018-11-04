@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
 import os
+import socket
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -84,20 +85,39 @@ WSGI_APPLICATION = 'TakedaAnalitic.wsgi.application'
 #    }
 #}
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'sql_server.pyodbc',
-        'NAME': 'BIMonitor',
-        'USER': 'cursor',
-        'PASSWORD': 'cursor2018',
-        'HOST': 'DESKTOP-VUDOG20\SQLEXPRESS',
-        'PORT': '',
+if socket.gethostname() == 'dsgate':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'sql_server.pyodbc',
+            'NAME': 'CursorTest',
+            'USER': 'cursor',
+            'PASSWORD': 'cursor2018',
+            'HOST': '192.168.7.130',
+            'PORT': '',
 
-        'OPTIONS': {
-            'driver': 'ODBC Driver 11 for SQL Server',
+            'OPTIONS': {
+                'driver': 'ODBC Driver 13 for SQL Server',
+            },
         },
-    },
-}
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'sql_server.pyodbc',
+            'NAME': 'BIMonitor',
+            'USER': 'cursor',
+            'PASSWORD': 'cursor2018',
+            'HOST': 'DESKTOP-VUDOG20\SQLEXPRESS',
+            'PORT': '',
+
+            'OPTIONS': {
+                'driver': 'ODBC Driver 11 for SQL Server',
+            },
+        },
+    }
+
+
+
 
 # set this to False if you want to turn off pyodbc's connection pooling
 #DATABASE_CONNECTION_POOLING = False

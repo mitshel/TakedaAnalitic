@@ -36,6 +36,9 @@ where c.org_id=1
 --inner join db_employee e1 on e1.id=e.employee_id and e1.org_id=1
 go
 
+alter table test_CACHE_1 add id bigint identity not null primary key
+go
+
 -- Создание полной таблици test_CACHE_1f
 --
 select 
