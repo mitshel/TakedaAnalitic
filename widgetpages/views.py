@@ -1,4 +1,5 @@
 import json
+import sys
 
 from django.shortcuts import render
 from django.db.models import Count, Sum, Min, F, Q
@@ -113,12 +114,11 @@ def filters_employee(request):
                 data = {'market_enabled':list(market_enabled),
                         'year_enabled':list(year_enabled),
                         'year_active': list(year_chart),
-                        'lpu_enabled':list(lpu_enabled.order_by('name').values('cust_id').distinct()),
+                        'lpu_enabled':list(lpu_enabled.values('cust_id').distinct()),
                         'pivot1': list(pivot1_data),
                         'pivot2': list(pivot2_data)
                         }
                 print("Return DATA")
-                print(data)
                 return JsonResponse(data)
 
     return render(request,'ta_home.html', {})
