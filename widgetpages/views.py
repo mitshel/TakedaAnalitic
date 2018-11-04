@@ -33,10 +33,10 @@ def sales_shedule(request):
     lpu_list = list(lpu_items.values('inn', 'name', 'cust_id').distinct().order_by('name'))
 
     print('start pivot')
-    pivot1_data = hs_active.values('PlanTYear','market_name').annotate(product_cost_sum=Sum('TenderPrice')).\
+    pivot1_data = hs_active.values('PlanTYear','market_name').annotate(product_cost_sum=Sum('TenderPrice')/1000000).\
         values('PlanTYear', 'market_name', 'product_cost_sum').order_by('market_name','PlanTYear')
     pivot2_data = hs_active.annotate(mon=Extract('ProcDt', 'month')).values('market_name', 'mon'). \
-        annotate(product_cost_sum=Sum('TenderPrice'), product_count=Count('market_id')). \
+        annotate(product_cost_sum=Sum('TenderPrice')/1000000, product_count=Count('market_id')). \
         values('market_name', 'mon', 'product_cost_sum','product_count').order_by('market_name', 'mon')
 
     #pivot = []
@@ -102,10 +102,10 @@ def filters_employee(request):
                     hs_chart = hs_enabled.filter(cust_id__in=lpu_active, PlanTYear__in=year_active, market_id__in=market_active)
 
                 print("Prepare pivot data")
-                pivot1_data = hs_chart.values('market_name','PlanTYear').annotate(product_cost_sum=Sum('TenderPrice')). \
+                pivot1_data = hs_chart.values('market_name','PlanTYear').annotate(product_cost_sum=Sum('TenderPrice')/1000000). \
                     values('market_name', 'PlanTYear',  'product_cost_sum').order_by('market_name', 'PlanTYear')
                 pivot2_data = hs_chart.annotate(mon=Extract('ProcDt','month')).values('market_name','mon').\
-                    annotate(product_cost_sum=Sum('TenderPrice'),product_count=Count('market_id')). \
+                    annotate(product_cost_sum=Sum('TenderPrice')/1000000,product_count=Count('market_id')). \
                     values('market_name', 'mon',  'product_cost_sum','product_count').order_by('market_name', 'mon')
 
                 #pivot1_data = []
