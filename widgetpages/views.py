@@ -19,10 +19,10 @@ def sales_shedule(request):
     org_id = 1
     print('start sales shedule')
     employee_items = Employee.objects.filter(org_id=org_id).order_by('name')
-    lpu_items = Lpu.objects.exclude(employee__isnull=True).values('inn','name','cust_id').distinct().order_by('name')
+    lpu_items = Lpu.objects.exclude(employee__isnull=True).exclude(cust_id=0).values('inn','name','cust_id').distinct().order_by('name')
     year_items = Hs.objects.values('PlanTYear').distinct().order_by('PlanTYear')
 
-    lpu_items_org = Lpu.objects.exclude(employee__isnull=True, cust_id=0).filter(employee__org=org_id)
+    lpu_items_org = Lpu.objects.exclude(employee__isnull=True).exclude(cust_id=0).filter(employee__org=org_id)
     lpu_active = lpu_items_org.values('cust_id')
     hs_active = Hs.objects.filter(cust_id__in=lpu_active)
     market_items = Market.objects.filter(org_id=org_id).values('id','name').order_by('name')

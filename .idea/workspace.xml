@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c2b8078d-8d3a-4a4d-a9ea-38dee01e930e" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -78,7 +78,7 @@
           <entry key="gitignore" value="16" />
           <entry key="html" value="1050" />
           <entry key="md" value="367" />
-          <entry key="py" value="1787" />
+          <entry key="py" value="1812" />
           <entry key="txt" value="10" />
         </counts>
       </usages-collector>
@@ -87,7 +87,7 @@
           <entry key="HTML" value="1050" />
           <entry key="Markdown" value="367" />
           <entry key="PLAIN_TEXT" value="26" />
-          <entry key="Python" value="1787" />
+          <entry key="Python" value="1812" />
         </counts>
       </usages-collector>
     </session>
@@ -187,16 +187,16 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1112">
-              <caret line="15" column="17" lean-forward="true" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="17" />
+            <state relative-caret-position="163">
+              <caret line="24" column="81" selection-start-line="24" selection-start-column="81" selection-end-line="24" selection-end-column="81" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="17">
@@ -220,8 +220,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2176">
-              <caret line="323" column="38" lean-forward="true" selection-start-line="323" selection-start-column="38" selection-end-line="323" selection-end-column="38" />
+            <state relative-caret-position="357">
+              <caret line="210" lean-forward="true" selection-start-line="210" selection-end-line="210" />
             </state>
           </provider>
         </entry>
@@ -294,8 +294,8 @@
         <option value="$PROJECT_DIR$/TakedaAnalitic/settings.py" />
         <option value="$PROJECT_DIR$/DOC/TODO.md" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter.html" />
-        <option value="$PROJECT_DIR$/widgetpages/views.py" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/widgetpages/views.py" />
       </list>
     </option>
   </component>
@@ -445,7 +445,7 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" x="805" y="161" width="309" height="717" id="Project" order="0" side_tool="true" visible="true" weight="0.204236" />
+      <window_info content_ui="combo" x="805" y="161" width="309" height="717" id="Project" order="0" side_tool="true" visible="true" weight="0.204236" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -459,7 +459,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info anchor="bottom" id="Terminal" order="11" visible="true" weight="0.3453355" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.25859246" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32936078" />
       <window_info anchor="bottom" id="Database Console" order="13" weight="0.32936078" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -725,6 +725,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/DOC/TODO.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor>
+            <caret column="12" lean-forward="true" selection-start-column="12" selection-end-column="12" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/.gitignore">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="210" lean-forward="true" selection-start-line="210" selection-end-line="210" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/TakedaAnalitic/settings.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="340">
@@ -742,34 +766,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DOC/TODO.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor>
-            <caret column="12" lean-forward="true" selection-start-column="12" selection-end-column="12" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2176">
-          <caret line="323" column="38" lean-forward="true" selection-start-line="323" selection-start-column="38" selection-end-line="323" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1112">
-          <caret line="15" column="17" lean-forward="true" selection-start-line="15" selection-start-column="4" selection-end-line="15" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="1" column="5" selection-start-line="1" selection-start-column="5" selection-end-line="1" selection-end-column="5" />
+        <state relative-caret-position="163">
+          <caret line="24" column="81" selection-start-line="24" selection-start-column="81" selection-end-line="24" selection-end-column="81" />
         </state>
       </provider>
     </entry>
