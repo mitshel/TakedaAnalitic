@@ -132,7 +132,7 @@
       </div>
     </div>
   </div>
-    <div id="text"></div>
+    <p id="textError"></p>
 
 <script type="text/javascript">
 var timerID = 0;
@@ -326,7 +326,7 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
             error:
             function(XMLHttpRequest, textStatus, errorThrown)
                 {
-                    $('#text').val('ERROR'+ XMLHttpRequest +" "+ errorThrown)
+                    $('#textError').val('ERROR'+ XMLHttpRequest +" "+ errorThrown);
                     alert(textStatus);
                 }
             //    function (xhr, str) {
