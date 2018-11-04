@@ -132,7 +132,7 @@
       </div>
     </div>
   </div>
-    <div id="ajax-timer"></div>
+    <div id="text"></div>
 
 <script type="text/javascript">
 var timerID = 0;
@@ -323,10 +323,16 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
                 //alert('Load was performed.');
                 processAjaxData(data);
             },
-            error: function (xhr, str) {
-                alert('Error loading data. ' + str);
-                alert(xhr.status);
-            }
+            error:
+            function(XMLHttpRequest, textStatus, errorThrown)
+                {
+                    $('#text').val('ERROR'+ XMLHttpRequest +" "+ errorThrown)
+                    alert(textStatus);
+                }
+            //    function (xhr, str) {
+            //    alert('Error loading data. ' + str);
+            //    alert(xhr.status);
+            //}
         }) }, 500);
     return true;
 });
