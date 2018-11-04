@@ -325,6 +325,7 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
             },
             error: function (xhr, str) {
                 alert('Error loading data. ' + str);
+                alert(xhr.status);
             }
         }) }, 500);
     return true;
