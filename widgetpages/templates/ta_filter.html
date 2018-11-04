@@ -19,13 +19,12 @@
     line-height: 1; !important;
 }
 
-.btn-circle {
+.btn-srv {
     width: 30px;
     height: 30px;
     border-radius: 4px;
     text-align: center;
-    padding-left: 0;
-    padding-right: 0;
+    padding: 0 0 0 0;
     font-size: 16px;
 }
 
@@ -41,8 +40,8 @@
               </h5>
           </div>
           <div class="col-6 text-right" style="padding-top:0.2rem;">
-              <button type="button" id="target-ctrl" class="btn btn-sm btn-outline-primary inline btn-circle" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
-              <button type="button" id="target-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-circle" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+              <button type="button" id="target-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+              <button type="button" id="target-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-srv active" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -63,15 +62,16 @@
   <div class="card">
     <div class="card-header" id="headingTwo" style="padding-top:0.2rem;padding-bottom:0.2rem;">
       <div class="row">
-          <div class="col-10">
+          <div class="col-6">
               <h5 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
                   Рынок
                 </button>
               </h5>
           </div>
-          <div class="col-2 text-right" style="padding-top:0.2rem;">
-                  <button type="button" id="market-ctrl" class="btn btn-sm btn-outline-primary" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+          <div class="col-6 text-right" style="padding-top:0.2rem;">
+                  <button type="button" id="market-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                  <button type="button" id="market-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-srv active" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -87,15 +87,16 @@
   <div class="card">
     <div class="card-header" id="headingThree" style="padding-top:0.2rem;padding-bottom:0.2rem;">
       <div class="row">
-          <div class="col-10">
+          <div class="col-6">
               <h5 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="true" aria-controls="collapseThree">
                   Год поставки
                 </button>
               </h5>
           </div>
-          <div class="col-2 text-right" style="padding-top:0.2rem;">
-                  <button type="button" id="year-ctrl" class="btn btn-sm btn-outline-primary" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+          <div class="col-6 text-right" style="padding-top:0.2rem;">
+                  <button type="button" id="year-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                  <button type="button" id="year-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-srv active" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -111,15 +112,16 @@
   <div class="card">
     <div class="card-header" id="headingFour" style="padding-top:0.2rem;padding-bottom:0.2rem;">
       <div class="row">
-          <div class="col-10">
+          <div class="col-6">
               <h5 class="mb-0">
                 <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#collapseFour" aria-expanded="true" aria-controls="collapseFour">
                   Грузополучатель
                 </button>
               </h5>
           </div>
-          <div class="col-2 text-right" style="padding-top:0.2rem;">
-                  <button type="button" id="lpu-ctrl" class="btn btn-sm btn-outline-primary" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+          <div class="col-6 text-right" style="padding-top:0.2rem;">
+                  <button type="button" id="lpu-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                  <button type="button" id="lpu-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-srv active" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -277,6 +279,9 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
        $('button[id^=market_].active').removeClass('active');
        if (isActive) $(this).addClass('active')
     }
+    if ($(this).attr('id') == 'market-check')
+        if ($('#market-check').hasClass('active')) $('button[id^=market_]').addClass('active')
+        else $('button[id^=market_]').removeClass('active');
     var arr = [];
     $('button[id^=market_].active').each(function() {
         arr.push($(this).attr('data-id'))
@@ -289,6 +294,9 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
        $('button[id^=year_].active').removeClass('active');
        if (isActive) $(this).addClass('active')
     }
+    if ($(this).attr('id') == 'year-check')
+        if ($('#year-check').hasClass('active')) $('button[id^=year_]').addClass('active')
+        else $('button[id^=year_]').removeClass('active');
     var arr = [];
     $('button[id^=year_].active').each(function() {
         arr.push($(this).attr('data-id'))
