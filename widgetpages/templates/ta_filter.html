@@ -142,10 +142,11 @@ var lpus = [
                 ]
 var table = $('#lpuTable').DataTable({
                 "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-                buttons: [
-                    'selectAll',
-                    'selectNone',
-                ],
+                //buttons: [
+                //    'selectAll',
+                //    'selectNone',
+                //],
+                buttons:[],
                 ordering:  true,
                 "pageLength": 10,
                 "columnDefs": [
@@ -210,9 +211,9 @@ $(table.column(0).header()).html('<b>ЛПУ</b>');
 table.rows().select();
 
 
-$('#lpuTable tbody').on( 'click', 'tr', function () {
-    $(this).toggleClass('selected');
-} );
+//$('#lpuTable tbody').on( 'click', 'tr', function (event) {
+//    $(this).toggleClass('selected');
+//} );
 
 $.fn.dataTable.ext.search.push(
     function( settings, data, DataIndex ) {
@@ -252,10 +253,19 @@ function processAjaxData(data) {
     ChartsUpdate3(data);
 }
 
-$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #lpuTable tbody, .buttons-select-all, .buttons-select-none', function(event) {
+$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #lpuTable tbody tr, .buttons-select-all, .buttons-select-none', function(event) {
     action_url = $('#empl_form').attr("action");
 
     ctrlPress = (event.ctrlKey == true);
+
+    if ((!ctrlPress) & (!$('#lpu-ctrl').hasClass('active'))) {
+        table.rows().deselect();
+        $(this).addClass('selected');
+    }
+    else $(this).toggleClass('selected');
+    if ($(this).attr('id') == 'lpu-check')
+        if ($('#lpu-check').hasClass('active')) table.rows().select();
+        else table.rows().deselect();
 
     if ((!ctrlPress) & (!$('#target-ctrl').hasClass('active')))
     if ($(this).attr('id').substr(0,5) == 'empl_') {
@@ -265,7 +275,6 @@ $(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market
     if ($(this).attr('id') == 'target-check')
         if ($('#target-check').hasClass('active')) $('button[id^=empl_]').addClass('active')
         else $('button[id^=empl_]').removeClass('active');
-
     var arr = [];
     $('button[id^=empl_].active').each(function() {
         arr.push($(this).attr('data-id'))
