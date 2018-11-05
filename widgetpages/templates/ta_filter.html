@@ -41,7 +41,7 @@
           </div>
           <div class="col-6 text-right" style="padding-top:0.2rem;">
               <button type="button" id="target-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
-              <button type="button" id="target-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-srv active" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+              <button type="button" id="target-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -50,9 +50,9 @@
       <div class="card-body">
             <form id="empl_form" method="post" action="{% url 'widgetpages:f_emplsupd' %}">
              {% csrf_token %}
-                <button type="button" id='empl_0' data-id="0" class="btn btn-secondary btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">Без учета Таргет</button>
+                <button type="button" id='empl_0' data-id="0" class="btn btn-secondary btn-sm inline btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">Без учета Таргет</button>
               {% for e in employee %}
-                <button type="button" id='empl_{{ e.id }}' data-id="{{ e.id }}" class="btn btn-secondary btn-sm active inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
+                <button type="button" id='empl_{{ e.id }}' data-id="{{ e.id }}" class="btn btn-secondary btn-sm active inline btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
               {% endfor %}
             </form>
           </div>
@@ -71,14 +71,14 @@
           </div>
           <div class="col-6 text-right" style="padding-top:0.2rem;">
                   <button type="button" id="market-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
-                  <button type="button" id="market-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-srv active" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                  <button type="button" id="market-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
     <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo">
       <div class="card-body">
               {% for m in market %}
-                <button type="button" id='market_{{ m.id }}' data-id="{{ m.id }}" class="btn btn-secondary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ m.name }}</button>
+                <button type="button" id='market_{{ m.id }}' data-id="{{ m.id }}" class="btn btn-secondary active btn-sm inline btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ m.name }}</button>
               {% endfor %}
       </div>
     </div>
@@ -96,14 +96,14 @@
           </div>
           <div class="col-6 text-right" style="padding-top:0.2rem;">
                   <button type="button" id="year-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
-                  <button type="button" id="year-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-srv active" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                  <button type="button" id="year-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
     <div id="collapseThree" class="collapse" aria-labelledby="headingThree">
       <div class="card-body">
               {% for y in year %}
-                <button type="button" id='year_{{ y.PlanTYear }}' data-id="{{ y.PlanTYear }}" class="btn btn-secondary active btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ y.PlanTYear }}</button>
+                <button type="button" id='year_{{ y.PlanTYear }}' data-id="{{ y.PlanTYear }}" class="btn btn-secondary active btn-sm inline btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ y.PlanTYear }}</button>
               {% endfor %}
       </div>
     </div>
@@ -121,7 +121,7 @@
           </div>
           <div class="col-6 text-right" style="padding-top:0.2rem;">
                   <button type="button" id="lpu-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
-                  <button type="button" id="lpu-check" class="btn btn-sm btn-outline-primary buttons-select-all inline btn-srv active" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                  <button type="button" id="lpu-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -173,12 +173,11 @@ var table = $('#lpuTable').DataTable({
                 { data: 'cust_id' },
                 { data: 'disabled' }
                 ],
-//                "rowCallback": function( row, data ) {
-//                    $(row).attr('data-id',data.id);
-//                    $(row).addClass('entity');
+                "rowCallback": function( row, data ) {
+                    $(row).addClass('btn-filter');
 //                    $('td:eq(1)', row).attr('style','width:100%;');
 //                    $('td:eq(1)', row).html('<span title="'+data.id+' '+data.entity+'">'+data.entity+'</span>');
-//                },
+                },
                 "language": {
                               "processing": "Подождите...",
                               "search": "Поиск:",
@@ -253,16 +252,12 @@ function processAjaxData(data) {
     ChartsUpdate3(data);
 }
 
-$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #lpuTable tbody tr, .buttons-select-all, .buttons-select-none', function(event) {
+//$(document).on('click', 'button[id^=empl_], button[id^=year_], button[id^=market_], #lpuTable tbody tr, .buttons-select-all, .buttons-select-none', function(event) {
+$(document).on('click', '.btn-filter', function(event) {
     action_url = $('#empl_form').attr("action");
 
     ctrlPress = (event.ctrlKey == true);
 
-    // Если щелкнули по сотруднику, то снова выделяем все записи в таблице ЛПУ
-    //if ($(this).attr('id').substr(0,5) == 'empl_') {
-    //    table.rows().select();
-    //    $('#lpu-check').addClass('active');
-    //}
     // С нажатой ctrl работает мультивыделение кнопок выбора сотрудников
     if ((!ctrlPress) & (!$('#target-ctrl').hasClass('active')))
     if ($(this).attr('id').substr(0,5) == 'empl_') {
