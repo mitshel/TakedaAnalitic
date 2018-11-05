@@ -122,3 +122,20 @@ def filters_employee(request):
                 return JsonResponse(data)
 
     return render(request,'ta_home.html', {})
+
+
+def competitions(request):
+    args={}
+    args.update(csrf(request))
+    org_id = 1
+    employee_items = Employee.objects.filter(org_id=org_id).values('name', iid=F('id')).order_by('name')
+    market_items = Market.objects.filter(org_id=org_id).values('name', iid=F('id')).order_by('name')
+    year_items = Hs.objects.extra(select = {'iid':'PlanTYear','name':'PlanTYear'}).values('name','iid').distinct().order_by('name')
+
+    args['filters'] = [
+        {'id': 'empl', 'type': 'btn', 'name': 'Таргет', 'expanded':'true', 'data': employee_items},
+        {'id': 'mrkt', 'type': 'btn', 'name': 'Рынок', 'data': market_items},
+        {'id': 'year', 'type': 'btn', 'name': 'Год поставки', 'data': year_items},
+    ]
+
+    return render(request,'ta_competitions.html', args)

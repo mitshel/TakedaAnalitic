@@ -48,13 +48,13 @@
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Аналитика <span class="sr-only">(current)</span></a>
             <div class="dropdown-menu">
               <a class="dropdown-item" href="{% url 'widgetpages:salesshedule' %}">График продаж</a>
-              <a class="dropdown-item" href="#">Анализ упаковок</a>
-              <a class="dropdown-item" href="#">Анализ средней цены</a>
-              <a class="dropdown-item" href="#">Конкурентный анализ</a>
-              <a class="dropdown-item" href="#">Каналы финансирования</a>
-              <a class="dropdown-item" href="#">Доля</a>
-              <a class="dropdown-item" href="#">Анализ продаж</a>
-              <a class="dropdown-item" href="#">Анализ учреждений</a>
+              <a class="dropdown-item disabled" href="#">Анализ упаковок</a>
+              <a class="dropdown-item disabled" href="#">Анализ средней цены</a>
+              <a class="dropdown-item" href="{% url 'widgetpages:competitions' %}">Конкурентный анализ</a>
+              <a class="dropdown-item disabled" href="#">Каналы финансирования</a>
+              <a class="dropdown-item disabled" href="#">Доля</a>
+              <a class="dropdown-item disabled" href="#">Анализ продаж</a>
+              <a class="dropdown-item disabled" href="#">Анализ учреждений</a>
             </div>
           </li>
         </ul>

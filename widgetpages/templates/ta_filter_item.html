@@ -1,0 +1,25 @@
+  <div class="card">
+    <div class="card-header" id="heading_{{ flt.id }}">
+      <div class="row">
+          <div class="col-6">
+              <h5 class="mb-0">
+                <button class="btn btn-link{% if flt.expanded != 'true' %} collapse{% endif %}" type="button" data-toggle="collapse" data-target="#collapse_{{ flt.id }}" aria-expanded="true" aria-controls="collapse_{{ flt.id }}">
+                  {{ flt.name }}
+                </button>
+              </h5>
+          </div>
+          <div class="col-6 text-right" style="padding-top:0.3rem;">
+              <button type="button" id="{{ flt.id }}-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+              <button type="button" id="{{ flt.id }}-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+          </div>
+      </div>
+    </div>
+
+    <div id="collapse_{{ flt.id }}" class="collapse show" aria-labelledby="heading_{{ flt.id }}">
+      <div class="card-body">
+              {% for e in flt.data %}
+                <button type="button" id='{{ flt.id }}_{{ e.iid }}' data-id="{{ e.iid }}" class="btn btn-secondary btn-sm active inline btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
+              {% endfor %}
+          </div>
+    </div>
+  </div>
