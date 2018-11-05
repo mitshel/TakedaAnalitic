@@ -28,6 +28,10 @@
     font-size: 16px;
 }
 
+.card-body {
+    padding: 1rem;
+}
+
 </style>
   <div class="card">
     <div class="card-header" id="headingOne" style="padding-top:0.2rem;padding-bottom:0.2rem;">
@@ -39,7 +43,7 @@
                 </button>
               </h5>
           </div>
-          <div class="col-6 text-right" style="padding-top:0.2rem;">
+          <div class="col-6 text-right" style="padding-top:0.3rem;">
               <button type="button" id="target-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
               <button type="button" id="target-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
@@ -69,7 +73,7 @@
                 </button>
               </h5>
           </div>
-          <div class="col-6 text-right" style="padding-top:0.2rem;">
+          <div class="col-6 text-right" style="padding-top:0.3rem;">
                   <button type="button" id="market-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
                   <button type="button" id="market-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
@@ -94,7 +98,7 @@
                 </button>
               </h5>
           </div>
-          <div class="col-6 text-right" style="padding-top:0.2rem;">
+          <div class="col-6 text-right" style="padding-top:0.3rem;">
                   <button type="button" id="year-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
                   <button type="button" id="year-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
@@ -119,7 +123,7 @@
                 </button>
               </h5>
           </div>
-          <div class="col-6 text-right" style="padding-top:0.2rem;">
+          <div class="col-6 text-right" style="padding-top:0.3rem;">
                   <button type="button" id="lpu-ctrl" class="btn btn-sm btn-outline-primary btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
                   <button type="button" id="lpu-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
@@ -180,7 +184,7 @@ var table = $('#lpuTable').DataTable({
                 },
                 "language": {
                               "processing": "Подождите...",
-                              "search": "Поиск:",
+                              "search": "&nbsp;Поиск:",
                               "lengthMenu": "&nbsp;&nbsp;_MENU_&nbsp;&nbsp;",
                               "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
                               "infoEmpty": "Записи с 0 до 0 из 0 записей",
