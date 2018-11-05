@@ -11,7 +11,7 @@
                     backgroundColor: window.listColors[{{ forloop.counter0 }}],
                     borderColor: window.listColors[{{ forloop.counter0 }}],
                     data: [
-                        {% for m in market.list %}{ x:{{ m.PlanTYear }}, y:{{ m.product_cost_sum|floatformat:"0" }} }{% if not forloop.last %},{% endif %}
+                        {% for m in market.list %}{ x:{{ m.iid }}, y:{{ m.product_cost_sum|floatformat:"0" }} }{% if not forloop.last %},{% endif %}
                         {% endfor %}
                     ],
                     fill: false,
@@ -55,16 +55,16 @@
     };
 
     function ChartsUpdate1(data) {
-        labels_data = []
-        data.data.year_active.forEach(function(year_active) {
-           labels_data.push(year_active.PlanTYear)
+        labels_data = [];
+        data.data.year.forEach(function(year) {
+           labels_data.push(year.iid)
         });
         config1.data.labels = labels_data;
         config1.data.datasets.forEach(function(dataset) {
             chart_data = [];
             for (var i in data.data.pivot1) {
                 if (data.data.pivot1[i].market_name==dataset.label) {
-                    chart_data.push({x:data.data.pivot1[i].PlanTYear,y:data.data.pivot1[i].product_cost_sum})
+                    chart_data.push({ x:data.data.pivot1[i].iid, y:data.data.pivot1[i].product_cost_sum })
                 }
             }
             dataset.data = chart_data;

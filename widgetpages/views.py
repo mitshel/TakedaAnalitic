@@ -168,24 +168,41 @@ class FiltersView(View):
     view_name = 'Пустая страница'
     org_id = 1
 
-    def filters(self):
-        employee_items = Employee.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
-        market_items = Market.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
-        year_items = Hs.objects.exclude(PlanTYear__isnull=True).extra(select={'iid': 'PlanTYear', 'name': 'PlanTYear'}).\
-            values('name','iid').distinct().order_by('name')
-        lpu_items = Lpu.objects.exclude(employee__isnull=True).exclude(cust_id=0).filter(employee__org=self.org_id).\
-            values('name', iid=F('cust_id'),ext=F('inn')).distinct().order_by('name')
+    def filters(self, flt_active=None):
+        if not flt_active:
+            employee_enabled = Employee.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
+            market_enabled = Market.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
+            year_enabled = Hs.objects.exclude(PlanTYear__isnull=True).extra(select={'iid': 'PlanTYear', 'name': 'PlanTYear'}).\
+                values('name','iid').distinct().order_by('name')
+            lpu_enabled = Lpu.objects.exclude(cust_id=0).filter(employee__org=self.org_id).\
+                values('name', iid=F('cust_id'),ext=F('inn')).distinct().order_by('name')
+        else:
+            employee_enabled = Employee.objects.filter(org_id=self.org_id).values(iid=F('id'))
+            lpu_enabled = Lpu.objects.filter(employee__in=flt_active[fempl]).exclude(cust_id=0).values(iid=F('cust_id'))
+            #if notarget_flag: hs_enabled = Hs.objects.all() else: hs_enabled = Hs.objects.filter(cust_id__in=lpu_enabled)
+            hs_enabled = Hs.objects.exclude(cust_id=0).filter(cust_id__employee__in=flt_active[fempl])
+            year_enabled = hs_enabled.values('PlanTYear').distinct().values(iid=F('PlanTYear'))
+            market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).distinct().values(iid=F('market_id'))
 
         filters = []
         if fempl in self.filters_list:
-            filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'expanded': 'true', 'data': employee_items})
+            filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'expanded': 'true', 'data': list(employee_enabled)})
         if fmrkt in self.filters_list:
-            filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'data': market_items})
+            filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'data': list(market_enabled)})
         if fyear in self.filters_list:
-            filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'data': year_items})
+            filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'data': list(year_enabled)})
         if fcust in self.filters_list:
-            filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'data': lpu_items})
+            filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'data': list(lpu_enabled)})
 
+        return filters
+
+    def get_filter(self,flt,flt_id):
+        return next(f for f in flt if f['id'] == flt_id )
+
+    def get_filters_dict(self,flt):
+        filters = {}
+        for f in self.filters_list:
+            filters[f]=self.get_filter(flt,f)
         return filters
 
     def data(self, flt=None, flt_active=None):
@@ -194,8 +211,6 @@ class FiltersView(View):
     def get(self, request, *args, **kwargs):
         filters = self.filters()
         data = self.data(filters)
-        print(filters)
-        print(data)
         return render(request, self.template_name, {'filters': filters,
                                                     'data': data,
                                                     'view': {'id': self.view_id, 'name': self.view_name},
@@ -209,15 +224,18 @@ class FiltersView(View):
                     flt_str = request.POST.get('{}_active'.format(f), '')
                     flt_active[f] = [int(e) for e in flt_str.split(',')] if flt_str else []
 
-                print('------ From FrontEnd -----')
-                print(flt_active)
+                #print('------ From FrontEnd -----')
+                #print(flt_active)
+                #print(len(flt_active[fcust]))
 
                 filters = self.filters(flt_active)
                 data = self.data(filters, flt_active)
-                return JsonResponse({'filters': filters,
-                                     'data': data,
-                                     'view': {'id' : self.view_id, 'name': self.view_name},
-                                     'ajax_url': self.ajax_url})
+                response = {'filters': self.get_filters_dict(filters),
+                            'data': data,
+                            'view': {'id' : self.view_id, 'name': self.view_name},
+                            'ajax_url': self.ajax_url}
+                return JsonResponse(response)
+
         return self.get(request)
 
 class SalessheduleView(FiltersView):
@@ -229,15 +247,22 @@ class SalessheduleView(FiltersView):
     def data(self, flt=None, flt_active=None):
         pivot_data = {}
         if flt:
-            hs_active = Hs.objects.filter(cust_id__in=next(f for f in flt if f['id'] == fcust )['data'].values('iid'))
-            pivot_data['year'] = hs_active.values(iid=F('PlanTYear')).distinct().order_by('iid')
-            pivot_data['pivot1'] = hs_active.values('PlanTYear', 'market_name').annotate(
-                product_cost_sum=Sum('TenderPrice') / 1000000). \
-                values('PlanTYear', 'market_name', 'product_cost_sum').order_by('market_name', 'PlanTYear')
+            hs_active = Hs.objects.exclude(cust_id=0)
+            if flt_active:
+                hs_active = hs_active.filter(cust_id__employee__in=flt_active[fempl], \
+                                             cust_id__in=flt_active[fcust], \
+                                             PlanTYear__in=flt_active[fyear], \
+                                             market_id__in=flt_active[fmrkt])
+            else:
+                hs_active = hs_active.filter(cust_id__employee__org_id=self.org_id)
 
-            pivot_data['pivot2'] = hs_active.annotate(mon=Extract('ProcDt', 'month')).values('market_name', 'mon'). \
+            pivot_data['year'] = list(hs_active.values(iid=F('PlanTYear')).distinct().order_by('iid'))
+            pivot_data['pivot1'] = list(hs_active.values('market_name',iid=F('PlanTYear')).annotate(
+                product_cost_sum=Sum('TenderPrice') / 1000000). \
+                values('iid', 'market_name', 'product_cost_sum').order_by('market_name', 'iid'))
+            pivot_data['pivot2'] = list(hs_active.annotate(mon=Extract('ProcDt', 'month')).values('market_name', 'mon'). \
                 annotate(product_cost_sum=Sum('TenderPrice') / 1000000, product_count=Count('market_id')). \
-                values('market_name', 'mon', 'product_cost_sum', 'product_count').order_by('market_name', 'mon')
+                values('market_name', 'mon', 'product_cost_sum', 'product_count').order_by('market_name', 'mon'))
 
         return pivot_data
 

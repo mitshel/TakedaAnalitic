@@ -4,7 +4,7 @@
         data: {
             labels: ['1','2','3','4','5','6','7','8','9','10','11','12'],
             datasets: [
-                {% regroup pivot2 by market_name as market_list %}
+                {% regroup data.pivot2 by market_name as market_list %}
                 {% for market in market_list %}
                 {
                     label: '{{ market.grouper }}',
@@ -58,9 +58,9 @@
         config3.data.labels = ['1','2','3','4','5','6','7','8','9','10','11','12'];
         config3.data.datasets.forEach(function(dataset) {
             chart_data = [];
-            for (var i in data.pivot2) {
-                if (data.pivot2[i].market_name==dataset.label) {
-                    chart_data.push({x:data.pivot2[i].mon,y:data.pivot2[i].product_count})
+            for (var i in data.data.pivot2) {
+                if (data.data.pivot2[i].market_name==dataset.label) {
+                    chart_data.push({x:data.data.pivot2[i].mon,y:data.data.pivot2[i].product_count})
                 }
             }
             dataset.data = chart_data;
