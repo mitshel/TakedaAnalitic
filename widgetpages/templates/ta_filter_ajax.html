@@ -1,0 +1,75 @@
+<script type="text/javascript">
+var timerID = 0;
+function processAjaxData(data) {
+
+}
+
+$(document).on('click', '.btn-filter', function(event) {
+    action_url = '{{ ajax_url }}';
+    ctrlPress = (event.ctrlKey == true);
+
+    {% for flt in filters %}
+        {% if flt.type == 'btn' %}
+            // С нажатой ctrl работает мультивыделение кнопок выбора сотрудников
+            if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active')))
+            if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
+               $('button[id^={{ flt.id }}_].active').removeClass('active');
+               $(this).addClass('active')
+            };
+            // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех кнопок сотрудников
+            if ($(this).attr('id') == '{{ flt.id }}-check')
+                if ($('#{{ flt.id }}-check').hasClass('active')) $('button[id^={{ flt.id }}_]').addClass('active')
+                else $('button[id^={{ flt.id }}_]').removeClass('active');
+            // Создаем список активных кнопок сотрудников
+            var arr = [];
+            $('button[id^={{ flt.id }}_].active').each(function() {
+                arr.push($(this).attr('data-id'))
+            });
+            var {{ flt.id }}_active = arr.join(',');
+        {% endif %}
+
+        {% if flt.type == 'tbl' %}
+            // Если щелкнули по табличному фильтру
+            if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
+                if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active'))) {
+                    tbl_{{ flt.id }}.rows().deselect();
+                    $(this).addClass('selected');
+                }
+                else $(this).toggleClass('selected');
+            };
+            // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех ЛПУ
+            if ($(this).attr('id') == '{{ flt.id }}-check') {
+                if ($('#{{ flt.id }}-check').hasClass('active')) tbl_{{ flt.id }}.rows().select();
+                else tbl_{{ flt.id }}.rows().deselect();
+            };
+            arr = [];
+            tbl_{{ flt.id }}.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+                    arr.push(this.data().iid);
+            } );
+            var {{ flt.id }}_active = arr.join(',');
+        {% endif %}
+    {% endfor %}
+
+    if (timerID) clearTimeout(timerID);
+    timerID = setTimeout(function () {
+        $.ajax({
+            type: 'POST',
+            url: action_url,
+            data: {
+                {% for flt in filters %}
+                '{{ flt.id }}_active': {{ flt.id }}_active,
+                {% endfor %}
+                'csrfmiddlewaretoken': '{{ csrf_token }}'
+            },
+            success: function (data) {
+                //alert('Load was performed.');
+                processAjaxData(data);
+            },
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+            }
+        }) }, 500);
+    return true;
+});
+
+</script>

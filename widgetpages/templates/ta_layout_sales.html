@@ -9,12 +9,7 @@
                <p id="textError"></p>
          </div>
          <div class="col-4">
-             {% block filter %}
-                 {% include 'ta_filter_styles.html' %}
-                 {% for flt in filters %}
-                 {% include 'ta_filter_item.html' %}
-                 {% endfor %}
-             {% endblock %}
+             {% block filter %}{% include 'ta_filter.html' %}{% endblock %}
          </div>
     </div>
 {% endblock %}

@@ -17,9 +17,55 @@
 
     <div id="collapse_{{ flt.id }}" class="collapse {% if flt.expanded == 'true' %} show{% endif %}" aria-labelledby="heading_{{ flt.id }}">
       <div class="card-body">
+        {% if flt.type == 'btn' %}
               {% for e in flt.data %}
                 <button type="button" id='{{ flt.id }}_{{ e.iid }}' data-id="{{ e.iid }}" class="btn btn-secondary btn-sm active inline btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
               {% endfor %}
-          </div>
+        {% endif %}
+        {% if flt.type == 'tbl' %}
+              <table class="table table-sm table-hover display w-100 datatable" width="100%" id="tbl_{{ flt.id }}">
+              </table>
+        {% endif %}
+      </div>
     </div>
   </div>
+
+
+{% if flt.type == 'tbl' %}
+<script type="text/javascript">
+var {{ flt.id }}_data = [
+                    {% for e in flt.data %} {DT_RowId:'{{ flt.id }}_{{ e.iid }}', iid: '{{ e.iid }}', name:'{{ e.name }}', ext:'{{ e.ext }}', disabled:'0' } {% if not forloop.last %},{% endif %}
+                    {% endfor %}
+                ]
+var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
+                "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+                buttons:[],
+                ordering:  true,
+                "pageLength": 10,
+                "columnDefs": [
+                    {   "targets": [ 1 ], "visible": false, "searchable": true },
+                    {   "targets": [ 2 ], "visible": false, "searchable": false },
+                    {   "targets": [ 3 ], "visible": false, "searchable": false }
+                ],
+                data: {{ flt.id }}_data,
+                columns: [ { data: 'name' }, { data: 'ext' }, { data: 'iid' }, { data: 'disabled' } ],
+                "rowCallback": function( row, data ) {
+                    $(row).addClass('btn-filter');
+                },
+                "language": lang_russian
+            });
+
+$(tbl_{{ flt.id }}.column(0).header()).html('<b>{{ flt.name }}</b>');
+tbl_{{ flt.id }}.rows().select();
+
+$.fn.dataTable.ext.search.push(
+    function( settings, data, DataIndex ) {
+        var disabled = settings.aoData[DataIndex]._aData.disabled;
+        if (disabled == '0')
+            return true
+        else
+            return false;
+    }
+);
+</script>
+{% endif %}

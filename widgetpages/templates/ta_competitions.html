@@ -1,11 +1,10 @@
-{% extends "ta_layout_competitions.html" %}
+{% extends "ta_layout.html" %}
 {% load staticfiles %}
 {% load i18n %}
 
 {% block page %}
-	<style>	</style>
-
 	<div class="col-12">
+        <h5>{{ view.name }}</h5>
 		<table id="ta_competitions_table"></table>
 	</div>
 {%  endblock %}

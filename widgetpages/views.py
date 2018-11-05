@@ -8,6 +8,14 @@ from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
 
 from db.models import Hs, Target, Employee, Lpu, Market
+from django.views.generic import View
+from django.urls import reverse, reverse_lazy
+
+# Filters identification
+fempl = 'empl'
+fmrkt = 'mrkt'
+fyear = 'year'
+fcust = 'cust'
 
 # Create your views here.
 def Home(request):
@@ -125,17 +133,116 @@ def filters_employee(request):
 
 
 def competitions(request):
+    filters_enable = [fempl,fmrkt,fyear,fcust]
     args={}
     args.update(csrf(request))
     org_id = 1
     employee_items = Employee.objects.filter(org_id=org_id).values('name', iid=F('id')).order_by('name')
     market_items = Market.objects.filter(org_id=org_id).values('name', iid=F('id')).order_by('name')
     year_items = Hs.objects.extra(select = {'iid':'PlanTYear','name':'PlanTYear'}).values('name','iid').distinct().order_by('name')
+    lpu_items = Lpu.objects.exclude(employee__isnull=True).exclude(cust_id=0).values('name',iid=F('cust_id'),ext=F('inn')).distinct().order_by('name')
 
-    args['filters'] = [
-        {'id': 'empl', 'type': 'btn', 'name': 'Таргет', 'expanded':'true', 'data': employee_items},
-        {'id': 'mrkt', 'type': 'btn', 'name': 'Рынок', 'data': market_items},
-        {'id': 'year', 'type': 'btn', 'name': 'Год поставки', 'data': year_items},
-    ]
+    filters = []
+    if fempl in filters_enable:
+        filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'expanded':'true', 'data': employee_items})
+    if fmrkt in filters_enable:
+        filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'data': market_items})
+    if fyear in filters_enable:
+        filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'data': year_items})
+    if fcust in filters_enable:
+        filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'data': lpu_items})
+
+    args['filters'] = filters
+    args['action_url'] = '#'
 
     return render(request,'ta_competitions.html', args)
+
+def competitions_ajax(request):
+    pass
+
+class FiltersView(View):
+    filters_list = [fempl,fmrkt,fyear,fcust]
+    ajax_url = '#'
+    template_name = 'ta_competitions.html'
+    view_id = 'blank'
+    view_name = 'Пустая страница'
+    org_id = 1
+
+    def filters(self):
+        employee_items = Employee.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
+        market_items = Market.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
+        year_items = Hs.objects.exclude(PlanTYear__isnull=True).extra(select={'iid': 'PlanTYear', 'name': 'PlanTYear'}).\
+            values('name','iid').distinct().order_by('name')
+        lpu_items = Lpu.objects.exclude(employee__isnull=True).exclude(cust_id=0).filter(employee__org=self.org_id).\
+            values('name', iid=F('cust_id'),ext=F('inn')).distinct().order_by('name')
+
+        filters = []
+        if fempl in self.filters_list:
+            filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'expanded': 'true', 'data': employee_items})
+        if fmrkt in self.filters_list:
+            filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'data': market_items})
+        if fyear in self.filters_list:
+            filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'data': year_items})
+        if fcust in self.filters_list:
+            filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'data': lpu_items})
+
+        return filters
+
+    def data(self, flt=None, flt_active=None):
+        return {}
+
+    def get(self, request, *args, **kwargs):
+        filters = self.filters()
+        data = self.data(filters)
+        print(filters)
+        print(data)
+        return render(request, self.template_name, {'filters': filters,
+                                                    'data': data,
+                                                    'view': {'id': self.view_id, 'name': self.view_name},
+                                                    'ajax_url': self.ajax_url})
+
+    def post(self, request, *args, **kwargs):
+        if request.is_ajax():
+            if request.POST:
+                flt_active = {}
+                for f in self.filters_list:
+                    flt_str = request.POST.get('{}_active'.format(f), '')
+                    flt_active[f] = [int(e) for e in flt_str.split(',')] if flt_str else []
+
+                print('------ From FrontEnd -----')
+                print(flt_active)
+
+                filters = self.filters(flt_active)
+                data = self.data(filters, flt_active)
+                return JsonResponse({'filters': filters,
+                                     'data': data,
+                                     'view': {'id' : self.view_id, 'name': self.view_name},
+                                     'ajax_url': self.ajax_url})
+        return self.get(request)
+
+class SalessheduleView(FiltersView):
+    template_name = 'ta_salesshedule.html'
+    ajax_url = reverse_lazy('widgetpages:salesshedule')
+    view_id = 'salesshedule'
+    view_name = 'График продаж'
+
+    def data(self, flt=None, flt_active=None):
+        pivot_data = {}
+        if flt:
+            hs_active = Hs.objects.filter(cust_id__in=next(f for f in flt if f['id'] == fcust )['data'].values('iid'))
+            pivot_data['year'] = hs_active.values(iid=F('PlanTYear')).distinct().order_by('iid')
+            pivot_data['pivot1'] = hs_active.values('PlanTYear', 'market_name').annotate(
+                product_cost_sum=Sum('TenderPrice') / 1000000). \
+                values('PlanTYear', 'market_name', 'product_cost_sum').order_by('market_name', 'PlanTYear')
+
+            pivot_data['pivot2'] = hs_active.annotate(mon=Extract('ProcDt', 'month')).values('market_name', 'mon'). \
+                annotate(product_cost_sum=Sum('TenderPrice') / 1000000, product_count=Count('market_id')). \
+                values('market_name', 'mon', 'product_cost_sum', 'product_count').order_by('market_name', 'mon')
+
+        return pivot_data
+
+class CompetitionsView(FiltersView):
+    template_name = 'ta_competitions.html'
+    ajax_url = reverse_lazy('widgetpages:competitions')
+    view_id = 'competitions'
+    view_name = 'Конкурентный анализ'

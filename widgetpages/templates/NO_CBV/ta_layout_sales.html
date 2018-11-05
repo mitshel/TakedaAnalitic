@@ -1,0 +1,15 @@
+{% extends "ta_main.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+    <div class="row">
+         <div class="col-8">
+              {% block page %}{% endblock %}
+               <p id="textError"></p>
+         </div>
+         <div class="col-4">
+             {% block filter %}{% include 'ta_filter.html' %}{% endblock %}
+         </div>
+    </div>
+{% endblock %}
