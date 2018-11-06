@@ -69,14 +69,15 @@ class FiltersView(View):
 
     def filters(self, flt_active=None):
         filters = []
-        if fempl in self.filters_list:
-            filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'expanded': 'true', 'data': self.filter_empl(flt_active)})
-        if fmrkt in self.filters_list:
-            filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'data': self.filter_mrkt(flt_active)})
-        if fyear in self.filters_list:
-            filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'data': self.filter_year(flt_active)})
-        if fcust in self.filters_list:
-            filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'data': self.filter_cust(flt_active)})
+        for f in self.filters_list:
+            if fempl == f :
+                filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'expanded': 'true', 'data': self.filter_empl(flt_active)})
+            if fmrkt == f:
+                filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'data': self.filter_mrkt(flt_active)})
+            if fyear == f:
+                filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'data': self.filter_year(flt_active)})
+            if fcust == f:
+                filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'data': self.filter_cust(flt_active)})
 
         return filters
 
