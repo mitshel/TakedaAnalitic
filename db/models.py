@@ -1,5 +1,10 @@
 from django.db import models
 
+class IdList(models.Model):
+    item = models.IntegerField(db_column='Item', null=False, blank=False)
+    class Meta:
+        managed = False
+
 class Org(models.Model):
     name = models.CharField(max_length=32, null=True, blank=True)
 
