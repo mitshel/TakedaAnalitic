@@ -176,15 +176,17 @@ class SalessheduleView(FiltersView):
                     hs_active = hs_active.filter(PlanTYear__in=flt_active[fyear], \
                                                  market_id__in=flt_active[fmrkt])
                 else:
-                    #extra_lpu_filter = '[{}].Cust_ID in (select item from fnParseList(\'{}\'))'. \
-                    extra_lpu_filter = '[{}].Cust_ID in ({})'. \
-                        format(Lpu._meta.db_table,','.join([str(e) for e in flt_active[fcust]]))
-                    print(extra_lpu_filter)
+                    if len(flt_active[fcust])>0:
+                        extra_lpu_filter = '[{}].Cust_ID in ({})'.\
+                            format(Lpu._meta.db_table, ','.join([str(e) for e in flt_active[fcust]]))
+                    else:
+                        extra_lpu_filter = '1>1'
                     hs_active = hs_active.filter(cust_id__employee__in=flt_active[fempl], \
                                                  #cust_id__in=flt_active[fcust], \
                                                  PlanTYear__in=flt_active[fyear], \
-                                                 market_id__in=flt_active[fmrkt]).\
+                                                 market_id__in=flt_active[fmrkt]). \
                                                  extra(where=[extra_lpu_filter])
+
 
             pivot_data['year'] = list(hs_active.values(iid=F('PlanTYear')).distinct().order_by('iid'))
             pivot_data['pivot1'] = list(hs_active.values('market_name',iid=F('PlanTYear')).annotate(

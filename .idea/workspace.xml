@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c2b8078d-8d3a-4a4d-a9ea-38dee01e930e" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/DOC/ParseList.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/db/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/db/models.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -66,7 +64,7 @@
         <counts>
           <entry key="gitignore" value="3" />
           <entry key="html" value="46" />
-          <entry key="md" value="20" />
+          <entry key="md" value="21" />
           <entry key="py" value="20" />
           <entry key="txt" value="3" />
         </counts>
@@ -74,7 +72,7 @@
       <usages-collector id="statistics.file.types.open">
         <counts>
           <entry key="HTML" value="46" />
-          <entry key="Markdown" value="20" />
+          <entry key="Markdown" value="21" />
           <entry key="PLAIN_TEXT" value="6" />
           <entry key="Python" value="20" />
         </counts>
@@ -84,7 +82,7 @@
           <entry key="gitignore" value="24" />
           <entry key="html" value="3135" />
           <entry key="md" value="579" />
-          <entry key="py" value="6711" />
+          <entry key="py" value="6840" />
           <entry key="txt" value="10" />
         </counts>
       </usages-collector>
@@ -93,7 +91,7 @@
           <entry key="HTML" value="3135" />
           <entry key="Markdown" value="579" />
           <entry key="PLAIN_TEXT" value="34" />
-          <entry key="Python" value="6711" />
+          <entry key="Python" value="6840" />
         </counts>
       </usages-collector>
     </session>
@@ -163,33 +161,45 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1633">
-              <caret line="186" column="80" selection-start-line="186" selection-start-column="80" selection-end-line="186" selection-end-column="80" />
+            <state relative-caret-position="69">
+              <caret line="178" column="48" selection-start-line="178" selection-start-column="48" selection-end-line="178" selection-end-column="48" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
-                <marker date="1541528623232" expanded="true" signature="961:4038" ph="..." />
-                <marker date="1541528623232" expanded="true" signature="5504:5585" ph="..." />
-                <marker date="1541528623232" expanded="true" signature="5630:5636" ph="..." />
-                <marker date="1541528623232" expanded="true" signature="5678:5702" ph="..." />
-                <marker date="1541528623232" expanded="true" signature="5696:5697" ph="..." />
-                <marker date="1541528623232" expanded="true" signature="7166:7170" ph="..." />
+                <marker date="1541529945487" expanded="true" signature="961:4038" ph="..." />
+                <marker date="1541529945487" expanded="true" signature="5504:5585" ph="..." />
+                <marker date="1541529945487" expanded="true" signature="5630:5636" ph="..." />
+                <marker date="1541529945487" expanded="true" signature="5678:5702" ph="..." />
+                <marker date="1541529945487" expanded="true" signature="5696:5697" ph="..." />
+                <marker date="1541529945487" expanded="true" signature="7166:7170" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/db/models.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="28" selection-start-column="28" selection-end-column="28" />
+            <state relative-caret-position="51">
+              <caret line="3" column="28" lean-forward="true" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
               <folding>
                 <marker date="1541528858160" expanded="true" signature="28:30" ph="..." />
                 <marker date="1541528858160" expanded="true" signature="1587:2618" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/DOC/Org_create_model.md">
+          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+            <state split_layout="SPLIT">
+              <first_editor relative-caret-position="83">
+                <caret line="155" lean-forward="true" selection-end-line="155" />
+              </first_editor>
+              <second_editor />
             </state>
           </provider>
         </entry>
@@ -304,9 +314,9 @@
         <option value="$PROJECT_DIR$/widgetpages/urls.py" />
         <option value="$PROJECT_DIR$/DOC/Org_create_model.md" />
         <option value="$PROJECT_DIR$/DOC/mssql_howto.md" />
-        <option value="$PROJECT_DIR$/widgetpages/views.py" />
         <option value="$PROJECT_DIR$/DOC/ParseList.md" />
         <option value="$PROJECT_DIR$/db/models.py" />
+        <option value="$PROJECT_DIR$/widgetpages/views.py" />
       </list>
     </option>
   </component>
@@ -471,7 +481,7 @@
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.2667758" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.2667758" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -480,7 +490,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.3289689" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.30441898" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.30441898" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32936078" />
       <window_info anchor="bottom" id="Database Console" order="13" weight="0.32936078" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -824,16 +834,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/DOC/Org_create_model.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="221">
-            <caret line="67" column="1" lean-forward="true" selection-start-line="67" selection-start-column="1" selection-end-line="67" selection-end-column="1" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DOC/mssql_howto.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
         <state split_layout="SPLIT">
@@ -854,29 +854,39 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
+    <entry file="file://$PROJECT_DIR$/db/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1633">
-          <caret line="186" column="80" selection-start-line="186" selection-start-column="80" selection-end-line="186" selection-end-column="80" />
+        <state relative-caret-position="51">
+          <caret line="3" column="28" lean-forward="true" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
           <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <marker date="1541528623232" expanded="true" signature="961:4038" ph="..." />
-            <marker date="1541528623232" expanded="true" signature="5504:5585" ph="..." />
-            <marker date="1541528623232" expanded="true" signature="5630:5636" ph="..." />
-            <marker date="1541528623232" expanded="true" signature="5678:5702" ph="..." />
-            <marker date="1541528623232" expanded="true" signature="5696:5697" ph="..." />
-            <marker date="1541528623232" expanded="true" signature="7166:7170" ph="..." />
+            <marker date="1541528858160" expanded="true" signature="28:30" ph="..." />
+            <marker date="1541528858160" expanded="true" signature="1587:2618" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/db/models.py">
+    <entry file="file://$PROJECT_DIR$/DOC/Org_create_model.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="83">
+            <caret line="155" lean-forward="true" selection-end-line="155" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="28" selection-start-column="28" selection-end-column="28" />
+        <state relative-caret-position="69">
+          <caret line="178" column="48" selection-start-line="178" selection-start-column="48" selection-end-line="178" selection-end-column="48" />
           <folding>
-            <marker date="1541528858160" expanded="true" signature="28:30" ph="..." />
-            <marker date="1541528858160" expanded="true" signature="1587:2618" ph="..." />
+            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1541529945487" expanded="true" signature="961:4038" ph="..." />
+            <marker date="1541529945487" expanded="true" signature="5504:5585" ph="..." />
+            <marker date="1541529945487" expanded="true" signature="5630:5636" ph="..." />
+            <marker date="1541529945487" expanded="true" signature="5678:5702" ph="..." />
+            <marker date="1541529945487" expanded="true" signature="5696:5697" ph="..." />
+            <marker date="1541529945487" expanded="true" signature="7166:7170" ph="..." />
           </folding>
         </state>
       </provider>
