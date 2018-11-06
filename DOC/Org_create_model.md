@@ -146,7 +146,7 @@ alter table db_WinnerOrg alter column name varchar(200)
 alter table db_WinnerOrg alter column inn varchar(16)
 alter table db_WinnerOrg alter column id int not null
 go
-update db_WinnerOrg set name=REPLACE(name, char(10), '')
+update db_WinnerOrg set name=REPLACE(REPLACE(name, char(10), ''),char(13),'')
 go
 update db_WinnerOrg set name=CONCAT('#',CAST(id as VARCHAR(5))) where isnull(name,'')=''
 go
