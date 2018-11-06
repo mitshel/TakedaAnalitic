@@ -7,7 +7,7 @@ from django.db.models.functions import Extract
 from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
 
-from db.models import Hs, Target, Employee, Lpu, Market
+from db.models import Hs, Target, Employee, Lpu, Market, StatusT, InNR, TradeNR, WinnerOrg
 from django.views.generic import View
 from django.urls import reverse, reverse_lazy
 
@@ -16,6 +16,10 @@ fempl = 'empl'
 fmrkt = 'mrkt'
 fyear = 'year'
 fcust = 'cust'
+fstat = 'stat'
+finnr = 'innr'
+ftrnr = 'trnr'
+fwinr = 'winr'
 
 # Create your views here.
 def Home(request):
@@ -23,7 +27,7 @@ def Home(request):
     return render(request,'ta_main.html', args)
 
 class FiltersView(View):
-    filters_list = [fempl,fmrkt,fyear,fcust]
+    filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
     ajax_url = '#'
     template_name = 'ta_competitions.html'
     view_id = 'blank'
@@ -59,6 +63,34 @@ class FiltersView(View):
             year_enabled = hs_enabled.values('PlanTYear').distinct().values(iid=F('PlanTYear'))
         return list(year_enabled)
 
+    def filter_stat(self, flt_active=None):
+        if not flt_active:
+            status_enabled = StatusT.objects.all().values('name',iid=F('id')).order_by('name')
+        else:
+            status_enabled = StatusT.objects.all().values(iid=F('id'))
+        return list(status_enabled)
+
+    def filter_innr(self, flt_active=None):
+        if not flt_active:
+            innr_enabled = InNR.objects.all().values('name',iid=F('id')).order_by('name')
+        else:
+            innr_enabled = InNR.objects.all().values(iid=F('id'))
+        return list(innr_enabled)
+
+    def filter_trnr(self, flt_active=None):
+        if not flt_active:
+            trnr_enabled = TradeNR.objects.all().values('name',iid=F('id')).order_by('name')
+        else:
+            trnr_enabled = TradeNR.objects.all().values(iid=F('id'))
+        return list(trnr_enabled)
+
+    def filter_winr(self, flt_active=None):
+        if not flt_active:
+            winr_enabled = WinnerOrg.objects.all().values('name',iid=F('id'),ext=F('inn')).order_by('name')
+        else:
+            winr_enabled = WinnerOrg.objects.all().values(iid=F('id'))
+        return list(winr_enabled)
+
     def filter_cust(self, flt_active=None):
         if not flt_active:
             lpu_enabled = Lpu.objects.exclude(cust_id=0).filter(employee__org=self.org_id). \
@@ -76,6 +108,14 @@ class FiltersView(View):
                 filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'data': self.filter_mrkt(flt_active)})
             if fyear == f:
                 filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'data': self.filter_year(flt_active)})
+            if fstat == f:
+                filters.append({'id': fstat, 'type': 'btn', 'name': 'Статус торгов', 'data': self.filter_stat(flt_active)})
+            if finnr == f:
+                filters.append({'id': finnr, 'type': 'tbl', 'name': 'МНН', 'data': self.filter_innr(flt_active)})
+            if ftrnr == f:
+                filters.append({'id': ftrnr, 'type': 'tbl', 'name': 'Торговое наименование', 'data': self.filter_trnr(flt_active)})
+            if fwinr == f:
+                filters.append({'id': fwinr, 'type': 'tbl', 'name': 'Победитель торгов', 'data': self.filter_winr(flt_active)})
             if fcust == f:
                 filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'data': self.filter_cust(flt_active)})
 
@@ -109,6 +149,7 @@ class FiltersView(View):
                     flt_str = request.POST.get('{}_active'.format(f), '')
                     flt_active[f] = [int(e) for e in flt_str.split(',')] if flt_str else []
 
+                print(flt_active)
                 filters = self.filters(flt_active)
                 data = self.data(filters, flt_active)
                 response = {'filters': self.get_filters_dict(filters),
@@ -120,6 +161,7 @@ class FiltersView(View):
         return self.get(request)
 
 class SalessheduleView(FiltersView):
+    filters_list = [fempl, fmrkt, fyear, fcust]
     template_name = 'ta_salesshedule.html'
     ajax_url = reverse_lazy('widgetpages:salesshedule')
     view_id = 'salesshedule'
