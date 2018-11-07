@@ -1,7 +1,7 @@
 <script type="text/javascript">
 var timerID = 0;
 
-function processAjaxData(data) {
+function processAjaxData(data, src_id) {
 
     {% for flt in filters %}
         {% if flt.type == 'btn' %}
@@ -9,7 +9,8 @@ function processAjaxData(data) {
             for (var i in data.filters.{{ flt.id }}.data) $('#{{ flt.id }}_'+data.filters.{{ flt.id }}.data[i].iid).removeClass('disabled');
         {% endif %}
         {% if flt.type == 'tbl' %}
-            tbl_{{ flt.id }}.ajax.reload( null, true );
+            // Таблицу перегружаем только если перегрузка не иницирована этой же таблицей
+            if (src_id != '{{ flt.id }}_') tbl_{{ flt.id }}.ajax.reload( null, true );
         {% endif %}
     {% endfor %}
 
@@ -21,6 +22,7 @@ function processAjaxData(data) {
 $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
     action_url = '{{ ajax_url }}';
     ctrlPress = (event.ctrlKey == true);
+    src_id = $(this).attr('id').substr(0,5);
 
     {% for flt in filters %}
         {% if flt.type == 'btn' %}
@@ -28,7 +30,7 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
             if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active')))
             if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
                $('button[id^={{ flt.id }}_].active').removeClass('active');
-               $(this).addClass('active')
+               $(this).addClass('active');
             };
             // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех кнопок сотрудников
             if ($(this).attr('id') == '{{ flt.id }}-check')
@@ -60,8 +62,7 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
             url: action_url,
             data: filters_ajax_request,
             success: function (data) {
-                //alert('Load was performed.');
-                processAjaxData(data);
+                processAjaxData(data, src_id);
             },
             error: function (xhr, str) {
                     alert('Error loading data. ' + str);
