@@ -58,7 +58,12 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                 "serverSide": true,
                 //"stateSave" : true,
                 "ajax": {
-                    "url": "{% url 'widgetpages:jdata' flt.id %}"
+                    "url": "{% url 'widgetpages:jdata' flt.id %}",
+                    "type": "POST",
+                    "data": function ( d ) {
+                        d.filters_ajax_request = JSON.stringify(filters_ajax_request);
+                        d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                    }
                 },
                  //data: {{ flt.id }}_data,
                 //columns: [ { data: 'name' }, { data: 'ext' }, { data: 'iid' }, { data: 'disabled' } ],

@@ -71,36 +71,15 @@ class FiltersView(View):
         return list(status_enabled)
 
     def filter_innr(self, flt_active=None):
-        # if not flt_active:
-        #     innr_enabled = InNR.objects.all().values('name',iid=F('id')).order_by('name')
-        # else:
-        #     innr_enabled = InNR.objects.all().values(iid=F('id'))
-        # return list(innr_enabled)
         return []
 
     def filter_trnr(self, flt_active=None):
-        # if not flt_active:
-        #     trnr_enabled = TradeNR.objects.all().values('name',iid=F('id')).order_by('name')
-        # else:
-        #     trnr_enabled = TradeNR.objects.all().values(iid=F('id'))
-        # return list(trnr_enabled)
         return []
 
     def filter_winr(self, flt_active=None):
-        # if not flt_active:
-        #     winr_enabled = WinnerOrg.objects.all().values('name',iid=F('id'),ext=F('inn')).order_by('name')
-        # else:
-        #     winr_enabled = WinnerOrg.objects.all().values(iid=F('id'))
-        # return list(winr_enabled)
         return []
 
     def filter_cust(self, flt_active=None):
-        #if not flt_active:
-        #    lpu_enabled = Lpu.objects.exclude(cust_id=0).filter(employee__org=self.org_id). \
-        #        values('name', iid=F('cust_id'), ext=F('inn')).distinct().order_by('name')
-        #else:
-        #    lpu_enabled = Lpu.objects.filter(employee__in=flt_active[fempl]).exclude(cust_id=0).values(iid=F('cust_id'))
-        #return list(lpu_enabled)
         return []
 
     def filters(self, flt_active=None):
@@ -152,7 +131,6 @@ class FiltersView(View):
                 for f in self.filters_list:
                     flt_str = request.POST.get('{}_active'.format(f), '')
                     flt_select = request.POST.get('{}_select'.format(f), '')
-                    print(flt_str)
                     flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select)}
 
                 filters = self.filters(flt_active)
@@ -188,7 +166,6 @@ class SalessheduleView(FiltersView):
                                ','.join([str(e) for e in flt_active[fcust]['list']]))
                 else:
                     extra_lpu_filter = '1=1' if flt_active[fcust]['select'] else '1>1'
-                print(extra_lpu_filter)
 
                 hs_active = hs_active.filter(PlanTYear__in=flt_active[fyear]['list'], \
                                              market_id__in=flt_active[fmrkt]['list']).\
