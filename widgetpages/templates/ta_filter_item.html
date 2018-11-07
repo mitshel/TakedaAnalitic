@@ -10,7 +10,7 @@
           </div>
           <div class="col-6 text-right" style="padding-top:0.3rem;">
               <button type="button" id="{{ flt.id }}-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
-              <button type="button" id="{{ flt.id }}-check" class="btn btn-sm btn-outline-primary inline btn-srv active btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+              <button type="button" id="{{ flt.id }}-check" class="btn btn-sm btn-outline-primary inline active btn-srv btn-filter"{% if flt.type == 'btn' %} data-toggle="button" aria-pressed="false" autocomplete="off"{% endif %} title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -30,6 +30,9 @@
     </div>
   </div>
 
+<script type="text/javascript">
+var {{ flt.id }}_selectAll = 0;
+</script>
 
 {% if flt.type == 'tbl' %}
 <script type="text/javascript">
@@ -37,35 +40,108 @@ var {{ flt.id }}_data = [
                     {% for e in flt.data %} {DT_RowId:'{{ flt.id }}_{{ e.iid }}', iid: '{{ e.iid }}', name:'{{ e.name }}', ext:'{{ e.ext }}', disabled:'0' } {% if not forloop.last %},{% endif %}
                     {% endfor %}
                 ]
+var {{ flt.id }}_selected = [];
+
 var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                 "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
                 buttons:[],
                 ordering:  true,
+                select: true,
                 "pageLength": 10,
                 "columnDefs": [
-                    {   "targets": [ 1 ], "visible": false, "searchable": true },
-                    {   "targets": [ 2 ], "visible": false, "searchable": false },
-                    {   "targets": [ 3 ], "visible": false, "searchable": false }
+                    { "name": "name", "targets": [ 0 ], "visible": true, "searchable": true },
+                    { "name": "ext", "targets": [ 1 ], "visible": false, "searchable": true },
+                    { "name": "iid", "targets": [ 2 ], "visible": false, "searchable": false }
+                    //{   "name": "disabled", "targets": [ 3 ], "visible": false, "searchable": false }
                 ],
-                data: {{ flt.id }}_data,
-                columns: [ { data: 'name' }, { data: 'ext' }, { data: 'iid' }, { data: 'disabled' } ],
+                "processing": true,
+                "serverSide": true,
+                //"stateSave" : true,
+                "ajax": {
+                    "url": "{% url 'widgetpages:jdata' flt.id %}"
+                },
+                 //data: {{ flt.id }}_data,
+                //columns: [ { data: 'name' }, { data: 'ext' }, { data: 'iid' }, { data: 'disabled' } ],
                 "rowCallback": function( row, data ) {
                     $(row).addClass('btn-filter');
+                    $(row).attr('id', '{{ flt.id }}_'+data[2].toString());
+                    if ( $.inArray(data[2], {{ flt.id }}_selected) !== -1 ) {
+                        if ({{ flt.id }}_selectAll) $(row).removeClass('selected');
+                        else $(row).addClass('selected');
+                    } else {
+                         if ({{ flt.id }}_selectAll) $(row).addClass('selected');
+                        else $(row).removeClass('selected');
+                    }
                 },
+                select: { style: 'api' },
                 "language": lang_russian
             });
 
 $(tbl_{{ flt.id }}.column(0).header()).html('<b>{{ flt.name }}</b>');
-tbl_{{ flt.id }}.rows().select();
 
-$.fn.dataTable.ext.search.push(
-    function( settings, data, DataIndex ) {
-        var disabled = settings.aoData[DataIndex]._aData.disabled;
-        if (disabled == '0')
-            return true
-        else
-            return false;
+// Выделяет всю таблицу либо сбрасывает ее выделение
+function {{ flt.id }}_check( mode ) {
+    if (mode) {
+        tbl_{{ flt.id }}.rows().select();
+        {{ flt.id }}_selectAll = 1;
+        $('#{{ flt.id }}-check').addClass('active');
     }
-);
+    else {
+        tbl_{{ flt.id }}.rows().deselect();
+        {{ flt.id }}_selectAll = 0;
+        $('#{{ flt.id }}-check').removeClass('active');
+    }
+    // чистим массив с идентификаторами выделенных/не выделенных строк
+    {{ flt.id }}_selected.length = 0;
+}
+
+$('#{{ flt.id }}-check').on('click', function () {
+    // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех ЛПУ
+    {{ flt.id }}_check( !$('#{{ flt.id }}-check').hasClass('active') );
+});
+
+$('#tbl_{{ flt.id }} tbody').on('click', 'tr', function (event) {
+    var id = tbl_{{ flt.id }}.row(this).data()[2];
+    var ctrlPress = (event.ctrlKey == true);
+
+    // Если не включен мультивыбор сначала сбрасываем все выбор
+    if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active'))) {
+        {{ flt.id }}_check(0);
+    }
+
+    var thisSelected = $(this).hasClass('selected');
+
+    // Ищем наш элемент в массиве запомненных selected/deselected элементов
+    var index = $.inArray(id, {{ flt.id }}_selected);
+
+    if (thisSelected & {{ flt.id }}_selectAll) {
+        // делаем деселект и добавляем в массив selected (который сейчас какбы массив deselected)
+        $(this).removeClass('selected');
+        if ( index === -1 ) {{ flt.id }}_selected.push( id );
+    }
+
+    if (thisSelected & !{{ flt.id }}_selectAll) {
+        // делаем деселект и удаляем из массива selected
+        $(this).removeClass('selected');
+        if ( index !== -1 ) {{ flt.id }}_selected.splice( index, 1 );
+    }
+
+    if (!thisSelected & {{ flt.id }}_selectAll) {
+        // делаем селект и удаляем из массива selected (который сейчас какбы массив deselected)
+        $(this).addClass('selected');
+        if ( index !== -1 ) {{ flt.id }}_selected.splice( index, 1 );
+    }
+
+    if (!thisSelected & !{{ flt.id }}_selectAll) {
+        // делаем селект и добавляем в массив selected
+        $(this).addClass('selected');
+        if ( index === -1 ) {{ flt.id }}_selected.push( id );
+    }
+
+} );
+
+// Делаем Выбор на всех элементах таблицы
+{{ flt.id }}_check(1);
+
 </script>
 {% endif %}

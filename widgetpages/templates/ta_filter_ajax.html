@@ -49,23 +49,29 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
 
         {% if flt.type == 'tbl' %}
             // Если щелкнули по табличному фильтру
-            if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
-                if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active'))) {
-                    tbl_{{ flt.id }}.rows().deselect();
-                    $(this).addClass('selected');
-                }
-                else $(this).toggleClass('selected');
-            };
+            //
+            // Не нужно отрабатывать отдельно мультиселект в таблице данных
+            //if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
+            //    if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active'))) {
+            //        tbl_{{ flt.id }}.rows().deselect();
+            //        $(this).addClass('selected');
+            //    }
+            //    else $(this).toggleClass('selected');
+            //};
             // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех ЛПУ
-            if ($(this).attr('id') == '{{ flt.id }}-check') {
-                if ($('#{{ flt.id }}-check').hasClass('active')) tbl_{{ flt.id }}.rows().select();
-                else tbl_{{ flt.id }}.rows().deselect();
-            };
-            arr = [];
-            tbl_{{ flt.id }}.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
-                    arr.push(this.data().iid);
-            } );
-            var {{ flt.id }}_active = arr.join(',');
+            //if ($(this).attr('id') == '{{ flt.id }}-check') {
+            //    if ($('#{{ flt.id }}-check').hasClass('active')) tbl_{{ flt.id }}.rows().select();
+            //    else tbl_{{ flt.id }}.rows().deselect();
+            //};
+            //arr = [];
+            //tbl_{{ flt.id }}.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+            //tbl_{{ flt.id }}.rows({ selected: true }).every( function ( rowIdx, tableLoop, rowLoop ) {
+            //        iid = tbl_{{ flt.id }}.row( rowIdx ).data().iid;
+            //        //iid = this.data().iid;
+            //        arr.push(iid);
+            //} );
+            //var {{ flt.id }}_active = arr.join(',');
+            var {{ flt.id }}_active = {{ flt.id }}_selected.join(',');
         {% endif %}
     {% endfor %}
 
@@ -77,6 +83,7 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
             data: {
                 {% for flt in filters %}
                 '{{ flt.id }}_active': {{ flt.id }}_active,
+                '{{ flt.id }}_select': {{ flt.id }}_selectAll,
                 {% endfor %}
                 'csrfmiddlewaretoken': '{{ csrf_token }}'
             },

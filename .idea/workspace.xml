@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="c2b8078d-8d3a-4a4d-a9ea-38dee01e930e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/widgetpages/datatable.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/DOC/Org_create_model.md" beforeDir="false" afterPath="$PROJECT_DIR$/DOC/Org_create_model.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/views.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -49,9 +52,9 @@
     <session id="-1236594997">
       <usages-collector id="statistics.lifecycle.project">
         <counts>
-          <entry key="project.closed" value="10" />
+          <entry key="project.closed" value="11" />
           <entry key="project.open.time.14" value="2" />
-          <entry key="project.open.time.15" value="1" />
+          <entry key="project.open.time.15" value="2" />
           <entry key="project.open.time.16" value="2" />
           <entry key="project.open.time.17" value="1" />
           <entry key="project.open.time.18" value="1" />
@@ -60,43 +63,43 @@
           <entry key="project.open.time.22" value="1" />
           <entry key="project.open.time.37" value="1" />
           <entry key="project.open.time.58" value="1" />
-          <entry key="project.opened" value="12" />
+          <entry key="project.opened" value="13" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="gitignore" value="3" />
-          <entry key="html" value="46" />
+          <entry key="html" value="47" />
           <entry key="md" value="22" />
-          <entry key="py" value="20" />
+          <entry key="py" value="27" />
           <entry key="txt" value="4" />
           <entry key="xml" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="HTML" value="46" />
+          <entry key="HTML" value="47" />
           <entry key="Markdown" value="22" />
           <entry key="PLAIN_TEXT" value="7" />
-          <entry key="Python" value="20" />
+          <entry key="Python" value="27" />
           <entry key="XML" value="1" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.extensions.edit">
         <counts>
           <entry key="gitignore" value="24" />
-          <entry key="html" value="3135" />
+          <entry key="html" value="4820" />
           <entry key="md" value="601" />
-          <entry key="py" value="6840" />
+          <entry key="py" value="8045" />
           <entry key="txt" value="15" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="HTML" value="3135" />
+          <entry key="HTML" value="4820" />
           <entry key="Markdown" value="601" />
           <entry key="PLAIN_TEXT" value="39" />
-          <entry key="Python" value="6840" />
+          <entry key="Python" value="8045" />
         </counts>
       </usages-collector>
     </session>
@@ -166,29 +169,49 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="69">
-              <caret line="178" column="48" selection-start-line="178" selection-start-column="48" selection-end-line="178" selection-end-column="48" />
+            <state relative-caret-position="188">
+              <caret line="206" column="36" selection-start-line="206" selection-start-column="36" selection-end-line="206" selection-end-column="36" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
-                <marker date="1541529945487" expanded="true" signature="961:4038" ph="..." />
-                <marker date="1541529945487" expanded="true" signature="5504:5585" ph="..." />
-                <marker date="1541529945487" expanded="true" signature="5630:5636" ph="..." />
-                <marker date="1541529945487" expanded="true" signature="5678:5702" ph="..." />
-                <marker date="1541529945487" expanded="true" signature="5696:5697" ph="..." />
-                <marker date="1541529945487" expanded="true" signature="7166:7170" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="918:922" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="961:4162" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="2811:2820" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="3115:3124" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="3425:3434" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="3752:3761" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="5628:5709" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="5754:5760" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="5802:5826" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="5820:5821" ph="..." />
+                <marker date="1541603720302" expanded="true" signature="7438:7442" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/requirements.txt">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/widgetpages/datatable.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="6" column="22" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
+            <state relative-caret-position="156">
+              <caret line="22" column="69" selection-start-line="22" selection-start-column="69" selection-end-line="22" selection-end-column="69" />
+              <folding>
+                <element signature="e#0#72#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/db/models.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="255">
+              <caret line="48" column="23" lean-forward="true" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="23" />
+              <folding>
+                <marker date="1541528858160" expanded="true" signature="28:30" ph="..." />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -196,8 +219,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/widgetpages/urls.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="8" selection-start-line="8" selection-end-line="8" />
+            <state relative-caret-position="136">
+              <caret line="8" column="37" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
@@ -206,10 +229,19 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1037">
+              <caret line="61" column="18" selection-start-line="61" selection-start-column="18" selection-end-line="61" selection-end-column="18" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1088">
-              <caret line="64" column="95" selection-start-line="64" selection-start-column="95" selection-end-line="64" selection-end-column="95" />
+            <state relative-caret-position="1174">
+              <caret line="85" column="36" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="36" />
             </state>
           </provider>
         </entry>
@@ -250,6 +282,9 @@
       <find>test_CACHE</find>
       <find>inn</find>
       <find>sele</find>
+      <find>btn-srv</find>
+      <find>ctrl</find>
+      <find>select</find>
     </findStrings>
     <replaceStrings>
       <replace>max_length</replace>
@@ -290,24 +325,25 @@
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_styles.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_layout_competitions.html" />
-        <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_layout.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_competitions.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthsum.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthcount.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_year.html" />
-        <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html" />
         <option value="$PROJECT_DIR$/DOC/old_views.py" />
-        <option value="$PROJECT_DIR$/widgetpages/urls.py" />
         <option value="$PROJECT_DIR$/DOC/mssql_howto.md" />
         <option value="$PROJECT_DIR$/DOC/ParseList.md" />
         <option value="$PROJECT_DIR$/db/models.py" />
-        <option value="$PROJECT_DIR$/widgetpages/views.py" />
         <option value="$PROJECT_DIR$/DOC/Org_create_model.md" />
         <option value="$PROJECT_DIR$/DOC/nginx.md" />
         <option value="$PROJECT_DIR$/DOC/uwsgi-farm.xml" />
         <option value="$PROJECT_DIR$/requirements.txt" />
+        <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html" />
+        <option value="$PROJECT_DIR$/widgetpages/urls.py" />
+        <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html" />
+        <option value="$PROJECT_DIR$/widgetpages/datatable.py" />
+        <option value="$PROJECT_DIR$/widgetpages/views.py" />
       </list>
     </option>
   </component>
@@ -326,7 +362,7 @@
       <path value="$PROJECT_DIR$/assets/jquery-ui/package.json" />
     </packageJsonPaths>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="-129" />
     <option name="y" value="53" />
     <option name="width" value="1382" />
@@ -370,6 +406,12 @@
               <item name="TakedaAnalitic" type="b2602c69:ProjectViewProjectNode" />
               <item name="TakedaAnalitic" type="462c0819:PsiDirectoryNode" />
               <item name="widgetpages" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TakedaAnalitic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TakedaAnalitic" type="462c0819:PsiDirectoryNode" />
+              <item name="widgetpages" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -467,13 +509,13 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" x="805" y="161" width="309" height="717" id="Project" order="0" side_tool="true" visible="true" weight="0.22239032" />
+      <window_info content_ui="combo" x="805" y="161" width="309" height="717" id="Project" order="0" side_tool="true" visible="true" weight="0.22541603" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.2667758" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.4" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.2667758" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.39934534" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" />
@@ -481,7 +523,7 @@
       <window_info anchor="bottom" id="Version Control" order="8" weight="0.3289689" />
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="11" visible="true" weight="0.30441898" />
+      <window_info anchor="bottom" id="Terminal" order="11" weight="0.30441898" />
       <window_info anchor="bottom" id="Python Console" order="12" weight="0.32936078" />
       <window_info anchor="bottom" id="Database Console" order="13" weight="0.32936078" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -497,29 +539,23 @@
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
   </component>
+  <component name="XDebuggerManager">
+    <watches-manager>
+      <configuration name="Python.DjangoServer">
+        <watch expression="qs" language="Python" />
+      </configuration>
+    </watches-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="watch">
+      <expression>
+        <expression-string>qs</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
   <component name="editorHistoryManager">
-    <entry file="das://3413eb52-d77e-4a1a-92ee-a379662c42da/schema/main/table/db_target_employee">
-      <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
-        <state>
-          <filtering enabled="true" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$APPLICATION_CONFIG_DIR$/consoles/db/3413eb52-d77e-4a1a-92ee-a379662c42da/console.sql" />
-    <entry file="file://$PROJECT_DIR$/db/admin.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="29" selection-start-line="29" selection-end-line="29" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/assets/dataTables/datatables.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1335">
-          <caret line="8998" column="29" lean-forward="true" selection-start-line="8998" selection-start-column="29" selection-end-line="8998" selection-end-column="29" />
-        </state>
-      </provider>
-    </entry>
     <entry file="das://3413eb52-d77e-4a1a-92ee-a379662c42da/schema/main/table/db_target">
       <provider selected="true" editor-type-id="com.intellij.database.editor.DatabaseTableFileEditorProvider">
         <state>
@@ -711,13 +747,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_sales_year.html" />
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="128">
-          <caret line="31" lean-forward="true" selection-start-line="31" selection-end-line="31" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_styles.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="680">
@@ -739,9 +768,6 @@
           <caret line="30" column="31" selection-start-line="30" selection-start-column="31" selection-end-line="30" selection-end-column="31" />
         </state>
       </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/models.py">
-      <provider selected="true" editor-type-id="text-editor" />
     </entry>
     <entry file="file://$PROJECT_DIR$/DOC/FieldsDescription.md">
       <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
@@ -800,47 +826,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/db/models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="51">
-          <caret line="3" column="28" lean-forward="true" selection-start-line="3" selection-start-column="28" selection-end-line="3" selection-end-column="28" />
-          <folding>
-            <marker date="1541528858160" expanded="true" signature="28:30" ph="..." />
-            <marker date="1541528858160" expanded="true" signature="1587:2618" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="69">
-          <caret line="178" column="48" selection-start-line="178" selection-start-column="48" selection-end-line="178" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <marker date="1541529945487" expanded="true" signature="961:4038" ph="..." />
-            <marker date="1541529945487" expanded="true" signature="5504:5585" ph="..." />
-            <marker date="1541529945487" expanded="true" signature="5630:5636" ph="..." />
-            <marker date="1541529945487" expanded="true" signature="5678:5702" ph="..." />
-            <marker date="1541529945487" expanded="true" signature="5696:5697" ph="..." />
-            <marker date="1541529945487" expanded="true" signature="7166:7170" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/urls.py">
+    <entry file="file://$PROJECT_DIR$/requirements.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
-          <caret line="8" selection-start-line="8" selection-end-line="8" />
-          <folding>
-            <element signature="e#0#32#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1088">
-          <caret line="64" column="95" selection-start-line="64" selection-start-column="95" selection-end-line="64" selection-end-column="95" />
+          <caret line="6" column="20" lean-forward="true" selection-start-line="6" selection-end-line="6" selection-end-column="22" />
         </state>
       </provider>
     </entry>
@@ -851,10 +840,92 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/requirements.txt">
+    <entry file="file://$PROJECT_DIR$/widgetpages/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="6" column="22" selection-start-line="6" selection-start-column="22" selection-end-line="6" selection-end-column="22" />
+        <state relative-caret-position="136">
+          <caret line="8" column="37" selection-start-line="8" selection-start-column="37" selection-end-line="8" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1174">
+          <caret line="85" column="36" selection-start-line="85" selection-start-column="36" selection-end-line="85" selection-end-column="36" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1037">
+          <caret line="61" column="18" selection-start-line="61" selection-start-column="18" selection-end-line="61" selection-end-column="18" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/models.py">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/db/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="48" column="23" lean-forward="true" selection-start-line="48" selection-start-column="23" selection-end-line="48" selection-end-column="23" />
+          <folding>
+            <marker date="1541528858160" expanded="true" signature="28:30" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django/views/generic/base.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="67" selection-start-line="67" selection-end-line="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django_datatables_view/mixins.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="60" selection-start-line="60" selection-end-line="60" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/venv/Lib/site-packages/django_datatables_view/base_datatable_view.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="304" selection-start-line="304" selection-end-line="304" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/datatable.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="22" column="69" selection-start-line="22" selection-start-column="69" selection-end-line="22" selection-end-column="69" />
+          <folding>
+            <element signature="e#0#72#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="206" column="36" selection-start-line="206" selection-start-column="36" selection-end-line="206" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1541603720302" expanded="true" signature="918:922" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="961:4162" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="2811:2820" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="3115:3124" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="3425:3434" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="3752:3761" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="5628:5709" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="5754:5760" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="5802:5826" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="5820:5821" ph="..." />
+            <marker date="1541603720302" expanded="true" signature="7438:7442" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
