@@ -6,10 +6,13 @@ from django.db.models import Count, Sum, Min, F, Q
 from django.db.models.functions import Extract
 from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
+from django.template import Context, Template
 
 from db.models import Hs, Target, Employee, Lpu, Market, StatusT, InNR, TradeNR, WinnerOrg
 from django.views.generic import View
 from django.urls import reverse, reverse_lazy
+
+from widgetpages import queries
 
 # Filters identification
 fempl = 'empl'
@@ -23,14 +26,18 @@ fwinr = 'winr'
 
 # Create your views here.
 def extra_in_filter(model, field, flt):
-    if len(flt['list']) > 0:
-        ef = '[{}].{} {}in ({})'. \
-            format(model._meta.db_table,
-                   field,
-                   'not ' if flt['select'] else '',
-                   ','.join([str(e) for e in flt['list']]))
+    db_table = model if isinstance(model,str) else model._meta.db_table
+    if flt:
+        if (len(flt['list']) > 0):
+            ef = '[{}].{} {}in ({})'. \
+                format(db_table, field,
+                       'not ' if flt['select'] else '',
+                       ','.join([str(e) for e in flt['list']]))
+        else:
+            ef = '1=1' if flt['select'] else '1>1'
     else:
-        ef = '1=1' if flt['select'] else '1>1'
+        ef = '1=1'
+
     return ef
 
 def Home(request):
@@ -193,3 +200,17 @@ class CompetitionsView(FiltersView):
     ajax_url = reverse_lazy('widgetpages:competitions')
     view_id = 'competitions'
     view_name = 'Конкурентный анализ'
+
+    def data(self, flt=None, flt_active=None):
+        pivot_data = {}
+        t = Template(queries.q_competitions)
+        print('filter year >>>',list([e['iid'] for e in self.get_filter(flt,fyear)['data']]))
+        pivot_sql = t.render(Context({"years": flt_active[fyear]['list'] if flt_active else list([e['iid'] for e in self.get_filter(flt,fyear)['data']]),
+                      "markets": ','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
+                      "employees": ','.join([str(e) for e in flt_active[fempl]['list']] if flt_active and not (0 in flt_active[fempl]['list']) else ''),
+                      "lpus_in": extra_in_filter('l','Cust_ID',flt_active[fcust] if flt_active else '')
+                      }))
+
+        pivot_data['pivot_sql'] = pivot_sql
+        pivot_data['pivot'] = pivot_sql
+        return pivot_data

@@ -53,14 +53,18 @@ group by c.name, PlanTYear
 
 -- Конкурентный анализ
 --
-select market_name, tradeNx, [2015] as y2015, [2016] as y2016, [2017] as y2017, [2018] as y2018, [2019] as y2019, [2020] as y2020, [2021] as y2021, [2022] as y2022
+select l.Org_CustINN, l.Org_CustNm, pvt.cust_id, pvt.tradeNx, t.name, [2015], [2016], [2017], [2018], [2019], [2020], [2021], [2022]
 from
 (
-select market_name, tradeNx, PlanTYear, TenderPrice from [dbo].[test_CACHE_1]
+select cust_id, tradeNx, PlanTYear, TenderPrice from [dbo].[test_CACHE_1]
 ) m
 PIVOT
 (
 sum(TenderPrice)
 for PlanTYear in ([2015],[2016],[2017],[2018],[2019],[2020],[2021],[2022])
 ) as pvt
-order by pvt.market_name, pvt.tradeNx
+left join db_lpu l on pvt.cust_id = l.cust_id
+left join db_TradeNR t on pvt.TradeNx = t.id
+order by pvt.cust_id, pvt.tradeNx
+
+select * from db_lpu 

@@ -5,6 +5,17 @@
 {% block page %}
 	<div class="col-12">
         <h5>{{ view.name }}</h5>
+        <p id="sql_pivot">{{ data.pivot_sql }}</p>
 		<table id="ta_competitions_table"></table>
 	</div>
+
+    <script>
+    function ChartsUpdate1(data) {
+      $('#sql_pivot').html(data.data.pivot_sql)
+    }
+    function ChartsUpdate2(data) {
+    }
+    function ChartsUpdate3(data) {
+    }
+    </script>
 {%  endblock %}
