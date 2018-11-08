@@ -32,10 +32,13 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
                $('button[id^={{ flt.id }}_].active').removeClass('active');
                $(this).addClass('active');
             };
-            // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех кнопок сотрудников
-            if ($(this).attr('id') == '{{ flt.id }}-check')
-                if ($('#{{ flt.id }}-check').hasClass('active')) $('button[id^={{ flt.id }}_]').addClass('active')
-                else $('button[id^={{ flt.id }}_]').removeClass('active');
+
+            // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+            if ($('button[id^={{ flt.id }}_].active').length == $('button[id^={{ flt.id }}_]').length )
+                $('#{{ flt.id }}-check').addClass('active');
+            else
+                $('#{{ flt.id }}-check').removeClass('active');
+
             // Создаем список активных кнопок сотрудников
             var arr = [];
             $('button[id^={{ flt.id }}_].active').each(function() {

@@ -10,7 +10,7 @@
           </div>
           <div class="col-6 text-right" style="padding-top:0.3rem;">
               <button type="button" id="{{ flt.id }}-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
-              <button type="button" id="{{ flt.id }}-check" class="btn btn-sm btn-outline-primary inline active btn-srv btn-filter"{% if flt.type == 'btn' %} data-toggle="button" aria-pressed="false" autocomplete="off"{% endif %} title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+              <button type="button" id="{{ flt.id }}-check" class="btn btn-sm btn-outline-primary inline active btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
       </div>
     </div>
@@ -33,6 +33,29 @@
 <script type="text/javascript">
 var {{ flt.id }}_selectAll = 0;
 </script>
+
+{% if flt.type == 'btn' %}
+<script type="text/javascript">
+// Выделяет все кнопки либо сбрасывает ее выделение
+function {{ flt.id }}_check( mode ) {
+    if (mode) {
+        $('#{{ flt.id }}-check').addClass('active');
+        $('button[id^={{ flt.id }}_]').addClass('active');
+    }
+    else {
+        $('#{{ flt.id }}-check').removeClass('active');
+        $('button[id^={{ flt.id }}_]').removeClass('active');
+    }
+    // чистим массив с идентификаторами выделенных/не выделенных строк
+    {{ flt.id }}_selected.length = 0;
+}
+
+// При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех кнопок
+$('#{{ flt.id }}-check').on('click', function () {
+    {{ flt.id }}_check( !$('#{{ flt.id }}-check').hasClass('active') );
+});
+</script>
+{% endif %}
 
 {% if flt.type == 'tbl' %}
 <script type="text/javascript">

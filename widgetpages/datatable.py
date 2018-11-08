@@ -10,6 +10,7 @@ from db.models import Hs, Target, Employee, Lpu, Market, StatusT, InNR, TradeNR,
 class FilterListJson(BaseDatatableView):
     columns = ['name', 'ext', 'iid']
     order_columns = ['name', 'ext']
+    filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
     org_id = 1
 
     def filter_innr(self, flt_active=None):
@@ -41,7 +42,7 @@ class FilterListJson(BaseDatatableView):
         flt = json.loads(filters_ajax_request)
         flt_active = {}
         if flt:
-            for f in [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]:
+            for f in self.filters_list:
                 flt_str = flt.get('{}_active'.format(f), '')
                 flt_select = flt.get('{}_select'.format(f), '')
                 flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
