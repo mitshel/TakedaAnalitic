@@ -13,29 +13,45 @@ class FilterListJson(BaseDatatableView):
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
     org_id = 1
 
-    def filter_innr(self, flt_active=None):
+    def initial_innr(self):
         innr_enabled = InNR.objects.distinct().values('name', iid=F('id')).order_by('name')
-        if flt_active and not (0 in flt_active[fempl]['list']):
-            innr_enabled = innr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
+        # if flt_active and not (0 in flt_active[fempl]['list']):
+        #     innr_enabled = innr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
         return innr_enabled
 
-    def filter_trnr(self, flt_active=None):
+    def initial_trnr(self):
         trnr_enabled = TradeNR.objects.distinct().values('name', iid=F('id')).order_by('name')
-        if flt_active and not (0 in flt_active[fempl]['list']):
-            trnr_enabled = trnr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
+        # if flt_active and not (0 in flt_active[fempl]['list']):
+        #     trnr_enabled = trnr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
         return trnr_enabled
 
-    def filter_winr(self, flt_active=None):
+    def initial_winr(self):
         winr_enabled = WinnerOrg.objects.distinct().exclude(id=0).values('name', iid=F('id'), ext=F('inn')).order_by('name')
-        if flt_active and not (0 in flt_active[fempl]['list']):
-            winr_enabled = winr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
+        # if flt_active and not (0 in flt_active[fempl]['list']):
+        #     winr_enabled = winr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
         return winr_enabled
 
-    def filter_cust(self, flt_active=None):
+    def initial_cust(self):
         lpu_enabled = Lpu.objects.distinct().exclude(cust_id=0).values('name', ext=F('inn'), iid=F('cust_id')).distinct().order_by('name')
-        if flt_active and not (0 in flt_active[fempl]['list']):
-            lpu_enabled = lpu_enabled.filter(employee__in=flt_active[fempl]['list'])
+        # if flt_active and not (0 in flt_active[fempl]['list']):
+        #     lpu_enabled = lpu_enabled.filter(employee__in=flt_active[fempl]['list'])
         return lpu_enabled
+
+    def addfilters(self, qs, flt_active):
+        if not flt_active:
+            return qs
+
+        if not (0 in flt_active[fempl]['list']):
+            if self.kwargs['flt_id'] == fcust:
+                qs = qs.filter(employee__in=flt_active[fempl]['list'])
+            else:
+                qs = qs.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
+
+        #qs = qs.filter(hs__market_id__in=flt_active[fmrkt]['list'])
+        #qs = qs.filter(hs__PlanTYear__in=flt_active[fyear]['list'])
+        #qs = qs.filter(hs__StatusT_ID__in=flt_active[fstat]['list'])
+        #if self.kwargs['flt_id'] != fcust
+        return qs
 
     def get_initial_queryset(self):
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
@@ -47,17 +63,16 @@ class FilterListJson(BaseDatatableView):
                 flt_select = flt.get('{}_select'.format(f), '')
                 flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
 
-        print(flt_active)
-
+        initial_data ={}
 
         if self.kwargs['flt_id'] == finnr:
-            initial_data = self.filter_innr(flt_active)
+            initial_data = self.addfilters(self.initial_innr(), flt_active)
         if self.kwargs['flt_id'] == ftrnr:
-            initial_data = self.filter_trnr(flt_active)
+            initial_data = self.addfilters(self.initial_trnr(), flt_active)
         if self.kwargs['flt_id'] == fwinr:
-            initial_data = self.filter_winr(flt_active)
+            initial_data = self.addfilters(self.initial_winr(), flt_active)
         if self.kwargs['flt_id'] == fcust:
-            initial_data = self.filter_cust(flt_active)
+            initial_data = self.addfilters(self.initial_cust(), flt_active)
 
         return initial_data
 
