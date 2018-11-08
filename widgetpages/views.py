@@ -22,6 +22,17 @@ ftrnr = 'trnr'
 fwinr = 'winr'
 
 # Create your views here.
+def extra_in_filter(model, field, flt):
+    if len(flt['list']) > 0:
+        ef = '[{}].{} {}in ({})'. \
+            format(model._meta.db_table,
+                   field,
+                   'not ' if flt['select'] else '',
+                   ','.join([str(e) for e in flt['list']]))
+    else:
+        ef = '1=1' if flt['select'] else '1>1'
+    return ef
+
 def Home(request):
     args={}
     return render(request,'ta_main.html', args)
@@ -159,17 +170,9 @@ class SalessheduleView(FiltersView):
                     # Если не выбрано 'Без учета Таргет' то фильтруем по сотрудникам
                     hs_active = hs_active.filter(cust_id__employee__in=flt_active[fempl]['list'])
 
-                if len(flt_active[fcust]['list'])>0:
-                    extra_lpu_filter = '[{}].Cust_ID {}in ({})'.\
-                        format(Hs._meta.db_table,
-                               'not ' if flt_active[fcust]['select'] else '',
-                               ','.join([str(e) for e in flt_active[fcust]['list']]))
-                else:
-                    extra_lpu_filter = '1=1' if flt_active[fcust]['select'] else '1>1'
-
                 hs_active = hs_active.filter(PlanTYear__in=flt_active[fyear]['list'], \
                                              market_id__in=flt_active[fmrkt]['list']).\
-                                             extra(where=[extra_lpu_filter])
+                                             extra(where=[extra_in_filter(Hs,'Cust_ID',flt_active[fcust])])
 
             pivot_data['year'] = list(hs_active.values(iid=F('PlanTYear')).distinct().order_by('iid'))
             pivot_data['pivot1'] = list(hs_active.values('market_name',iid=F('PlanTYear')).annotate(
