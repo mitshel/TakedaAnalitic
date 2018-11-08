@@ -57,9 +57,10 @@ class FiltersView(View):
             market_enabled = Market.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
         else:
             hs_enabled = Hs.objects.exclude(cust_id=0)
-            # if not (0 in flt_active[fempl]):
-            #     hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
+            if not (0 in flt_active[fempl]['list']):
+                hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
             market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).distinct().values(iid=F('market_id'))
+        print(flt_active)
         return list(market_enabled)
 
     def filter_year(self, flt_active=None):
@@ -69,8 +70,8 @@ class FiltersView(View):
                 values('name', 'iid').distinct().order_by('name')
         else:
             hs_enabled = Hs.objects.exclude(cust_id=0)
-            # if not (0 in flt_active[fempl]):
-            #     hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
+            if not (0 in flt_active[fempl]['list']):
+                hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
             year_enabled = hs_enabled.values('PlanTYear').distinct().values(iid=F('PlanTYear'))
         return list(year_enabled)
 
@@ -78,7 +79,10 @@ class FiltersView(View):
         if not flt_active:
             status_enabled = StatusT.objects.values('name',iid=F('id')).order_by('name')
         else:
-            status_enabled = StatusT.objects.values(iid=F('id'))
+            hs_enabled = Hs.objects.exclude(cust_id=0)
+            if not (0 in flt_active[fempl]['list']):
+                hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
+            status_enabled = hs_enabled.annotate(iid=F('StatusT_ID')).distinct().values('iid')
         return list(status_enabled)
 
     def filter_innr(self, flt_active=None):
