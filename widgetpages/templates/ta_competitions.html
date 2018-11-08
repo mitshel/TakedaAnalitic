@@ -1,13 +1,136 @@
 {% extends "ta_layout.html" %}
+{% load widgettags %}
 {% load staticfiles %}
 {% load i18n %}
 
 {% block page %}
+    <style>
+        table.datatable tr {
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 0.9rem;
+        }
+        .buttons-select-all, .buttons-select-none, .buttons-html5 {
+            line-height: 1; !important;
+        }
+    </style>
 	<div class="col-12">
         <h5>{{ view.name }}</h5>
-        <p id="sql_pivot">{{ data.pivot_sql }}</p>
-		<table id="ta_competitions_table"></table>
+        <br>
+        <!--<p id="sql_pivot">{ { data.pivot_sql }}</p>-->
+		<table class="table table-sm table-hover display w-100 datatable" width="100%" id="ta_competitions_table">
+        <thead>
+            <tr>
+                <th>ИНН</th>
+                <th width="50%">ЛПУ</th>
+                <th>Торговая марка</th>
+                {% for y in data.year %}<th>{{ y }}</th>{% endfor %}
+            </tr>
+        </thead>
+        </table>
 	</div>
+
+<script type="text/javascript">
+var competitions_data = [
+    {% for row in data.pivot %}
+        { {% for k,v in row.items %}'{{ k }}':'{% if k|slice:"0:2" == "20" %}{{ v|floatformat:2 }}{% else %}{{ v }}{% endif %}'{% if not forloop.last %},{% endif %}{% endfor %} }{% if not forloop.last %},{% endif %}
+    {% endfor %}
+]
+
+{%for obj in objs%}
+    {%for key in obj|get_dict %}
+        {% with d=obj|get_dict  %}
+            {{key}} - {{ d|get_val:key }}
+        {% endwith %}
+    {%endfor%}
+{%endfor%}
+
+var lang_russian = {
+                      "processing": "Подождите...",
+                      "search": "&nbsp;&nbsp;&nbsp;Поиск:",
+                      "lengthMenu": "&nbsp;&nbsp;_MENU_&nbsp;&nbsp;",
+                      "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
+                      "infoEmpty": "Записи с 0 до 0 из 0 записей",
+                      "infoFiltered": "(отфильтровано из _MAX_ записей)",
+                      "infoPostFix": "",
+                      "loadingRecords": "Загрузка записей...",
+                      "zeroRecords": "Записи отсутствуют.",
+                      "emptyTable": "В таблице отсутствуют данные",
+                      "paginate": {
+                        "first": "Первая",
+                        "previous": "Пред.",
+                        "next": "След.",
+                        "last": "Посл."
+                      },
+                      "aria": {
+                        "sortAscending": ": активировать для сортировки столбца по возрастанию",
+                        "sortDescending": ": активировать для сортировки столбца по убыванию"
+                      },
+                      "buttons": {
+                        "selectAll": "Выбрать все",
+                        "selectNone": "Снять выбор"
+                      }
+                    };
+
+var ta_competitions_table = $('#ta_competitions_table').DataTable({
+                "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+                //ordering:  true,
+                buttons: [
+                    'excel'
+                ],
+                select: true,
+                "pageLength": 25,
+                "columnDefs": [
+                    { "name": "Org_CustINN", "targets": [ 0 ], "visible": false, "searchable": true },
+                //    { "name": "ext", "targets": [ 1 ], "visible": false, "searchable": true },
+                //    { "name": "iid", "targets": [ 2 ], "visible": false, "searchable": false }
+                //    //{   "name": "disabled", "targets": [ 3 ], "visible": false, "searchable": false }
+                ],
+                //"processing": true,
+                //"serverSide": true,
+                //"stateSave" : true,
+                //"ajax": {
+                //    "url": "% url 'widgetpages:jdata' flt.id %}",
+                //    "type": "POST",
+                //    "data": function ( d ) {
+                //        d.filters_ajax_request = JSON.stringify(filters_ajax_request);
+                //        d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                //    }
+                //},
+                 data: competitions_data,
+                 columns: [
+                     { data: 'Org_CustINN' },
+                     { data: 'Org_CustNm' },
+                     { data: 'name' },
+                     {% for y in data.year %}{ data: '{{ y }}'}{% if not forloop.last %},{% endif %}{% endfor %}
+                     ],
+                    orderFixed: [1, 'asc'],
+                    rowGroup: {
+                        startRender: null,
+                        //endRender: function ( rows, group ) {
+                        //    return group +' ('+rows.count()+')';
+                        //},
+                        endRender: function ( rows, group ) {
+                            {% for y in data.year %}
+                            var sum{{ y }} = rows
+                                .data()
+                                .pluck('{{ y }}')
+                                .reduce( function (a, b) {
+                                    return a + b.replace(/[^\d]/g, '')*1;
+                                }, 0) / 100;
+                            {% endfor %}
+
+                            return $('<tr/>')
+                                .append( '<td colspan="2">'+group+' ИТОГ:</td>' )
+                                {% for y in data.year %}
+                                .append( '<td>'+sum{{ y }}.toFixed(2)+'</td>' ){% endfor %};
+                        },
+                        dataSrc: 'Org_CustNm'
+                    },
+                "language": lang_russian
+            });
+
+</script>
 
     <script>
     function ChartsUpdate1(data) {
