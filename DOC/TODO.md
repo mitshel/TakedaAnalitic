@@ -79,4 +79,23 @@ where Org_CustNm like '%''%'
                             .append( '<td colspan="2">'+group+' ИТОГ:</td>' )
                             {% for y in data.year %}
                             .append( '<td>'+sum{{ y }}.toFixed(2)+'</td>' ){% endfor %};
-                    },                    
+                    },      
+                    
+                    
+                    endRender: function ( rows, group ) {
+                        {% for y in data.year %}
+                        var sum{{ forloop.counter0|add:3 }} = rows
+                            .data()
+                            .pluck({{ forloop.counter0|add:3 }})
+                            .reduce( function (a, b) {
+                                return a + b.replace(/[^\d]/g, '')*1;
+                            }, 0) / 100000;
+                        {% endfor %}
+
+                        return $('<tr/>')
+                            .append( '<td colspan="2">'+group+' ИТОГ:</td>' )
+                            {% for y in data.year %}
+                            .append( '<td>'+sum{{ forloop.counter0|add:3 }}.toFixed(2)+'</td>' ){% endfor %};
+                    },      
+                    
+                    for (i = 3; i <= $('#ta_competitions_table thead th').length; i++) {                    

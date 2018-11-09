@@ -84,20 +84,23 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 order: [[1, 'asc']],
                 rowGroup: {
                     startRender: null,
-                    endRender: function ( rows, group ) {
-                        {% for y in data.year %}
-                        var sum{{ forloop.counter0|add:3 }} = rows
-                            .data()
-                            .pluck({{ forloop.counter0|add:3 }})
-                            .reduce( function (a, b) {
-                                return a + b.replace(/[^\d]/g, '')*1;
-                            }, 0) / 100000;
-                        {% endfor %}
-
-                        return $('<tr/>')
-                            .append( '<td colspan="2">'+group+' ИТОГ:</td>' )
-                            {% for y in data.year %}
-                            .append( '<td>'+sum{{ forloop.counter0|add:3 }}.toFixed(2)+'</td>' ){% endfor %};
+                    endRender: function (rows, group) {
+                        var container = $('<tr/>');
+                        container.append('<td colspan= "2"> ' + group + ' ИТОГО:</td>');
+                        var i = 3;
+                        while (i<rows.columns().header().length) {
+                            if (rows.column(i).visible()) {
+                                var subtotalSum = rows
+                                    .data()
+                                    .pluck(i)
+                                    .reduce(function (a, b) {
+                                        return a + b * 1;
+                                    }, 0) / 1000;
+                                container.append('<td>' + subtotalSum.toFixed(2) + '</td>');
+                            };
+                            i++;
+                        }
+                        return $(container)
                     },
                     dataSrc: 1
                 },
