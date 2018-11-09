@@ -3,9 +3,14 @@
 {% load i18n %}
 
 {% block content %}
+<style>
+
+</style>
     <div class="row">
-         <div class="col-8">
+         <div class="col-8" style="padding:0;">
+         <div class="container" style="padding-left:0.5rem; padding-right:0;">
               {% block page %}{% endblock %}
+         </div>
          </div>
          <div class="col-4">
              {% block filter %}

@@ -13,12 +13,16 @@
         .buttons-select-all, .buttons-select-none, .buttons-html5 {
             line-height: 1; !important;
         }
+
+        .sticky-top {top:3.5rem;}
+        #ta_competitions_table thead {background-color: rgb(108, 117, 125); color: #ffffff; }
+
     </style>
 	<div class="col-12">
         <h5>{{ view.name }}</h5>
         <br>
 		<table class="table table-sm table-hover display w-100 datatable" width="100%" id="ta_competitions_table">
-        <thead>
+        <thead class="position-sticky sticky-top">
             <tr>
                 <th>ИНН</th>
                 <th>ЛПУ</th>
@@ -63,6 +67,7 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 ordering:  false,
                 buttons: ['excel'],
                 select: true,
+                fixedHeader: true,
                 "pageLength": 25,
                 "columnDefs": [
                     { "name": "Org_CustINN", "targets": 0 , "visible": false, "searchable": false },
