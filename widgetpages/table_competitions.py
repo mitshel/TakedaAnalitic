@@ -37,12 +37,19 @@ class CompetitionsAjaxTable(BaseDatatableView):
         print('Years active ==>', years_active)
         print('_columns ==>', self.columns_data)
 
-        rawmodel = RawModel(queries.q_competitions)
-        rawmodel = rawmodel.filter(years=years_active,
-                       markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
-                       employees=','.join([str(e) for e in flt_active[fempl]['list']] if flt_active and not (0 in flt_active[fempl]['list']) else ''),
-                       lpus_in=extra_in_filter('l','Cust_ID',flt_active[fcust] if flt_active else '')
-                       ).order_by('l.Org_CustNm', 'pvt.tradeNx')
+        if years_active:
+            rawmodel = RawModel(queries.q_competitions)
+            rawmodel = rawmodel.filter(years=years_active,
+                           markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
+                           status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active else ''),
+                           employees=','.join([str(e) for e in flt_active[fempl]['list']] if flt_active and not (0 in flt_active[fempl]['list']) else ''),
+                           lpus_in=extra_in_filter('l','Cust_ID',flt_active[fcust] if flt_active else ''),
+                           winrs_in=extra_in_filter('w', 'id', flt_active[fwinr] if flt_active else ''),
+                           innrs_in = extra_in_filter('s', 'InnNx', flt_active[finnr] if flt_active else ''),
+                           trnrs_in = extra_in_filter('s', 'TradeNx', flt_active[ftrnr] if flt_active else '')
+                           ).order_by('l.Org_CustNm', 'pvt.tradeNx')
+        else:
+            rawmodel = RawModel('select null as Org_CustINN, null as Org_CustNm, null as name')
 
         print('Rawmodel Query ==>',rawmodel.query)
         return rawmodel

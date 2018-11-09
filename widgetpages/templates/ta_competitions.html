@@ -37,7 +37,9 @@
         var s = [];
         var h = [];
         $('button[id^=year_]').each(function() {
-            ta_competitions_table.columns($(this).attr('data-id').toString()+':name').visible($(this).hasClass('active'),false);
+            ta_competitions_table.columns($(this)
+                .attr('data-id').toString()+':name')
+                .visible($(this).hasClass('active') & !$(this).hasClass('disabled'),false);
         });
         ta_competitions_table.columns.adjust().draw( true );
     }
