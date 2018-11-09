@@ -13,6 +13,7 @@ from django.views.generic import View
 from django.urls import reverse, reverse_lazy
 
 from widgetpages import queries
+from widgetpages.rawmodel import RawModel
 
 # Filters identification
 fempl = 'empl'
@@ -201,29 +202,23 @@ class CompetitionsView(FiltersView):
     view_id = 'competitions'
     view_name = 'Конкурентный анализ'
 
-    def to_list(self, qs):
-        mlist = list()
-        for row in qs:
-            d = {}
-            for f in qs.columns:
-                d[f] = getattr(row, f)
-            mlist.append(d)
-        return mlist
-
     def data(self, flt=None, flt_active=None):
         pivot_data = {}
-        t = Template(queries.q_competitions)
+        rawmodel = RawModel(queries.q_competitions)
         years_enabled = list([e['iid'] for e in self.get_filter(flt,fyear)['data']])
         years_active = flt_active[fyear]['list'] if flt_active else years_enabled
         years_active = [2015,2016,2017,2018,2019]
         years_intersect = sorted(list(set(years_enabled) & set(years_active)))
-        pivot_sql = t.render(Context({"years": years_intersect ,
-                      "markets": ','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
-                      "employees": ','.join([str(e) for e in flt_active[fempl]['list']] if flt_active and not (0 in flt_active[fempl]['list']) else ''),
-                      "lpus_in": extra_in_filter('l','Cust_ID',flt_active[fcust] if flt_active else '')
-                      }))
 
-        pivot_data['pivot_sql'] = pivot_sql
+        rawmodel = rawmodel.filter(years=years_intersect,
+                       markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
+                       employees=','.join([str(e) for e in flt_active[fempl]['list']] if flt_active and not (0 in flt_active[fempl]['list']) else ''),
+                       lpus_in=extra_in_filter('l','Cust_ID',flt_active[fcust] if flt_active else '')
+                       ).order_by('pvt.cust_id', 'pvt.tradeNx')[0:999]
+
+        pivot_data['pivot_sql'] = rawmodel.query
         pivot_data['year'] = years_intersect
-        pivot_data['pivot'] = self.to_list(Hs.objects.raw(pivot_sql))
+        pivot_data['cnt'] = rawmodel.count()
+        pivot_data['pivot'] = rawmodel.open().fetchall()
+        rawmodel.close()
         return pivot_data

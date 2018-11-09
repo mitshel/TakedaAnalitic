@@ -18,3 +18,13 @@ where Org_CustNm like '%''%'
     {% for row in data.pivot %}
         { 'Org_CustINN':'{{ row.Org_CustINN }}', 'Org_CustNm':'{{ row.Org_CustNm }}', 'name':'{{ row.name }}'{% for y in data.year %},{% with d=row|get_dict  %}'{{ y }}':'{%  if d|get_val:y  %}{{ d|get_val:y|floatformat:2 }}{% endif %}'{% endwith %}{% endfor %} }{% if not forloop.last %},{% endif %}
     {% endfor %}        
+    
+    
+    def to_list(self, qs):
+        mlist = list()
+        for row in qs:
+            d = {}
+            for f in qs.columns:
+                d[f] = getattr(row, f)
+            mlist.append(d)
+        return mlist
