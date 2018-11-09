@@ -37,12 +37,9 @@
         var s = [];
         var h = [];
         $('button[id^=year_]').each(function() {
-            var column = ta_competitions_table.column( $(this).attr('data-id') ).index();
-            if ($(this).hasClass('active')) s.push(column); else h.push(column);
+            ta_competitions_table.columns($(this).attr('data-id').toString()+':name').visible($(this).hasClass('active'),false);
         });
-        ta_competitions_table.columns(s).visible(true);
-        ta_competitions_table.columns(h).visible(false);
-        ta_competitions_table.columns.adjust().draw( false );
+        ta_competitions_table.columns.adjust().draw( true );
     }
     function ChartsUpdate2(data, src_id) {
     }
