@@ -37,15 +37,6 @@ var competitions_data = [
         { {% for k,v in row.items %}'{{ k }}':'{% if k|slice:"0:2" == "20" %}{{ v|floatformat:2 }}{% else %}{{ v }}{% endif %}'{% if not forloop.last %},{% endif %}{% endfor %} }{% if not forloop.last %},{% endif %}
     {% endfor %}
 ]
-
-{%for obj in objs%}
-    {%for key in obj|get_dict %}
-        {% with d=obj|get_dict  %}
-            {{key}} - {{ d|get_val:key }}
-        {% endwith %}
-    {%endfor%}
-{%endfor%}
-
 var lang_russian = {
                       "processing": "Подождите...",
                       "search": "&nbsp;&nbsp;&nbsp;Поиск:",
@@ -83,22 +74,24 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 "pageLength": 25,
                 "columnDefs": [
                     { "name": "Org_CustINN", "targets": [ 0 ], "visible": false, "searchable": true },
-                //    { "name": "ext", "targets": [ 1 ], "visible": false, "searchable": true },
-                //    { "name": "iid", "targets": [ 2 ], "visible": false, "searchable": false }
-                //    //{   "name": "disabled", "targets": [ 3 ], "visible": false, "searchable": false }
+                    { "name": "Org_CustNm", "targets": [ 1 ], "visible": true, "searchable": true },
+                    { "name": "name", "targets": [ 2 ], "visible": true, "searchable": true },
+                    {% for y in data.year %}
+                    { "name": "{{ y }}", "targets": [ {{ forloop.counter0|add:3 }} ], "visible": true, "searchable": false }{% if not forloop.last %},{% endif %}
+                    {% endfor %}
                 ],
-                //"processing": true,
-                //"serverSide": true,
+                "processing": true,
+                "serverSide": true,
                 //"stateSave" : true,
-                //"ajax": {
-                //    "url": "% url 'widgetpages:jdata' flt.id %}",
-                //    "type": "POST",
-                //    "data": function ( d ) {
-                //        d.filters_ajax_request = JSON.stringify(filters_ajax_request);
-                //        d.csrfmiddlewaretoken = '{{ csrf_token }}';
-                //    }
-                //},
-                 data: competitions_data,
+                "ajax": {
+                    "url": "{% url 'widgetpages:jcompetitions' %}",
+                    "type": "POST",
+                    "data": function ( d ) {
+                        d.filters_ajax_request = JSON.stringify(filters_ajax_request);
+                        d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                    }
+                },
+                // data: competitions_data,
                  columns: [
                      { data: 'Org_CustINN' },
                      { data: 'Org_CustNm' },

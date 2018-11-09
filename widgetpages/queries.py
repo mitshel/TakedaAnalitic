@@ -14,6 +14,7 @@ select pvt.cust_id as id, l.Org_CustINN, l.Org_CustNm, pvt.tradeNx, t.name,
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if employees %}and e.employee_id in ({{employees}}) {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
+        {% if lpu__icontains %}and l.Org.Cust_Nm like '%{{ lpu__icontains }}%' {% endif %}
     ) m
     PIVOT
     (

@@ -13,6 +13,13 @@ class RawModel(object):
 
     def __init__(self,query):
         self._query = query
+        self._columns = []
+        self._order_data = []
+        self._filter_data = {}
+        self._offset = None
+        self._limit = None
+        self._cursor = None
+        self._count = None
 
     @property
     def columns(self):
@@ -54,7 +61,8 @@ class RawModel(object):
 
     def order_by(self, *args):
         for o in args:
-            self._order_data.append(o)
+            if not o in self._order_data:
+                self._order_data.append(o)
         return self
 
     def render(self, forcount = False):
