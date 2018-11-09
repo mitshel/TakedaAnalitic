@@ -73,7 +73,7 @@ class RawModel(object):
 
         # Ordering
         if (not forcount):
-            sql = "{} order by {} ".format(sql,','.join([str(e) for e in self._order_data])) if self._order_data else sql
+            sql = "{} order by {} \n".format(sql,','.join([str(e) for e in self._order_data])) if self._order_data else sql
 
         # Offset & Limit
         if (not forcount) and self._order_data:

@@ -68,7 +68,6 @@ class FiltersView(View):
             if not (0 in flt_active[fempl]['list']):
                 hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
             market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).distinct().values(iid=F('market_id'))
-        print(flt_active)
         return list(market_enabled)
 
     def filter_year(self, flt_active=None):
@@ -202,23 +201,15 @@ class CompetitionsView(FiltersView):
     view_id = 'competitions'
     view_name = 'Конкурентный анализ'
 
-    # def data(self, flt=None, flt_active=None):
-    #     pivot_data = {}
-    #     rawmodel = RawModel(queries.q_competitions)
-    #     years_enabled = list([e['iid'] for e in self.get_filter(flt,fyear)['data']])
-    #     years_active = flt_active[fyear]['list'] if flt_active else years_enabled
-    #     years_active = [2015,2016,2017,2018,2019]
-    #     years_intersect = sorted(list(set(years_enabled) & set(years_active)))
-    #
-    #     rawmodel = rawmodel.filter(years=years_intersect,
-    #                    markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
-    #                    employees=','.join([str(e) for e in flt_active[fempl]['list']] if flt_active and not (0 in flt_active[fempl]['list']) else ''),
-    #                    lpus_in=extra_in_filter('l','Cust_ID',flt_active[fcust] if flt_active else '')
-    #                    ).order_by('pvt.cust_id', 'pvt.tradeNx')[0:999]
-    #
-    #     pivot_data['pivot_sql'] = rawmodel.query
-    #     pivot_data['year'] = years_intersect
-    #     pivot_data['cnt'] = rawmodel.count()
-    #     pivot_data['pivot'] = rawmodel.open().fetchall()
-    #     rawmodel.close()
-    #     return pivot_data
+    def data(self, flt=None, flt_active=None):
+        data = {}
+        if not flt_active:
+            years_active = list(Hs.objects.exclude(PlanTYear__isnull=True).\
+                values('PlanTYear').distinct().order_by('PlanTYear').\
+                values_list('PlanTYear', flat=True))
+        else:
+            years_active = flt_active[fyear]['list']
+
+        data['year'] = years_active
+
+        return data

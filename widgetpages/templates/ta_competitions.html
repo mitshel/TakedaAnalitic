@@ -17,13 +17,11 @@
 	<div class="col-12">
         <h5>{{ view.name }}</h5>
         <br>
-        <!--<p id="sql_pivot">{{ data.pivot_sql }}</p>-->
-        <p>{{ data.cnt }}</p>
 		<table class="table table-sm table-hover display w-100 datatable" width="100%" id="ta_competitions_table">
         <thead>
             <tr>
                 <th>ИНН</th>
-                <th width="50%">ЛПУ</th>
+                <th>ЛПУ</th>
                 <th>Торговая марка</th>
                 {% for y in data.year %}<th>{{ y }}</th>{% endfor %}
             </tr>
@@ -31,54 +29,49 @@
         </table>
 	</div>
 
+<script>
+    function ChartsUpdate1(data, src_id) {
+        ta_competitions_table.ajax.reload( null, true );
+
+        // Скрываем/показываем столбцы в соответсвии с активностью кнопок по годам
+        var s = [];
+        var h = [];
+        $('button[id^=year_]').each(function() {
+            var column = ta_competitions_table.column( $(this).attr('data-id') ).index();
+            if ($(this).hasClass('active')) s.push(column); else h.push(column);
+        });
+        ta_competitions_table.columns(s).visible(true);
+        ta_competitions_table.columns(h).visible(false);
+        ta_competitions_table.columns.adjust().draw( false );
+    }
+    function ChartsUpdate2(data, src_id) {
+    }
+    function ChartsUpdate3(data, src_id) {
+    }
+</script>
+{% endblock %}
+
+{% block afterpage %}
 <script type="text/javascript">
-var competitions_data = [
-    {% for row in data.pivot %}
-        { {% for k,v in row.items %}'{{ k }}':'{% if k|slice:"0:2" == "20" %}{{ v|floatformat:2 }}{% else %}{{ v }}{% endif %}'{% if not forloop.last %},{% endif %}{% endfor %} }{% if not forloop.last %},{% endif %}
-    {% endfor %}
-]
-var lang_russian = {
-                      "processing": "Подождите...",
-                      "search": "&nbsp;&nbsp;&nbsp;Поиск:",
-                      "lengthMenu": "&nbsp;&nbsp;_MENU_&nbsp;&nbsp;",
-                      "info": "Записи с _START_ до _END_ из _TOTAL_ записей",
-                      "infoEmpty": "Записи с 0 до 0 из 0 записей",
-                      "infoFiltered": "(отфильтровано из _MAX_ записей)",
-                      "infoPostFix": "",
-                      "loadingRecords": "Загрузка записей...",
-                      "zeroRecords": "Записи отсутствуют.",
-                      "emptyTable": "В таблице отсутствуют данные",
-                      "paginate": {
-                        "first": "Первая",
-                        "previous": "Пред.",
-                        "next": "След.",
-                        "last": "Посл."
-                      },
-                      "aria": {
-                        "sortAscending": ": активировать для сортировки столбца по возрастанию",
-                        "sortDescending": ": активировать для сортировки столбца по убыванию"
-                      },
-                      "buttons": {
-                        "selectAll": "Выбрать все",
-                        "selectNone": "Снять выбор"
-                      }
-                    };
+
+function fixval ( data ) {
+    if (data != '') val=( data / 1000 ).toFixed(2); else val='';
+    return val;
+}
 
 var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-                //ordering:  true,
-                buttons: [
-                    'excel'
-                ],
+                ordering:  false,
+                buttons: ['excel'],
                 select: true,
                 "pageLength": 25,
                 "columnDefs": [
-                    { "name": "Org_CustINN", "targets": [ 0 ], "visible": false, "searchable": true },
-                    { "name": "Org_CustNm", "targets": [ 1 ], "visible": true, "searchable": true },
-                    { "name": "name", "targets": [ 2 ], "visible": true, "searchable": true },
+                    { "name": "Org_CustINN", "targets": 0 , "visible": false, "searchable": false },
+                    { "name": "Org_CustNm", "targets": 1, "visible": true, "searchable": true },
+                    { "name": "name", "targets": 2, "visible": true, "searchable": false },
                     {% for y in data.year %}
-                    { "name": "{{ y }}", "targets": [ {{ forloop.counter0|add:3 }} ], "visible": true, "searchable": false }{% if not forloop.last %},{% endif %}
-                    {% endfor %}
+                    { "name": "{{ y }}", "targets": {{ forloop.counter0|add:3 }}, "visible": true, "searchable": false,
+                      render: function ( data, type, row ) { return fixval( data ); } }{% if not forloop.last %},{% endif %}{% endfor %}
                 ],
                 "processing": true,
                 "serverSide": true,
@@ -91,48 +84,28 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                         d.csrfmiddlewaretoken = '{{ csrf_token }}';
                     }
                 },
-                // data: competitions_data,
-                 columns: [
-                     { data: 'Org_CustINN' },
-                     { data: 'Org_CustNm' },
-                     { data: 'name' },
-                     {% for y in data.year %}{ data: '{{ y }}'}{% if not forloop.last %},{% endif %}{% endfor %}
-                     ],
-                    orderFixed: [1, 'asc'],
-                    rowGroup: {
-                        startRender: null,
-                        //endRender: function ( rows, group ) {
-                        //    return group +' ('+rows.count()+')';
-                        //},
-                        endRender: function ( rows, group ) {
-                            {% for y in data.year %}
-                            var sum{{ y }} = rows
-                                .data()
-                                .pluck('{{ y }}')
-                                .reduce( function (a, b) {
-                                    return a + b.replace(/[^\d]/g, '')*1;
-                                }, 0) / 100;
-                            {% endfor %}
+                order: [[1, 'asc']],
+                rowGroup: {
+                    startRender: null,
+                    endRender: function ( rows, group ) {
+                        {% for y in data.year %}
+                        var sum{{ forloop.counter0|add:3 }} = rows
+                            .data()
+                            .pluck({{ forloop.counter0|add:3 }})
+                            .reduce( function (a, b) {
+                                return a + b.replace(/[^\d]/g, '')*1;
+                            }, 0) / 100000;
+                        {% endfor %}
 
-                            return $('<tr/>')
-                                .append( '<td colspan="2">'+group+' ИТОГ:</td>' )
-                                {% for y in data.year %}
-                                .append( '<td>'+sum{{ y }}.toFixed(2)+'</td>' ){% endfor %};
-                        },
-                        dataSrc: 'Org_CustNm'
+                        return $('<tr/>')
+                            .append( '<td colspan="2">'+group+' ИТОГ:</td>' )
+                            {% for y in data.year %}
+                            .append( '<td>'+sum{{ forloop.counter0|add:3 }}.toFixed(2)+'</td>' ){% endfor %};
                     },
+                    dataSrc: 1
+                },
                 "language": lang_russian
             });
 
 </script>
-
-    <script>
-    function ChartsUpdate1(data) {
-      $('#sql_pivot').html(data.data.pivot_sql)
-    }
-    function ChartsUpdate2(data) {
-    }
-    function ChartsUpdate3(data) {
-    }
-    </script>
 {%  endblock %}

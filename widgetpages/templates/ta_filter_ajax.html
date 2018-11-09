@@ -14,9 +14,9 @@ function processAjaxData(data, src_id) {
         {% endif %}
     {% endfor %}
 
-    ChartsUpdate1(data);
-    ChartsUpdate2(data);
-    ChartsUpdate3(data);
+    ChartsUpdate1(data,src_id);
+    ChartsUpdate2(data,src_id);
+    ChartsUpdate3(data,src_id);
 }
 
 $(document).on('click', '.btn-filter:not(.disabled)', function(event) {

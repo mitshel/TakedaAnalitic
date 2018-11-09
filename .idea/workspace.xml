@@ -3,10 +3,16 @@
   <component name="ChangeListManager">
     <list default="true" id="c2b8078d-8d3a-4a4d-a9ea-38dee01e930e" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/DOC/TODO.md" beforeDir="false" afterPath="$PROJECT_DIR$/DOC/TODO.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/widgetpages/queries.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/queries.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/widgetpages/rawmodel.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/rawmodel.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/widgetpages/table_competitions.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/table_competitions.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_competitions.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_competitions.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_layout.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_layout.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthcount.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthcount.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthsum.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthsum.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_year.html" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_year.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/widgetpages/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/urls.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/widgetpages/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/widgetpages/views.py" afterDir="false" />
     </list>
@@ -72,9 +78,9 @@
       <usages-collector id="statistics.file.extensions.open">
         <counts>
           <entry key="gitignore" value="3" />
-          <entry key="html" value="54" />
-          <entry key="md" value="24" />
-          <entry key="py" value="46" />
+          <entry key="html" value="71" />
+          <entry key="md" value="26" />
+          <entry key="py" value="47" />
           <entry key="sql" value="1" />
           <entry key="txt" value="5" />
           <entry key="xml" value="1" />
@@ -82,10 +88,10 @@
       </usages-collector>
       <usages-collector id="statistics.file.types.open">
         <counts>
-          <entry key="HTML" value="54" />
-          <entry key="Markdown" value="24" />
+          <entry key="HTML" value="71" />
+          <entry key="Markdown" value="26" />
           <entry key="PLAIN_TEXT" value="8" />
-          <entry key="Python" value="46" />
+          <entry key="Python" value="47" />
           <entry key="SQL" value="1" />
           <entry key="XML" value="1" />
         </counts>
@@ -95,20 +101,20 @@
           <entry key="Django Console" value="21" />
           <entry key="dummy" value="24" />
           <entry key="gitignore" value="24" />
-          <entry key="html" value="6699" />
-          <entry key="md" value="624" />
-          <entry key="py" value="12359" />
+          <entry key="html" value="8001" />
+          <entry key="md" value="634" />
+          <entry key="py" value="12876" />
           <entry key="sql" value="132" />
           <entry key="txt" value="15" />
         </counts>
       </usages-collector>
       <usages-collector id="statistics.file.types.edit">
         <counts>
-          <entry key="HTML" value="6699" />
-          <entry key="Markdown" value="624" />
+          <entry key="HTML" value="8001" />
+          <entry key="Markdown" value="634" />
           <entry key="PLAIN_TEXT" value="63" />
-          <entry key="Python" value="12374" />
-          <entry key="SQL" value="138" />
+          <entry key="Python" value="12890" />
+          <entry key="SQL" value="139" />
         </counts>
       </usages-collector>
     </session>
@@ -179,19 +185,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/widgetpages/queries.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="16" column="90" lean-forward="true" selection-start-line="16" selection-start-column="90" selection-end-line="16" selection-end-column="90" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/widgetpages/table_competitions.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="289">
-              <caret line="41" column="35" selection-start-line="41" selection-start-column="35" selection-end-line="41" selection-end-column="35" />
+            <state relative-caret-position="174">
+              <caret line="65" column="36" lean-forward="true" selection-start-line="65" selection-start-column="36" selection-end-line="65" selection-end-column="36" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -199,23 +196,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/widgetpages/urls.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="170">
-              <caret line="10" column="107" selection-start-line="10" selection-start-column="94" selection-end-line="10" selection-end-column="107" />
-              <folding>
-                <element signature="e#0#32#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_competitions.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="82" column="35" lean-forward="true" selection-start-line="82" selection-start-column="35" selection-end-line="82" selection-end-column="35" />
+            <state relative-caret-position="136">
+              <caret line="44" column="30" selection-start-line="44" selection-start-column="30" selection-end-line="44" selection-end-column="30" />
             </state>
           </provider>
         </entry>
@@ -223,44 +208,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="104">
-              <caret line="201" column="25" lean-forward="true" selection-start-line="201" selection-start-column="25" selection-end-line="201" selection-end-column="25" />
+            <state relative-caret-position="158">
+              <caret line="212" column="35" selection-start-line="212" selection-start-column="35" selection-end-line="212" selection-end-column="35" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
-                <marker date="1541753928364" expanded="true" signature="1508:1512" ph="..." />
-                <marker date="1541753928364" expanded="true" signature="1551:3878" ph="..." />
-                <marker date="1541753928364" expanded="true" signature="5344:5425" ph="..." />
-                <marker date="1541753928364" expanded="true" signature="5470:5476" ph="..." />
-                <marker date="1541753928364" expanded="true" signature="5518:5542" ph="..." />
-                <marker date="1541753928364" expanded="true" signature="5536:5537" ph="..." />
-                <marker date="1541753928364" expanded="true" signature="7119:7123" ph="..." />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/DOC/TODO.md">
-          <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-            <state split_layout="SPLIT">
-              <first_editor relative-caret-position="323">
-                <caret line="22" selection-start-line="22" selection-end-line="29" selection-end-column="20" />
-              </first_editor>
-              <second_editor />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/widgetpages/rawmodel.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="228">
-              <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
-              <folding>
-                <element signature="e#0#45#0" expanded="true" />
-                <marker date="1541751111381" expanded="true" signature="254:255" ph="..." />
-                <marker date="1541751111381" expanded="true" signature="254:260" ph="..." />
-                <marker date="1541751111381" expanded="true" signature="614:649" ph="..." />
+                <marker date="1541771563115" expanded="true" signature="1508:1512" ph="..." />
+                <marker date="1541771563115" expanded="true" signature="1551:3852" ph="..." />
+                <marker date="1541771563115" expanded="true" signature="5318:5399" ph="..." />
+                <marker date="1541771563115" expanded="true" signature="5444:5450" ph="..." />
+                <marker date="1541771563115" expanded="true" signature="5492:5516" ph="..." />
+                <marker date="1541771563115" expanded="true" signature="5510:5511" ph="..." />
+                <marker date="1541771563115" expanded="true" signature="7093:7097" ph="..." />
               </folding>
             </state>
           </provider>
@@ -297,6 +255,7 @@
       <find>ctrl</find>
       <find>select</find>
       <find>len</find>
+      <find>print</find>
     </findStrings>
     <replaceStrings>
       <replace>max_length</replace>
@@ -332,11 +291,7 @@
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_buttons.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_layout_competitions.html" />
-        <option value="$PROJECT_DIR$/widgetpages/templates/ta_layout.html" />
-        <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthsum.html" />
-        <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthcount.html" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule.html" />
-        <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_year.html" />
         <option value="$PROJECT_DIR$/DOC/old_views.py" />
         <option value="$PROJECT_DIR$/DOC/mssql_howto.md" />
         <option value="$PROJECT_DIR$/DOC/ParseList.md" />
@@ -345,20 +300,24 @@
         <option value="$PROJECT_DIR$/DOC/nginx.md" />
         <option value="$PROJECT_DIR$/DOC/uwsgi-farm.xml" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html" />
-        <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html" />
         <option value="$PROJECT_DIR$/widgetpages/datatable.py" />
         <option value="$PROJECT_DIR$/widgetpages/templates/q_competitions.sql" />
         <option value="$PROJECT_DIR$/widgetpages/templatetags/__init__.py" />
         <option value="$PROJECT_DIR$/widgetpages/templatetags/widgettags.py" />
         <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_styles.html" />
         <option value="$PROJECT_DIR$/requirements.txt" />
-        <option value="$PROJECT_DIR$/DOC/TODO.md" />
-        <option value="$PROJECT_DIR$/widgetpages/queries.py" />
-        <option value="$PROJECT_DIR$/widgetpages/rawmodel.py" />
         <option value="$PROJECT_DIR$/widgetpages/urls.py" />
-        <option value="$PROJECT_DIR$/widgetpages/templates/ta_competitions.html" />
+        <option value="$PROJECT_DIR$/widgetpages/rawmodel.py" />
+        <option value="$PROJECT_DIR$/widgetpages/templates/ta_layout.html" />
+        <option value="$PROJECT_DIR$/widgetpages/queries.py" />
+        <option value="$PROJECT_DIR$/DOC/TODO.md" />
         <option value="$PROJECT_DIR$/widgetpages/views.py" />
         <option value="$PROJECT_DIR$/widgetpages/table_competitions.py" />
+        <option value="$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html" />
+        <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_year.html" />
+        <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthsum.html" />
+        <option value="$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthcount.html" />
+        <option value="$PROJECT_DIR$/widgetpages/templates/ta_competitions.html" />
       </list>
     </option>
   </component>
@@ -416,6 +375,12 @@
               <item name="TakedaAnalitic" type="b2602c69:ProjectViewProjectNode" />
               <item name="TakedaAnalitic" type="462c0819:PsiDirectoryNode" />
               <item name="widgetpages" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="TakedaAnalitic" type="b2602c69:ProjectViewProjectNode" />
+              <item name="TakedaAnalitic" type="462c0819:PsiDirectoryNode" />
+              <item name="widgetpages" type="462c0819:PsiDirectoryNode" />
+              <item name="templates" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -514,12 +479,12 @@
     <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" x="805" y="161" width="309" height="717" id="Project" order="0" side_tool="true" visible="true" weight="0.23600605" />
+      <window_info active="true" content_ui="combo" x="805" y="161" width="309" height="717" id="Project" order="0" side_tool="true" visible="true" weight="0.23600605" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.24962178" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.3207856" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.20621932" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.39934534" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -668,20 +633,6 @@
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_layout_competitions.html" />
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_sales_monthcount.html" />
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_sales.html" />
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthcount.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="56" column="34" lean-forward="true" selection-start-line="56" selection-start-column="34" selection-end-line="56" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthsum.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="64" column="13" lean-forward="true" selection-start-line="64" selection-start-column="13" selection-end-line="64" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_sales_year.html" />
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter.html" />
     <entry file="file://$PROJECT_DIR$/DOC/old_views.py">
@@ -772,20 +723,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="33" column="14" selection-start-line="33" selection-start-column="14" selection-end-line="33" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_layout.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="14" selection-start-line="19" selection-start-column="14" selection-end-line="19" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/db/models.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="153">
@@ -797,30 +734,8 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/templates/q_competitions.sql" />
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_salesshedule.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="32" column="4" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/templatetags/__init__.py">
       <provider selected="true" editor-type-id="text-editor" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/table_filters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="612">
-          <caret line="39" column="28" selection-start-line="39" selection-start-column="28" selection-end-line="39" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-            <marker date="1541667199927" expanded="true" signature="607:613" ph="..." />
-            <marker date="1541667199927" expanded="true" signature="728:737" ph="..." />
-            <marker date="1541667199927" expanded="true" signature="1048:1057" ph="..." />
-            <marker date="1541667199927" expanded="true" signature="1398:1407" ph="..." />
-            <marker date="1541667199927" expanded="true" signature="1762:1771" ph="..." />
-          </folding>
-        </state>
-      </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/templatetags/widgettags.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -836,98 +751,148 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_styles.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
-          <caret line="19" column="1" selection-start-line="19" selection-start-column="1" selection-end-line="19" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1020">
-          <caret line="60" selection-start-line="60" selection-end-line="173" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_year.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="4" column="105" selection-start-line="4" selection-start-column="21" selection-end-line="4" selection-end-column="105" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/DOC/TODO.md">
-      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
-        <state split_layout="SPLIT">
-          <first_editor relative-caret-position="323">
-            <caret line="22" selection-start-line="22" selection-end-line="29" selection-end-column="20" />
-          </first_editor>
-          <second_editor />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/rawmodel.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="228">
-          <caret line="21" column="13" selection-start-line="21" selection-start-column="13" selection-end-line="21" selection-end-column="13" />
+        <state relative-caret-position="833">
+          <caret line="49" lean-forward="true" selection-start-line="49" selection-end-line="49" />
           <folding>
             <element signature="e#0#45#0" expanded="true" />
-            <marker date="1541751111381" expanded="true" signature="254:255" ph="..." />
-            <marker date="1541751111381" expanded="true" signature="254:260" ph="..." />
-            <marker date="1541751111381" expanded="true" signature="614:649" ph="..." />
+            <marker date="1541756928928" expanded="true" signature="254:255" ph="..." />
+            <marker date="1541756928928" expanded="true" signature="254:260" ph="..." />
+            <marker date="1541756928928" expanded="true" signature="614:649" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/queries.py">
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_styles.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="16" column="90" lean-forward="true" selection-start-line="16" selection-start-column="90" selection-end-line="16" selection-end-column="90" />
+        <state relative-caret-position="-100">
+          <caret line="19" column="1" selection-start-line="19" selection-start-column="1" selection-end-line="19" selection-end-column="1" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_layout.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="205">
+          <caret line="20" column="21" selection-start-line="20" selection-start-column="21" selection-end-line="20" selection-end-column="21" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/urls.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="170">
-          <caret line="10" column="107" selection-start-line="10" selection-start-column="94" selection-end-line="10" selection-end-column="107" />
+          <caret line="10" column="11" selection-start-line="10" selection-start-column="11" selection-end-line="10" selection-end-column="11" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_competitions.html">
+    <entry file="file://$PROJECT_DIR$/widgetpages/queries.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="82" column="35" lean-forward="true" selection-start-line="82" selection-start-column="35" selection-end-line="82" selection-end-column="35" />
+        <state relative-caret-position="112">
+          <caret line="7" column="57" selection-start-line="7" selection-start-column="57" selection-end-line="7" selection-end-column="57" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/DOC/TODO.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="8">
+            <caret line="67" selection-start-line="67" selection-end-line="81" selection-end-column="24" />
+          </first_editor>
+          <second_editor />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="104">
-          <caret line="201" column="25" lean-forward="true" selection-start-line="201" selection-start-column="25" selection-end-line="201" selection-end-column="25" />
+        <state relative-caret-position="158">
+          <caret line="212" column="35" selection-start-line="212" selection-start-column="35" selection-end-line="212" selection-end-column="35" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
-            <marker date="1541753928364" expanded="true" signature="1508:1512" ph="..." />
-            <marker date="1541753928364" expanded="true" signature="1551:3878" ph="..." />
-            <marker date="1541753928364" expanded="true" signature="5344:5425" ph="..." />
-            <marker date="1541753928364" expanded="true" signature="5470:5476" ph="..." />
-            <marker date="1541753928364" expanded="true" signature="5518:5542" ph="..." />
-            <marker date="1541753928364" expanded="true" signature="5536:5537" ph="..." />
-            <marker date="1541753928364" expanded="true" signature="7119:7123" ph="..." />
+            <marker date="1541771563115" expanded="true" signature="1508:1512" ph="..." />
+            <marker date="1541771563115" expanded="true" signature="1551:3852" ph="..." />
+            <marker date="1541771563115" expanded="true" signature="5318:5399" ph="..." />
+            <marker date="1541771563115" expanded="true" signature="5444:5450" ph="..." />
+            <marker date="1541771563115" expanded="true" signature="5492:5516" ph="..." />
+            <marker date="1541771563115" expanded="true" signature="5510:5511" ph="..." />
+            <marker date="1541771563115" expanded="true" signature="7093:7097" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/table_filters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="98">
+          <caret line="39" column="28" selection-start-line="39" selection-start-column="28" selection-end-line="39" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1541667199927" expanded="true" signature="607:613" ph="..." />
+            <marker date="1541667199927" expanded="true" signature="728:737" ph="..." />
+            <marker date="1541667199927" expanded="true" signature="1048:1057" ph="..." />
+            <marker date="1541667199927" expanded="true" signature="1398:1407" ph="..." />
+            <marker date="1541667199927" expanded="true" signature="1762:1771" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/widgetpages/table_competitions.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="289">
-          <caret line="41" column="35" selection-start-line="41" selection-start-column="35" selection-end-line="41" selection-end-column="35" />
+        <state relative-caret-position="174">
+          <caret line="65" column="36" lean-forward="true" selection-start-line="65" selection-start-column="36" selection-end-line="65" selection-end-column="36" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_year.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="182">
+          <caret line="56" column="39" selection-start-line="56" selection-start-column="39" selection-end-line="56" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthsum.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="46">
+          <caret line="56" column="39" selection-start-line="56" selection-start-column="39" selection-end-line="56" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_salesshedule_monthcount.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="56" column="39" selection-start-line="56" selection-start-column="39" selection-end-line="56" selection-end-column="39" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_salesshedule.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="32" column="4" selection-start-line="32" selection-start-column="4" selection-end-line="32" selection-end-column="12" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_item.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1003">
+          <caret line="25" column="78" selection-start-line="25" selection-start-column="28" selection-end-line="25" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_filter_ajax.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="238">
+          <caret line="41" lean-forward="true" selection-start-line="41" selection-end-line="46" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/widgetpages/templates/ta_competitions.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="136">
+          <caret line="44" column="30" selection-start-line="44" selection-start-column="30" selection-end-line="44" selection-end-column="30" />
         </state>
       </provider>
     </entry>
