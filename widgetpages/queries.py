@@ -1,6 +1,7 @@
 # Конкурентный анализ
 #
 q_competitions = """
+{% autoescape off %}
 select pvt.cust_id as id, l.Org_CustINN, l.Org_CustNm, pvt.tradeNx, t.name 
     {% for y in years %},[{{y}}]{% endfor %}
     from
@@ -28,4 +29,5 @@ select pvt.cust_id as id, l.Org_CustINN, l.Org_CustNm, pvt.tradeNx, t.name
     ) as pvt
     left join db_lpu l on pvt.cust_id = l.cust_id
     left join db_TradeNR t on pvt.TradeNx = t.id
+{% endautoescape %}  
 """
