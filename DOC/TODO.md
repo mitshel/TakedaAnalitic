@@ -98,4 +98,8 @@ where Org_CustNm like '%''%'
                             .append( '<td>'+sum{{ forloop.counter0|add:3 }}.toFixed(2)+'</td>' ){% endfor %};
                     },      
                     
-                    for (i = 3; i <= $('#ta_competitions_table thead th').length; i++) {                    
+                    for (i = 3; i <= $('#ta_competitions_table thead th').length; i++) {       
+                    
+                    
+                    
+                    https://codepen.io/jasonblewis/pen/PWgwPL             

@@ -7,3 +7,6 @@ Dynamic models:
 !!! https://stackoverflow.com/questions/25477522/django-model-change-db-table-dynamically
 https://github.com/willhardy/dynamic-models
 https://code.djangoproject.com/wiki/DynamicModels
+
+Responsive SubTotal:
+https://codepen.io/jasonblewis/pen/PWgwPL

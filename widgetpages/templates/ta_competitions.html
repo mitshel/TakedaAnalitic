@@ -107,11 +107,11 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 order: [[1, 'asc']],
                 rowGroup: {
                     startRender: function (rows, group) {
-                        return $('<tr style="background-color:yellow;"/>')
+                        return $('<tr class="group" style="background-color:yellow;"/>')
                         .append( '<td colspan="'+rows.columns().header().length+'">'+group+'</td>' )
                     },
                     endRender: function (rows, group) {
-                        var container = $('<tr/>');
+                        var container = $('<tr class="group"/>');
                         container.append('<td>ИТОГО:</td>');
                         var i = 3;
                         while (i<rows.columns().header().length) {
@@ -133,6 +133,22 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 },
                 "language": lang_russian
             });
+
+ta_competitions_table.on('responsive-resize', function (event, datatable, columns) {
+    // show/ hide group-end cells for columns that became visible/ invisible
+    var activeColumns = {};
+
+    activeColumns = columns.filter(function (value, index) {
+        return (value === true || value === false) ? true : false;
+    });
+
+    $('tr.dtrg-end').each(function () {
+
+        $('td', this).css('display', function (index, value) {
+            return activeColumns[index] ? '' : 'none';
+        });
+    });
+});
 
 </script>
 {%  endblock %}
