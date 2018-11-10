@@ -1,40 +1,32 @@
 import json
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.utils.html import escape
-from django.db.models import Count, Sum, Min, F, Q
+from django.db.models import F
 
 from widgetpages.views import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust
 from widgetpages.views import FiltersView, extra_in_filter
-from db.models import Hs, Target, Employee, Lpu, Market, StatusT, InNR, TradeNR, WinnerOrg
+from widgetpages.ajaxdatatabe import AjaxRawDatatableView
+from db.models import Hs_create, Lpu, InNR, TradeNR, WinnerOrg
 
-class FilterListJson(BaseDatatableView):
+class FilterListJson(AjaxRawDatatableView):
     columns = ['name', 'ext', 'iid']
     order_columns = ['name', 'ext']
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
-    org_id = 1
 
     def initial_innr(self):
         innr_enabled = InNR.objects.filter(hs__isnull=False).distinct().values('name', iid=F('id')).order_by('name')
-        # if flt_active and not (0 in flt_active[fempl]['list']):
-        #     innr_enabled = innr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
         return innr_enabled
 
     def initial_trnr(self):
         trnr_enabled = TradeNR.objects.filter(hs__isnull=False).distinct().values('name', iid=F('id')).order_by('name')
-        # if flt_active and not (0 in flt_active[fempl]['list']):
-        #     trnr_enabled = trnr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
         return trnr_enabled
 
     def initial_winr(self):
         winr_enabled = WinnerOrg.objects.distinct().exclude(id=0).values('name', iid=F('id'), ext=F('inn')).order_by('name')
-        # if flt_active and not (0 in flt_active[fempl]['list']):
-        #     winr_enabled = winr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
         return winr_enabled
 
     def initial_cust(self):
         lpu_enabled = Lpu.objects.distinct().exclude(cust_id=0).values('name', ext=F('inn'), iid=F('cust_id')).distinct().order_by('name')
-        # if flt_active and not (0 in flt_active[fempl]['list']):
-        #     lpu_enabled = lpu_enabled.filter(employee__in=flt_active[fempl]['list'])
         return lpu_enabled
 
     def addfilters(self, qs, flt_active):
@@ -54,6 +46,7 @@ class FilterListJson(BaseDatatableView):
         return qs
 
     def get_initial_queryset(self):
+        super(FilterListJson, self).get_initial_queryset()
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
         flt = json.loads(filters_ajax_request)
         flt_active = {}
@@ -77,9 +70,6 @@ class FilterListJson(BaseDatatableView):
         return initial_data
 
     def filter_queryset(self, qs):
-        # use request parameters to filter queryset
-
-        # simple example:
         search = self.request.POST.get('search[value]', None)
         if search:
             qs = qs.filter(name__icontains=search)
@@ -97,11 +87,3 @@ class FilterListJson(BaseDatatableView):
                 item['iid'] if 'iid' in item else 0,
             ])
         return json_data
-
-    # def render_column(self, row, column):
-    #     # We want to render user as a custom column
-    #     if column == 'name':
-    #         # escape HTML for security reasons
-    #         return escape(row['name'])
-    #     else:
-    #         return super(FilterListJson, self).render_column(row, column)

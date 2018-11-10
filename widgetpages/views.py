@@ -8,7 +8,8 @@ from django.http import HttpResponse, JsonResponse
 from django.template.context_processors import csrf
 from django.template import Context, Template
 
-from db.models import Hs, Target, Employee, Lpu, Market, StatusT, InNR, TradeNR, WinnerOrg
+from db.models import Employee, Lpu, Market, StatusT, InNR, TradeNR, WinnerOrg
+from db.models import Hs_create
 from django.views.generic import View
 from django.urls import reverse, reverse_lazy
 
@@ -53,6 +54,10 @@ class FiltersView(View):
     view_name = 'Пустая страница'
     org_id = 1
 
+    def init_dynamic_models(self):
+        self.Hs = Hs_create('Test_CACHE_1')
+        return
+
     def filter_empl(self, flt_active=None):
         if not flt_active:
             employee_enabled = Employee.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
@@ -64,7 +69,8 @@ class FiltersView(View):
         if not flt_active:
             market_enabled = Market.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
         else:
-            hs_enabled = Hs.objects.exclude(cust_id=0)
+
+            hs_enabled = self.Hs.objects.exclude(cust_id=0)
             if not (0 in flt_active[fempl]['list']):
                 hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
             market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).distinct().values(iid=F('market_id'))
@@ -72,11 +78,11 @@ class FiltersView(View):
 
     def filter_year(self, flt_active=None):
         if not flt_active:
-            year_enabled = Hs.objects.exclude(PlanTYear__isnull=True).\
+            year_enabled = self.Hs.objects.exclude(PlanTYear__isnull=True).\
                 extra(select={'iid': 'PlanTYear', 'name': 'PlanTYear'}). \
                 values('name', 'iid').distinct().order_by('name')
         else:
-            hs_enabled = Hs.objects.exclude(cust_id=0)
+            hs_enabled = self.Hs.objects.exclude(cust_id=0)
             if not (0 in flt_active[fempl]['list']):
                 hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
             year_enabled = hs_enabled.values('PlanTYear').distinct().values(iid=F('PlanTYear'))
@@ -86,7 +92,7 @@ class FiltersView(View):
         if not flt_active:
             status_enabled = StatusT.objects.values('name',iid=F('id')).order_by('name')
         else:
-            hs_enabled = Hs.objects.exclude(cust_id=0)
+            hs_enabled = self.Hs.objects.exclude(cust_id=0)
             if not (0 in flt_active[fempl]['list']):
                 hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
             status_enabled = hs_enabled.annotate(iid=F('StatusT_ID')).distinct().values('iid')
@@ -139,6 +145,7 @@ class FiltersView(View):
         return {}
 
     def get(self, request, *args, **kwargs):
+        self.init_dynamic_models()
         filters = self.filters()
         data = self.data(filters)
         return render(request, self.template_name, {'filters': filters,
@@ -147,6 +154,7 @@ class FiltersView(View):
                                                     'ajax_url': self.ajax_url})
 
     def post(self, request, *args, **kwargs):
+        self.init_dynamic_models()
         if request.is_ajax():
             if request.POST:
                 flt_active = {}
@@ -175,7 +183,7 @@ class SalessheduleView(FiltersView):
     def data(self, flt=None, flt_active=None):
         pivot_data = {}
         if flt:
-            hs_active = Hs.objects.exclude(cust_id=0).exclude(PlanTYear__isnull=True)
+            hs_active = self.Hs.objects.exclude(cust_id=0).exclude(PlanTYear__isnull=True)
             if flt_active:
                 if not (0 in flt_active[fempl]['list']):
                     # Если не выбрано 'Без учета Таргет' то фильтруем по сотрудникам
@@ -183,7 +191,7 @@ class SalessheduleView(FiltersView):
 
                 hs_active = hs_active.filter(PlanTYear__in=flt_active[fyear]['list'], \
                                              market_id__in=flt_active[fmrkt]['list']).\
-                                             extra(where=[extra_in_filter(Hs,'Cust_ID',flt_active[fcust])])
+                                             extra(where=[extra_in_filter(self.Hs,'Cust_ID',flt_active[fcust])])
 
             pivot_data['year'] = list(hs_active.values(iid=F('PlanTYear')).distinct().order_by('iid'))
             pivot_data['pivot1'] = list(hs_active.values('market_name',iid=F('PlanTYear')).annotate(
@@ -204,7 +212,7 @@ class CompetitionsView(FiltersView):
     def data(self, flt=None, flt_active=None):
         data = {}
         if not flt_active:
-            years_active = list(Hs.objects.exclude(PlanTYear__isnull=True).\
+            years_active = list(self.Hs.objects.exclude(PlanTYear__isnull=True).\
                 values('PlanTYear').distinct().order_by('PlanTYear').\
                 values_list('PlanTYear', flat=True))
         else:
