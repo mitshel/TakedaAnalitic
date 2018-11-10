@@ -207,7 +207,7 @@ class CompetitionsView(FiltersView):
     template_name = 'ta_competitions.html'
     ajax_url = reverse_lazy('widgetpages:competitions')
     view_id = 'competitions'
-    view_name = 'Конкурентный анализ'
+    view_name = 'Конкурентный анализ (тыс.руб.)'
 
     def data(self, flt=None, flt_active=None):
         data = {}

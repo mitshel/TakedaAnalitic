@@ -16,6 +16,9 @@
 
         .sticky-top {top:3.5rem; }
         #ta_competitions_table thead {background-color: rgb(108, 117, 125); color: #ffffff; }
+        th.dt-right, td.dt-right { text-align: right; padding-right:5px; !important;}
+        table.dataTable.table-sm > thead > tr > th.dt-right { padding-right:5px; !important; }
+        table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
 
     </style>
 	<div class="col-12">
@@ -27,7 +30,7 @@
                 <th>ИНН</th>
                 <th>ЛПУ</th>
                 <th>Торговая марка</th>
-                {% for y in data.year %}<th>{{ y }}</th>{% endfor %}
+                {% for y in data.year %}<th class="dt-right">{{ y }}</th>{% endfor %}
             </tr>
         </thead>
         </table>
@@ -58,8 +61,18 @@
 <script type="text/javascript">
 
 function fixval ( data ) {
-    if (data != '') val=( data / 1000 ).toFixed(2); else val='';
+    if (data != '') val=( data / 1000 ).toFixed(0); else val='';
     return val;
+}
+
+function floatWithSpaces(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return parts.join(".");
+}
+
+function intWithSpaces(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 }
 
 var ta_competitions_table = $('#ta_competitions_table').DataTable({
@@ -71,12 +84,13 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 //"scrollX": true,
                 "pageLength": 25,
                 "columnDefs": [
-                    { "name": "Org_CustINN", "targets": 0 , "visible": false, "searchable": false },
-                    { "name": "Org_CustNm", "targets": 1, "visible": true, "searchable": true },
+                    { "name": "Org_CustINN", "targets": 0 , "visible": false, "searchable": true },
+                    { "name": "Org_CustNm", "targets": 1, "visible": false, "searchable": true },
                     { "name": "name", "targets": 2, "visible": true, "searchable": false },
                     {% for y in data.year %}
                     { "name": "{{ y }}", "targets": {{ forloop.counter0|add:3 }}, "visible": true, "searchable": false,
-                      render: function ( data, type, row ) { return fixval( data ); } }{% if not forloop.last %},{% endif %}{% endfor %}
+                      "className": "dt-right",
+                      render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } }{% if not forloop.last %},{% endif %}{% endfor %}
                 ],
                 "processing": true,
                 "serverSide": true,
@@ -91,10 +105,13 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 },
                 order: [[1, 'asc']],
                 rowGroup: {
-                    startRender: null,
+                    startRender: function (rows, group) {
+                        return $('<tr style="background-color:yellow;"/>')
+                        .append( '<td colspan="'+rows.columns().header().length+'">'+group+'</td>' )
+                    },
                     endRender: function (rows, group) {
                         var container = $('<tr/>');
-                        container.append('<td colspan= "2"> ' + group + ' ИТОГО:</td>');
+                        container.append('<td>ИТОГО:</td>');
                         var i = 3;
                         while (i<rows.columns().header().length) {
                             if (rows.column(i).visible()) {
@@ -104,7 +121,8 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                                     .reduce(function (a, b) {
                                         return a + b * 1;
                                     }, 0) / 1000;
-                                container.append('<td>' + subtotalSum.toFixed(2) + '</td>');
+                                if ( subtotalSum != 0 ) out = intWithSpaces( subtotalSum.toFixed(0) ); else out = '';
+                                container.append('<td class="dt-right">' + out + '</td>');
                             };
                             i++;
                         }
