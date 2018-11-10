@@ -14,13 +14,13 @@ class FilterListJson(BaseDatatableView):
     org_id = 1
 
     def initial_innr(self):
-        innr_enabled = InNR.objects.distinct().values('name', iid=F('id')).order_by('name')
+        innr_enabled = InNR.objects.filter(hs__isnull=False).distinct().values('name', iid=F('id')).order_by('name')
         # if flt_active and not (0 in flt_active[fempl]['list']):
         #     innr_enabled = innr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
         return innr_enabled
 
     def initial_trnr(self):
-        trnr_enabled = TradeNR.objects.distinct().values('name', iid=F('id')).order_by('name')
+        trnr_enabled = TradeNR.objects.filter(hs__isnull=False).distinct().values('name', iid=F('id')).order_by('name')
         # if flt_active and not (0 in flt_active[fempl]['list']):
         #     trnr_enabled = trnr_enabled.filter(hs__cust_id__employee__in=flt_active[fempl]['list'])
         return trnr_enabled

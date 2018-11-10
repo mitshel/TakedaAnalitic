@@ -8,17 +8,33 @@ class Employee(models.Model):
     parent = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, db_index=True)
     name = models.CharField(max_length=64, null=True, blank=True)
 
+class InNR(models.Model):
+    id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
+    name = models.CharField(db_column='name', max_length=300, null=False, blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'db_inNR'
+
+class TradeNR(models.Model):
+    id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
+    name = models.CharField(db_column='name', max_length=256, null=False, blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'db_tradeNR'
+
 class Market(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE)
     name = models.CharField(max_length=32, null=True, blank=True)
 
 class MarketMnn(models.Model):
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
-    mnn_id = models.IntegerField(null=False, blank=False, db_index=True)
+    mnn_id = models.ForeignKey(InNR, null=False, blank=False, db_index=True, on_delete=models.CASCADE)
 
 class MarketTM(models.Model):
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
-    tm_id = models.IntegerField(null=False, blank=False, db_index=True)
+    tm_id = models.ForeignKey(TradeNR, null=False, blank=False, db_index=True, on_delete=models.CASCADE)
 
 class Lpu(models.Model):
     cust_id = models.IntegerField(db_column='Cust_ID', primary_key=True, db_index=True, null=False, blank=False)
@@ -40,22 +56,6 @@ class StatusT(models.Model):
     class Meta:
         managed = False
         db_table = 'db_statusT'
-
-class InNR(models.Model):
-    id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
-    name = models.CharField(db_column='name', max_length=64, null=False, blank=False)
-
-    class Meta:
-        managed = False
-        db_table = 'db_inNR'
-
-class TradeNR(models.Model):
-    id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
-    name = models.CharField(db_column='name', max_length=64, null=False, blank=False)
-
-    class Meta:
-        managed = False
-        db_table = 'db_tradeNR'
 
 class WinnerOrg(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)

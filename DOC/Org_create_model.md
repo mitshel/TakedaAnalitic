@@ -96,7 +96,7 @@ from CursorTest..test_CACHE_1f a
 where a.innNX is not null 
 go
 select max(len(name)) from db_inNR
-alter table db_inNR alter column name varchar(64)
+alter table db_inNR alter column name varchar(300)
 alter table db_inNR alter column id int not null
 go
 update db_InnR set name=CONCAT('#',CAST(id as VARCHAR(5))) where isnull(name,'')=''
@@ -118,7 +118,7 @@ from CursorTest..test_CACHE_1f a
 where a.TradeNX is not null 
 go
 select max(len(name)) from db_tradeNR
-alter table db_tradeNR alter column name varchar(64)
+alter table db_tradeNR alter column name varchar(256)
 alter table db_tradeNR alter column id int not null
 go
 update db_tradeNR set name=CONCAT('#',CAST(id as VARCHAR(5))) where isnull(name,'')=''
