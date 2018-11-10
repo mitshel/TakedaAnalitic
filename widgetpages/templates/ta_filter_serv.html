@@ -1,0 +1,23 @@
+  <div class="card">
+    <div class="card-header" style="background-color: #ddddff;" id="heading_serv">
+      <div class="row">
+          <div class="col-6">
+              <h5 class="mb-0">
+                <button style="padding-left:0px;" class="btn btn-link" type="button" data-toggle="collapse" data-target="#collapse_serv" aria-expanded="true" aria-controls="collapse_serv">
+                  <i class="fa fa-cog"></i> Настройки
+                </button>
+              </h5>
+          </div>
+          <div class="col-6 text-right" style="padding-top:0.3rem;">
+              <button type="button" id="serv-collapse" class="btn btn-sm btn-outline-primary inline btn-srv" title="Свернуть все" onclick="$('.collapse').collapse('hide');"><i class="fa fa-angle-up"></i></button>
+              <button type="button" id="serv-close" class="btn btn-sm btn-outline-primary inline btn-srv" title="Закрыть" onclick="closeNav()"><i class="fa fa-times"></i></button>
+          </div>
+      </div>
+    </div>
+
+    <div id="collapse_serv" class="collapse" aria-labelledby="heading_serv">
+      <div class="card-body">
+           Здесь будут настройки
+      </div>
+    </div>
+  </div>

@@ -1,10 +1,11 @@
+
   <div class="card">
     <div class="card-header" id="heading_{{ flt.id }}">
       <div class="row">
           <div class="col-6">
               <h5 class="mb-0">
-                <button class="btn btn-link{% if flt.expanded != 'true' %} collapsed{% endif %}" type="button" data-toggle="collapse" data-target="#collapse_{{ flt.id }}" aria-expanded="true" aria-controls="collapse_{{ flt.id }}">
-                  {{ flt.name }}
+                <button style="padding-left:0px;" class="btn btn-link{% if flt.expanded != 'true' %} collapsed{% endif %}" type="button" data-toggle="collapse" data-target="#collapse_{{ flt.id }}" aria-expanded="true" aria-controls="collapse_{{ flt.id }}">
+                    {% if flt.icon %}<i class="fa fa-{{ flt.icon }}"></i> {% endif %}{{ flt.name }}
                 </button>
               </h5>
           </div>

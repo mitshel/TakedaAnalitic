@@ -114,21 +114,21 @@ class FiltersView(View):
         filters = []
         for f in self.filters_list:
             if fempl == f :
-                filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'expanded': 'true', 'data': self.filter_empl(flt_active)})
+                filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'icon':'user', 'expanded': 'false', 'data': self.filter_empl(flt_active)})
             if fmrkt == f:
-                filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'data': self.filter_mrkt(flt_active)})
+                filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'icon':'shopping-cart','data': self.filter_mrkt(flt_active)})
             if fyear == f:
-                filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'data': self.filter_year(flt_active)})
+                filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'icon':'calendar', 'data': self.filter_year(flt_active)})
             if fstat == f:
-                filters.append({'id': fstat, 'type': 'btn', 'name': 'Статус торгов', 'data': self.filter_stat(flt_active)})
+                filters.append({'id': fstat, 'type': 'btn', 'name': 'Статус торгов', 'icon':'check-square', 'data': self.filter_stat(flt_active)})
             if finnr == f:
-                filters.append({'id': finnr, 'type': 'tbl', 'name': 'МНН', 'data': self.filter_innr(flt_active)})
+                filters.append({'id': finnr, 'type': 'tbl', 'name': 'МНН', 'icon':'globe', 'data': self.filter_innr(flt_active)})
             if ftrnr == f:
-                filters.append({'id': ftrnr, 'type': 'tbl', 'name': 'Торговое наименование', 'data': self.filter_trnr(flt_active)})
+                filters.append({'id': ftrnr, 'type': 'tbl', 'name': 'Торговое наименование', 'icon':'trademark', 'data': self.filter_trnr(flt_active)})
             if fwinr == f:
-                filters.append({'id': fwinr, 'type': 'tbl', 'name': 'Победитель торгов', 'data': self.filter_winr(flt_active)})
+                filters.append({'id': fwinr, 'type': 'tbl', 'name': 'Победитель торгов', 'icon':'handshake', 'data': self.filter_winr(flt_active)})
             if fcust == f:
-                filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'data': self.filter_cust(flt_active)})
+                filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'icon':'ambulance', 'data': self.filter_cust(flt_active)})
 
         return filters
 

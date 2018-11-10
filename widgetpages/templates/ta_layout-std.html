@@ -1,0 +1,28 @@
+{% extends "ta_main.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+<style>
+
+</style>
+    <div class="row">
+         <div class="col-8" style="padding:0;">
+         <div class="container" style="padding-left:0.5rem; padding-right:0;">
+              {% block page %}{% endblock %}
+         </div>
+         </div>
+         <div class="col-4">
+             {% block filter %}
+                 {% include 'ta_filter_styles.html' %}
+                 {% for flt in filters %}
+                 {% include 'ta_filter_item.html' %}
+                 {% endfor %}
+                 {% include 'ta_filter_ajax.html' %}
+             {% endblock %}
+         </div>
+    </div>
+
+{% block afterpage %}{% endblock %}
+
+{% endblock %}

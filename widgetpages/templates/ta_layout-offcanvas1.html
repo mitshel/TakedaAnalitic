@@ -1,0 +1,36 @@
+{% extends "ta_main.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+<style>
+
+</style>
+     <div id="wrapper">
+         <div id="sidebar-wrapper">
+             {% block filter %}
+                 {% include 'ta_filter_styles.html' %}
+                 {% for flt in filters %}
+                 {% include 'ta_filter_item.html' %}
+                 {% endfor %}
+                 {% include 'ta_filter_ajax.html' %}
+             {% endblock %}
+         </div>
+         <div id="page-content-wrapper" style="padding:0;">
+             <a href="#menu-toggle" class="btn btn-secondary" id="menu-toggle">Toggle Menu</a>
+             <div class="container" style="padding-left:0.5rem; padding-right:0;">
+                  {% block page %}{% endblock %}
+             </div>
+         </div>
+     </div>
+
+{% block afterpage %}{% endblock %}
+
+    <script>
+    $("#menu-toggle").click(function(e) {
+        e.preventDefault();
+        $("#wrapper").toggleClass("toggled");
+    });
+    </script>
+
+{% endblock %}
