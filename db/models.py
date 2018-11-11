@@ -1,12 +1,24 @@
+import datetime
 from django.db import models
+from django.contrib.auth.models import User
 
 class Org(models.Model):
-    name = models.CharField(max_length=32, null=True, blank=True)
+    name = models.CharField(max_length=32, null=True, blank=True, verbose_name='Организация')
+    sync_time = models.CharField(verbose_name='Время синхронизации', max_length=5, null=True, blank=True, default='')
+
+    class Meta:
+        verbose_name = 'Организация'
+        verbose_name_plural = 'Организации'
 
 class Employee(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE)
     parent = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, db_index=True)
     name = models.CharField(max_length=64, null=True, blank=True)
+    user = models.ManyToManyField(User)
+
+    class Meta:
+        verbose_name = 'Сотрудник'
+        verbose_name_plural = 'Сотрудники'
 
 class InNR(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
