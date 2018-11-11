@@ -63,7 +63,7 @@
 	z-index: 1000;
 	margin: 0;
 	padding: 0;
-	width: 0.5em;
+	width: 0.7em;
 	height: 2em;
 	border: none;
 	text-indent: 2em;
@@ -126,12 +126,14 @@ function openNav() {
     } else {
         document.getElementById("page-content").style.marginLeft = "350px";
     }
+    $('#open-button').css("display","none");
 }
 
 /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
 function closeNav() {
     document.getElementById("mySidenav").style.width = "0";
     document.getElementById("page-content").style.marginLeft = "0";
+    $('#open-button').css("display","block");
 }
 
 $(document).ready(function() {
