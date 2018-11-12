@@ -85,7 +85,7 @@ WSGI_APPLICATION = 'TakedaAnalitic.wsgi.application'
 #    }
 #}
 
-if socket.gethostname() == 'dsgate':
+if socket.gethostname() == 'dsgate' or socket.gethostname() == 'DESKTOP-1NT18VI':
     DATABASES = {
         'default': {
             'ENGINE': 'sql_server.pyodbc',
