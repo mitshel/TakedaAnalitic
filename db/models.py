@@ -10,15 +10,21 @@ class Org(models.Model):
         verbose_name = 'Организация'
         verbose_name_plural = 'Организации'
 
+    def __str__(self):
+         return  self.name
+
 class Employee(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE)
-    parent = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, db_index=True)
-    name = models.CharField(max_length=64, null=True, blank=True)
-    user = models.ManyToManyField(User)
+    parent = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, db_index=True, verbose_name='Руководитель')
+    name = models.CharField(max_length=64, null=True, blank=True,verbose_name='Краткое имя')
+    users = models.ManyToManyField(User, verbose_name='Логин входа')
 
     class Meta:
         verbose_name = 'Сотрудник'
         verbose_name_plural = 'Сотрудники'
+
+    def __str__(self):
+         return  self.name
 
 class InNR(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
@@ -28,6 +34,9 @@ class InNR(models.Model):
         managed = False
         db_table = 'db_inNR'
 
+    def __str__(self):
+         return  self.name
+
 class TradeNR(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
     name = models.CharField(db_column='name', max_length=256, null=False, blank=False)
@@ -36,9 +45,15 @@ class TradeNR(models.Model):
         managed = False
         db_table = 'db_tradeNR'
 
+    def __str__(self):
+         return  self.name
+
 class Market(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE)
     name = models.CharField(max_length=32, null=True, blank=True)
+
+    def __str__(self):
+         return  self.name
 
 class MarketMnn(models.Model):
     market = models.ForeignKey(Market, on_delete=models.CASCADE)
