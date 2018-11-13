@@ -155,6 +155,14 @@ ALTER TABLE [dbo].[db_WinnerOrg] ADD PRIMARY KEY CLUSTERED
 GO
 
 
+-- Перенос ранее вручную созданной таблицы db_marketmnn в db_market_innrs, для возможнсти отображения виджета многие ко многим в админке
+insert into db_market_innrs(market_id, innr_id) select market_id, mnn_id_id from db_marketmnn
+go
+-- Перенос ранее вручную созданной таблицы db_markettm в db_market_tmnrs, для возможнсти отображения виджета многие ко многим в админке
+insert into db_market_tmnrs(market_id, tradenr_id) select market_id, tm_id_id from db_markettm
+go
+
+
 -- Создание полной таблици test_CACHE_1f
 --
 select 

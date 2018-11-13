@@ -30,6 +30,8 @@ class Employee(models.Model):
 class InNR(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
     name = models.CharField(db_column='name', max_length=300, null=False, blank=False)
+    #markets_innr = models.ReverseManyToManyField(Market, through=Market.innr.through)
+    #markets_tmnr = models.ReverseManyToManyField(Market, through=Market.tmnr.through)
 
     class Meta:
         managed = False
@@ -50,19 +52,25 @@ class TradeNR(models.Model):
          return  self.name
 
 class Market(models.Model):
-    org = models.ForeignKey(Org, on_delete=models.CASCADE)
-    name = models.CharField(max_length=32, null=True, blank=True)
+    org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
+    name = models.CharField(max_length=32, null=True, blank=True, verbose_name='Рынок')
+    innrs = models.ManyToManyField(InNR, blank=True, verbose_name='МНН')
+    tmnrs = models.ManyToManyField(TradeNR, blank=True, verbose_name='Торговые наименования')
+
+    class Meta:
+        verbose_name = 'Рынок'
+        verbose_name_plural = 'Рынки'
 
     def __str__(self):
          return  self.name
 
-class MarketMnn(models.Model):
-    market = models.ForeignKey(Market, on_delete=models.CASCADE)
-    mnn_id = models.ForeignKey(InNR, null=False, blank=False, db_index=True, on_delete=models.CASCADE)
-
-class MarketTM(models.Model):
-    market = models.ForeignKey(Market, on_delete=models.CASCADE)
-    tm_id = models.ForeignKey(TradeNR, null=False, blank=False, db_index=True, on_delete=models.CASCADE)
+# class MarketMnn(models.Model):
+#     market = models.ForeignKey(Market, on_delete=models.CASCADE)
+#     mnn_id = models.ForeignKey(InNR, null=False, blank=False, db_index=True, on_delete=models.CASCADE)
+#
+# class MarketTM(models.Model):
+#     market = models.ForeignKey(Market, on_delete=models.CASCADE)
+#     tm_id = models.ForeignKey(TradeNR, null=False, blank=False, db_index=True, on_delete=models.CASCADE)
 
 class Lpu(models.Model):
     cust_id = models.IntegerField(db_column='Cust_ID', primary_key=True, db_index=True, null=False, blank=False)
