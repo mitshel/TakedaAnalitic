@@ -97,9 +97,6 @@ class WinnerOrg(models.Model):
         managed = False
         db_table = 'db_WinnerOrg'
 
-class Target(models.Model):
-    pass
-
 # class Hs(models.Model):
 #     Tender_ID = models.IntegerField(db_column='Tender_ID', null=False)
 #     ProcDt = models.DateTimeField(db_column='ProcDt', null=False)
