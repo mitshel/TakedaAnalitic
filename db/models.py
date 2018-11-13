@@ -18,6 +18,7 @@ class Employee(models.Model):
     parent = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, blank=True, db_index=True, verbose_name='Руководитель')
     name = models.CharField(max_length=64, null=True, blank=True,verbose_name='Краткое имя')
     users = models.ManyToManyField(User, verbose_name='Логин входа', blank=True)
+    istarget = models.BooleanField(default=True, db_index=True, verbose_name='Таргет')
 
     class Meta:
         verbose_name = 'Сотрудник'

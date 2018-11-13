@@ -25,8 +25,8 @@ class Org_admin(admin.ModelAdmin):
 
 class Employee_admin(admin.ModelAdmin):
     list_filter = ['org__name']
-    list_display = ('name', 'parent', 'org', 'logons')
-    fields = ('name','parent','org')
+    list_display = ('name', 'parent', 'org', 'istarget', 'logons')
+    fields = ('name','parent','org', 'istarget')
     readonly_fields = ('logons', )
     exclude = ('users',)
     inlines = (UserInline, )

@@ -35,14 +35,15 @@ select pvt.cust_id as id, l.Org_CustINN, l.Org_CustNm, pvt.tradeNx, t.name
 q_employees = """
 with tree as 
 (
-select a1.id, a1.name, a1.parent_id, a1.org_id 
+select a1.id, a1.name, a1.parent_id, a1.org_id, a1.istarget 
 from db_employee a1
 left join db_employee_users a2 on a1.id=a2.employee_id
 left join auth_user a3 on a2.user_id=a3.id
 where a3.username = '{{username}}'
 union all
-select a.id, a.name, a.parent_id, a.org_id from db_employee a 
+select a.id, a.name, a.parent_id, a.org_id, a.istarget from db_employee a 
 inner join tree t on t.id = a.parent_id and a.org_id=t.org_id
 )
-select {{ fields }} from tree 
+select distinct {{ fields }} from tree 
+where istarget=1 
 """
