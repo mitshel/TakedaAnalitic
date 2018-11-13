@@ -42,7 +42,7 @@ left join auth_user a3 on a2.user_id=a3.id
 where a3.username = '{{username}}'
 union all
 select a.id, a.name, a.parent_id, a.org_id from db_employee a 
-inner join tree t on t.id = a.parent_id 
+inner join tree t on t.id = a.parent_id and a.org_id=t.org_id
 )
 select {{ fields }} from tree 
 """
