@@ -51,7 +51,7 @@
         </ul>
 
         <ul class="navbar-nav mr-left">
-          {% if mb_auth %}
+          {% if bi_auth %}
               <li class="nav-item active">
             {% if user.is_authenticated %}
                 <a class="nav-link" href="{% url "logout" %}"><i class="fa fa-torsos"></i>Выход ({{ user.username }})</a>

@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'db',
-    'widgetpages'
+    'bi_auth',
+    'widgetpages',
 ]
 
 MIDDLEWARE = [
@@ -67,6 +68,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'bi_auth.views.bi_processor',
             ],
         },
     },
@@ -166,8 +168,9 @@ STATICFILES_DIRS = [
     'assets',
 ]
 
-
-
 MEDIA_ROOT = BASE_DIR + '/media/'
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/media/'
+
+
+BI_AUTH = True

@@ -18,12 +18,13 @@ from django.urls import path
 from django.conf.urls import url, include
 from django.conf import settings
 
+from bi_auth.views import loginView, logoutView, bi_login
 from widgetpages.views import Home
 
 urlpatterns = [
-    path('', Home, name='home'),
-    # path('login/', loginView, name='login'),
-    # path('logout/', logoutView, name='logout'),
+    path('', bi_login(Home), name='home'),
+    path('login/', loginView, name='login'),
+    path('logout/', logoutView, name='logout'),
     path('page/', include(('widgetpages.urls', 'widgetpages'), namespace='widgetpages')),
     # path('proto/', include(('protocols.urls', 'protocols'), namespace='protocols')),
     path('admin/', admin.site.urls, name='admin'),

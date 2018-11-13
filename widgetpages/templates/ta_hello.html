@@ -1,0 +1,19 @@
+{% extends "ta_main.html" %}
+{% load i18n %}
+
+{% block main-content %}
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron" style="padding: 2rem;">
+        <div class="container">
+          <h2 class="display-6">Платформа Бизнес-Аналитика.</h2>
+          <br>
+          <p><b>Приветсвуем Вас, уважаемый {% if user.last_name %}{{ user.last_name }} {{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</b></p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores cum eos nam officiis voluptate. Commodi eaque ex explicabo in labore laboriosam neque nostrum nulla, obcaecati praesentium repudiandae sint vero vitae?</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos dolor dolorem facilis id mollitia natus nesciunt nostrum quam quod sequi? Aliquid consequuntur exercitationem fugit nisi obcaecati optio perferendis recusandae veritatis?</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet consequuntur eos eveniet facilis, illo incidunt iusto laborum laudantium magnam magni minus natus nobis odit omnis placeat qui repudiandae saepe!</p>
+          <hr class="my-4">
+          <a class="btn btn-primary btn-lg" href="{% url 'widgetpages:salesshedule' %}" role="button">Начать работу с графиком продаж &raquo;</a> &nbsp;&nbsp;
+          <a class="btn btn-primary btn-lg" href="{% url 'widgetpages:competitions' %}" role="button">Начать работу с конкурентным анализом &raquo;</a>
+        </div>
+      </div>
+{% endblock %}  {# content #}

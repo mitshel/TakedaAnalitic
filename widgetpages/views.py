@@ -44,7 +44,7 @@ def extra_in_filter(model, field, flt):
 
 def Home(request):
     args={}
-    return render(request,'ta_main.html', args)
+    return render(request,'ta_hello.html', args)
 
 class FiltersView(View):
     filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
