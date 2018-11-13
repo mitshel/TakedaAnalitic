@@ -26,7 +26,7 @@ class Lpu(models.Model):
         db_table = 'db_lpu'
 
     def __str__(self):
-         return  self.inn+' '+self.name[0:40]
+         return  self.inn+' '+self.name
 
 class Employee(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
