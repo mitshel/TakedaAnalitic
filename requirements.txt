@@ -5,3 +5,4 @@ xlwt
 xlutils
 django-pyodbc-azure
 django-datatables-view
+django-mptt

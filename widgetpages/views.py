@@ -13,7 +13,7 @@ from db.models import Hs_create
 from django.views.generic import View
 from django.urls import reverse, reverse_lazy
 
-from widgetpages import queries
+from widgetpages.queries import q_employees
 from widgetpages.rawmodel import RawModel
 
 # Filters identification
@@ -59,11 +59,16 @@ class FiltersView(View):
         return
 
     def filter_empl(self, flt_active=None):
+        employee_raw = RawModel(q_employees).filter(username=self.request.user.username)
         if not flt_active:
-            employee_enabled = Employee.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
+            #employee_enabled = Employee.objects.filter(users=self.request.user).values('name', iid=F('id')).order_by('name')
+            employee_enabled = employee_raw.filter(fields='id as iid, name').order_by('name')
         else:
-            employee_enabled = Employee.objects.filter(org_id=self.org_id).values(iid=F('id'))
-        return [{'name':'Без учета Таргет','iid':0}]+list(employee_enabled)
+            #employee_enabled = Employee.objects.filter(users=self.request.user).values(iid=F('id'))
+            employee_enabled = employee_raw.filter(fields='id as iid')
+        employee_list=list(employee_enabled.open().fetchall())
+        employee_enabled.close()
+        return [{'name':'Без учета Таргет','iid':0}]+employee_list
 
     def filter_mrkt(self, flt_active=None):
         if not flt_active:
