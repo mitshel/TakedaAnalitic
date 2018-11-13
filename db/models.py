@@ -26,7 +26,7 @@ class Lpu(models.Model):
         db_table = 'db_lpu'
 
     def __str__(self):
-         return  self.name
+         return  self.inn+' '+self.name[0:40]
 
 class Employee(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
@@ -34,7 +34,7 @@ class Employee(models.Model):
     name = models.CharField(max_length=64, null=True, blank=True,verbose_name='Краткое имя')
     users = models.ManyToManyField(User, verbose_name='Логин входа', blank=True)
     istarget = models.BooleanField(default=True, db_index=True, verbose_name='Таргет')
-    lpu = models.ManyToManyField('Lpu', through=Lpu.employee.through, related_name='lpus', verbose_name='Грузополучатели')
+    lpu = models.ManyToManyField('Lpu', through=Lpu.employee.through, related_name='lpus', blank=True, verbose_name='Грузополучатели')
 
     class Meta:
         verbose_name = 'Сотрудник'
