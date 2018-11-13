@@ -1,17 +1,5 @@
 from django.contrib import admin
-from db.models import Org, Employee, Market, InNR, TradeNR
-
-class UserInline(admin.StackedInline):
-    model = Employee.users.through
-    extra = 1
-    verbose_name = "Пользователь"
-    verbose_name_plural = "Пользователи"
-
-class EmployeeInline(admin.TabularInline):
-    list_display = ('name', 'parent', 'org')
-    model = Employee
-    exclude = ['users',]
-    extra = 1
+from db.models import Org, Employee, Market
 
 class Org_admin(admin.ModelAdmin):
     list_display = ('name','sync_time')
@@ -19,17 +7,10 @@ class Org_admin(admin.ModelAdmin):
 class Employee_admin(admin.ModelAdmin):
     list_filter = ['org__name']
     list_display = ('name', 'parent', 'org', 'istarget', 'logons')
-    fields = ('name','parent','org', 'istarget', 'users')
+    fields = ('name','parent','org', 'istarget', 'lpu', 'users')
     readonly_fields = ('logons', )
-    filter_horizontal = ('users',)
+    filter_horizontal = ('lpu','users',)
     search_fields = ['name',]
-
-    #def queryset(self, request):
-    #    qs = super(Employee_admin, self).queryset(request)
-    #    if request.user.is_superuser:
-    #        return qs
-    #    enabled_org = Org.objects.filter(employee__users=request.user)
-    #    return qs.filter(org__in=enabled_org)
 
     def logons(self, obj):
         return ','.join([l.username for l in obj.users.all()])

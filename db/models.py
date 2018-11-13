@@ -13,12 +13,28 @@ class Org(models.Model):
     def __str__(self):
          return  self.name
 
+class Lpu(models.Model):
+    cust_id = models.IntegerField(db_column='Cust_ID', primary_key=True, db_index=True, null=False, blank=False)
+    inn = models.CharField(db_column='Org_CustINN', max_length=12, db_index=True, null=False, blank=False, verbose_name='ИНН')
+    name = models.CharField(db_column='Org_CustNm', max_length=2000, null=False, blank=False, verbose_name='Грузополучатель')
+    employee = models.ManyToManyField('Employee', related_name='employees', verbose_name='Сотрудник')
+
+    class Meta:
+        verbose_name = 'Грузополучатель'
+        verbose_name_plural = 'Грузополучатели'
+        managed = False
+        db_table = 'db_lpu'
+
+    def __str__(self):
+         return  self.name
+
 class Employee(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
     parent = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, blank=True, db_index=True, verbose_name='Руководитель')
     name = models.CharField(max_length=64, null=True, blank=True,verbose_name='Краткое имя')
     users = models.ManyToManyField(User, verbose_name='Логин входа', blank=True)
     istarget = models.BooleanField(default=True, db_index=True, verbose_name='Таргет')
+    lpu = models.ManyToManyField('Lpu', through=Lpu.employee.through, related_name='lpus', verbose_name='Грузополучатели')
 
     class Meta:
         verbose_name = 'Сотрудник'
@@ -60,27 +76,6 @@ class Market(models.Model):
     class Meta:
         verbose_name = 'Рынок'
         verbose_name_plural = 'Рынки'
-
-    def __str__(self):
-         return  self.name
-
-# class MarketMnn(models.Model):
-#     market = models.ForeignKey(Market, on_delete=models.CASCADE)
-#     mnn_id = models.ForeignKey(InNR, null=False, blank=False, db_index=True, on_delete=models.CASCADE)
-#
-# class MarketTM(models.Model):
-#     market = models.ForeignKey(Market, on_delete=models.CASCADE)
-#     tm_id = models.ForeignKey(TradeNR, null=False, blank=False, db_index=True, on_delete=models.CASCADE)
-
-class Lpu(models.Model):
-    cust_id = models.IntegerField(db_column='Cust_ID', primary_key=True, db_index=True, null=False, blank=False)
-    inn = models.CharField(db_column='Org_CustINN', max_length=12, db_index=True, null=False, blank=False)
-    name = models.CharField(db_column='Org_CustNm', max_length=2000, null=False, blank=False)
-    employee = models.ManyToManyField(Employee)
-
-    class Meta:
-        managed = False
-        db_table = 'db_lpu'
 
     def __str__(self):
          return  self.name
