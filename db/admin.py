@@ -1,8 +1,20 @@
 from django.contrib import admin
-from db.models import Org, Employee, Market
+from db.models import Org, Employee, Market, Org_log
+
+class Org_log_Inline(admin.TabularInline):
+    model = Org_log
+    readonly_fields = ('org', 'time', 'description')
+    extra = 0
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 class Org_admin(admin.ModelAdmin):
     list_display = ('name','sync_time')
+    inlines = (Org_log_Inline, )
 
 class Employee_admin(admin.ModelAdmin):
     list_filter = ['org__name']

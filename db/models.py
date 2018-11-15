@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 class Org(models.Model):
     name = models.CharField(max_length=32, null=True, blank=True, verbose_name='Организация')
     sync_time = models.CharField(verbose_name='Время синхронизации', max_length=5, null=True, blank=True, default='')
-    sync_flag = models.BooleanField(default=False, verbose_name='Запустить формирования БД', null=False, blank=True)
+    sync_flag = models.BooleanField(default=False, verbose_name='Запустить формирование БД', null=False, blank=True)
 
     class Meta:
         verbose_name = 'Организация'
@@ -13,6 +13,18 @@ class Org(models.Model):
 
     def __str__(self):
          return  self.name
+
+class Org_log(models.Model):
+    org = models.ForeignKey(Org, on_delete=models.CASCADE)
+    time = models.DateTimeField(null=False, blank=False, auto_now_add=True)
+    description = models.CharField(max_length=64, null=False, blank=False, verbose_name='Сообщение')
+
+    class Meta:
+        verbose_name = 'Событие БД'
+        verbose_name_plural = 'События БД'
+
+    def __str__(self):
+         return  self.description
 
 class Lpu(models.Model):
     cust_id = models.IntegerField(db_column='Cust_ID', primary_key=True, db_index=True, null=False, blank=False)
