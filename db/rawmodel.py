@@ -1,8 +1,8 @@
 from django.template import Context, Template
 from django.db import connection
+from django.template import loader
 
 class RawModel(object):
-    _query = ''
     _columns = []
     _order_data = []
     _filter_data = {}
@@ -12,7 +12,10 @@ class RawModel(object):
     _count = None
 
     def __init__(self,query):
-        self._query = query
+        try:
+            self._query = loader.get_template(query)
+        except:
+            self._query = Template(query)
         self._columns = []
         self._order_data = []
         self._filter_data = {}
@@ -66,10 +69,8 @@ class RawModel(object):
         return self
 
     def render(self, forcount = False):
-        t = Template(self._query)
-
         # Filtering
-        sql = t.render(Context(self._filter_data))
+        sql = self._query.render(Context(self._filter_data))
 
         # Ordering
         if (not forcount):

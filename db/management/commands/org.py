@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from db.models import Org
+from db.rawmodel import RawModel
 
 
 class Command(BaseCommand):
