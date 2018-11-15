@@ -1,6 +1,5 @@
-from django.template import Context, Template
+from django.template import Context, Template, loader
 from django.db import connection
-from django.template import loader
 
 class RawModel(object):
     _columns = []
@@ -10,12 +9,15 @@ class RawModel(object):
     _limit = None
     _cursor = None
     _count = None
+    _template_type = 0
 
     def __init__(self,query):
         try:
             self._query = loader.get_template(query)
         except:
             self._query = Template(query)
+            self._template_type = 1
+
         self._columns = []
         self._order_data = []
         self._filter_data = {}
@@ -70,7 +72,10 @@ class RawModel(object):
 
     def render(self, forcount = False):
         # Filtering
-        sql = self._query.render(Context(self._filter_data))
+        if self._template_type:
+            sql = self._query.render(Context(self._filter_data))
+        else:
+            sql = self._query.render(self._filter_data)
 
         # Ordering
         if (not forcount):
@@ -86,7 +91,7 @@ class RawModel(object):
     def open(self):
         self._cursor = connection.cursor()
         self._cursor.execute(self.render())
-        self._columns = [col[0] for col in self._cursor.description]
+        self._columns = [col[0] for col in self._cursor.description] if self._cursor.description else None
         return self
 
     def close(self):

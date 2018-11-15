@@ -3,6 +3,7 @@ import json
 from widgetpages.views import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust
 from widgetpages.views import extra_in_filter
 from db.rawmodel import RawModel
+from db.models import Org
 from widgetpages import queries
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 
@@ -34,6 +35,8 @@ class CompetitionsAjaxTable(AjaxRawDatatableView):
         print('_columns ==>', self.columns_data)
 
         if years_active:
+            org = Org.objects.filter(employee__users=self.request.user)
+            print('3==>', org[0].id, org[0].name)
             rawmodel = RawModel(queries.q_competitions)
             rawmodel = rawmodel.filter(years=years_active,
                            markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
@@ -42,7 +45,8 @@ class CompetitionsAjaxTable(AjaxRawDatatableView):
                            lpus_in=extra_in_filter('l','Cust_ID',flt_active[fcust] if flt_active else ''),
                            winrs_in=extra_in_filter('w', 'id', flt_active[fwinr] if flt_active else ''),
                            innrs_in = extra_in_filter('s', 'InnNx', flt_active[finnr] if flt_active else ''),
-                           trnrs_in = extra_in_filter('s', 'TradeNx', flt_active[ftrnr] if flt_active else '')
+                           trnrs_in = extra_in_filter('s', 'TradeNx', flt_active[ftrnr] if flt_active else ''),
+                           org_id = org[0].id if org else 0,
                            ).order_by('l.Org_CustNm', 'pvt.tradeNx')
         else:
             rawmodel = RawModel('select null as Org_CustINN, null as Org_CustNm, null as name')

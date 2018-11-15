@@ -22,7 +22,7 @@ class FilterListJson(AjaxRawDatatableView):
         return trnr_enabled
 
     def initial_winr(self):
-        winr_enabled = WinnerOrg.objects.distinct().exclude(id=0).values('name', iid=F('id'), ext=F('inn')).order_by('name')
+        winr_enabled = WinnerOrg.objects.distinct().exclude(id=0).filter(hs__isnull=False).values('name', iid=F('id'), ext=F('inn')).order_by('name')
         return winr_enabled
 
     def initial_cust(self):

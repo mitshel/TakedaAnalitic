@@ -3,7 +3,7 @@ from django.db.models import Count, Sum, F
 from django.db.models.functions import Extract
 from django.http import JsonResponse
 
-from db.models import Market, StatusT
+from db.models import Market, StatusT, Org
 from db.models import Hs_create
 from django.views.generic import View
 from django.urls import reverse_lazy
@@ -49,11 +49,14 @@ class FiltersView(View):
     view_name = 'Пустая страница'
     org_id = 1
 
-    def init_dynamic_models(self):
-        self.Hs = Hs_create('Test_CACHE_1')
-        return
+    def init_dynamic_org(self):
+        org = Org.objects.filter(employee__users=self.request.user)
+        org_id = org[0].id if org else 0
+        print('1==>', org[0].id, org[0].name)
+        self.Hs = Hs_create('org_CACHE_{}'.format(org_id))
+        return org_id
 
-    def filter_empl(self, flt_active=None):
+    def filter_empl(self, flt_active=None, org_id=0):
         employee_raw = RawModel(q_employees).filter(username=self.request.user.username)
         if not flt_active:
             #employee_enabled = Employee.objects.filter(users=self.request.user).values('name', iid=F('id')).order_by('name')
@@ -65,9 +68,9 @@ class FiltersView(View):
         employee_enabled.close()
         return [{'name':'Без учета Таргет','iid':0}]+employee_list
 
-    def filter_mrkt(self, flt_active=None):
+    def filter_mrkt(self, flt_active=None, org_id=0):
         if not flt_active:
-            market_enabled = Market.objects.filter(org_id=self.org_id).values('name', iid=F('id')).order_by('name')
+            market_enabled = Market.objects.filter(org_id=org_id).values('name', iid=F('id')).order_by('name')
         else:
 
             hs_enabled = self.Hs.objects.exclude(cust_id=0)
@@ -76,7 +79,7 @@ class FiltersView(View):
             market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).distinct().values(iid=F('market_id'))
         return list(market_enabled)
 
-    def filter_year(self, flt_active=None):
+    def filter_year(self, flt_active=None, org_id=0):
         if not flt_active:
             year_enabled = self.Hs.objects.exclude(PlanTYear__isnull=True).\
                 extra(select={'iid': 'PlanTYear', 'name': 'PlanTYear'}). \
@@ -88,7 +91,7 @@ class FiltersView(View):
             year_enabled = hs_enabled.values('PlanTYear').distinct().values(iid=F('PlanTYear'))
         return list(year_enabled)
 
-    def filter_stat(self, flt_active=None):
+    def filter_stat(self, flt_active=None, org_id=0):
         if not flt_active:
             status_enabled = StatusT.objects.values('name',iid=F('id')).order_by('name')
         else:
@@ -98,37 +101,37 @@ class FiltersView(View):
             status_enabled = hs_enabled.annotate(iid=F('StatusT_ID')).distinct().values('iid')
         return list(status_enabled)
 
-    def filter_innr(self, flt_active=None):
+    def filter_innr(self, flt_active=None, org_id=0):
         return []
 
-    def filter_trnr(self, flt_active=None):
+    def filter_trnr(self, flt_active=None, org_id=0):
         return []
 
-    def filter_winr(self, flt_active=None):
+    def filter_winr(self, flt_active=None, org_id=0):
         return []
 
-    def filter_cust(self, flt_active=None):
+    def filter_cust(self, flt_active=None, org_id=0):
         return []
 
-    def filters(self, flt_active=None):
+    def filters(self, flt_active=None, org_id=0):
         filters = []
         for f in self.filters_list:
             if fempl == f :
-                filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'icon':'user', 'expanded': 'false', 'data': self.filter_empl(flt_active)})
+                filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'icon':'user', 'expanded': 'false', 'data': self.filter_empl(flt_active, org_id)})
             if fmrkt == f:
-                filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'icon':'shopping-cart','data': self.filter_mrkt(flt_active)})
+                filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'icon':'shopping-cart','data': self.filter_mrkt(flt_active, org_id)})
             if fyear == f:
-                filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'icon':'calendar', 'data': self.filter_year(flt_active)})
+                filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'icon':'calendar', 'data': self.filter_year(flt_active, org_id)})
             if fstat == f:
-                filters.append({'id': fstat, 'type': 'btn', 'name': 'Статус торгов', 'icon':'check-square', 'data': self.filter_stat(flt_active)})
+                filters.append({'id': fstat, 'type': 'btn', 'name': 'Статус торгов', 'icon':'check-square', 'data': self.filter_stat(flt_active, org_id)})
             if finnr == f:
-                filters.append({'id': finnr, 'type': 'tbl', 'name': 'МНН', 'icon':'globe', 'data': self.filter_innr(flt_active)})
+                filters.append({'id': finnr, 'type': 'tbl', 'name': 'МНН', 'icon':'globe', 'data': self.filter_innr(flt_active, org_id)})
             if ftrnr == f:
-                filters.append({'id': ftrnr, 'type': 'tbl', 'name': 'Торговое наименование', 'icon':'trademark', 'data': self.filter_trnr(flt_active)})
+                filters.append({'id': ftrnr, 'type': 'tbl', 'name': 'Торговое наименование', 'icon':'trademark', 'data': self.filter_trnr(flt_active, org_id)})
             if fwinr == f:
-                filters.append({'id': fwinr, 'type': 'tbl', 'name': 'Победитель торгов', 'icon':'handshake', 'data': self.filter_winr(flt_active)})
+                filters.append({'id': fwinr, 'type': 'tbl', 'name': 'Победитель торгов', 'icon':'handshake', 'data': self.filter_winr(flt_active, org_id)})
             if fcust == f:
-                filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'icon':'ambulance', 'data': self.filter_cust(flt_active)})
+                filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'icon':'ambulance', 'data': self.filter_cust(flt_active, org_id)})
 
         return filters
 
@@ -141,20 +144,20 @@ class FiltersView(View):
             filters[f]=self.get_filter(flt,f)
         return filters
 
-    def data(self, flt=None, flt_active=None):
+    def data(self, flt=None, flt_active=None, org_id=0):
         return {}
 
     def get(self, request, *args, **kwargs):
-        self.init_dynamic_models()
-        filters = self.filters()
-        data = self.data(filters)
+        org_id = self.init_dynamic_org()
+        filters = self.filters(None, org_id)
+        data = self.data(filters, None, org_id)
         return render(request, self.template_name, {'filters': filters,
                                                     'data': data,
                                                     'view': {'id': self.view_id, 'name': self.view_name},
                                                     'ajax_url': self.ajax_url})
 
     def post(self, request, *args, **kwargs):
-        self.init_dynamic_models()
+        org_id = self.init_dynamic_org()
         if request.is_ajax():
             if request.POST:
                 flt_active = {}
@@ -163,8 +166,8 @@ class FiltersView(View):
                     flt_select = request.POST.get('{}_select'.format(f), '')
                     flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select)}
 
-                filters = self.filters(flt_active)
-                data = self.data(filters, flt_active)
+                filters = self.filters(flt_active, org_id)
+                data = self.data(filters, flt_active, org_id)
                 response = {'filters': self.get_filters_dict(filters),
                             'data': data,
                             'view': {'id' : self.view_id, 'name': self.view_name},
@@ -180,7 +183,7 @@ class SalessheduleView(FiltersView):
     view_id = 'salesshedule'
     view_name = 'График продаж'
 
-    def data(self, flt=None, flt_active=None):
+    def data(self, flt=None, flt_active=None, org_id=0):
         pivot_data = {}
         if flt:
             hs_active = self.Hs.objects.exclude(cust_id=0).exclude(PlanTYear__isnull=True)
@@ -209,7 +212,7 @@ class CompetitionsView(FiltersView):
     view_id = 'competitions'
     view_name = 'Конкурентный анализ (тыс.руб.)'
 
-    def data(self, flt=None, flt_active=None):
+    def data(self, flt=None, flt_active=None, org_id=0):
         data = {}
         if not flt_active:
             years_active = list(self.Hs.objects.exclude(PlanTYear__isnull=True).\

@@ -1,3 +1,4 @@
+import time
 from django.core.management.base import BaseCommand
 from db.models import Org
 from db.rawmodel import RawModel
@@ -31,3 +32,9 @@ class Command(BaseCommand):
         if org_id:
             org=Org.objects.get(id=org_id)
             self.stdout.write('Create database for "{}".'.format(org.name))
+            raw=RawModel('create_org.sql').filter(org_id=org.id)
+            #print("raw query ==>",raw.query)
+            startTime = time.time()
+            raw.open().close()
+            totalTime = int(time.time() - startTime)
+            print("Elapsed time: {:0=2}:{:0=2}".format(totalTime//60, totalTime%60))

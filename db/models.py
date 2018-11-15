@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 class Org(models.Model):
     name = models.CharField(max_length=32, null=True, blank=True, verbose_name='Организация')
     sync_time = models.CharField(verbose_name='Время синхронизации', max_length=5, null=True, blank=True, default='')
+    sync_flag = models.BooleanField(default=False, verbose_name='Запустить формирования БД', null=False, blank=True)
 
     class Meta:
         verbose_name = 'Организация'

@@ -92,7 +92,7 @@ select distinct
 a.innNx as id, 
 (select top 1 c.innR from CursorTest..test_CACHE_1f c where c.innNX=a.innNX) as name 
 into db_inNR
-from CursorTest..test_CACHE_1f a
+from CursorTest..ComplexRpt_CACHE a
 where a.innNX is not null 
 go
 select max(len(name)) from db_inNR
@@ -112,9 +112,9 @@ drop table db_tradeNR
 go
 select distinct 
 a.TradeNx as id, 
-(select top 1 c.TradeNmR from CursorTest..test_CACHE_1f c where c.TradeNX=a.TradeNX) as name 
+(select top 1 c.TradeNmR from CursorTest..ComplexRpt_CACHE c where c.TradeNX=a.TradeNX) as name 
 into db_tradeNR
-from CursorTest..test_CACHE_1f a
+from CursorTest..ComplexRpt_CACHE a
 where a.TradeNX is not null 
 go
 select max(len(name)) from db_tradeNR
@@ -134,10 +134,10 @@ drop table db_WinnerOrg
 go
 select distinct 
 Winner_ID as id, 
-(select top 1 WinnerOrgINN from CursorTest..test_CACHE_1f b where a.Winner_ID=b.Winner_ID) as inn,
-(select top 1 WinnerOrg from CursorTest..test_CACHE_1f c where a.Winner_ID=c.Winner_ID) as name
+(select top 1 WinnerOrgINN from CursorTest..ComplexRpt_CACHE b where a.Winner_ID=b.Winner_ID) as inn,
+(select top 1 WinnerOrg from CursorTest..ComplexRpt_CACHE c where a.Winner_ID=c.Winner_ID) as name
 into db_WinnerOrg
-from CursorTest..test_CACHE_1f a
+from CursorTest..ComplexRpt_CACHE a
 where Winner_ID is not null 
 order by Winner_ID
 go
