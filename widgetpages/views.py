@@ -1,20 +1,15 @@
-import json
-import sys
-
 from django.shortcuts import render
-from django.db.models import Count, Sum, Min, F, Q
+from django.db.models import Count, Sum, F
 from django.db.models.functions import Extract
-from django.http import HttpResponse, JsonResponse
-from django.template.context_processors import csrf
-from django.template import Context, Template
+from django.http import JsonResponse
 
-from db.models import Employee, Lpu, Market, StatusT, InNR, TradeNR, WinnerOrg
+from db.models import Market, StatusT
 from db.models import Hs_create
 from django.views.generic import View
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 
 from widgetpages.queries import q_employees
-from widgetpages.rawmodel import RawModel
+from db.rawmodel import RawModel
 
 # Filters identification
 fempl = 'empl'

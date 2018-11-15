@@ -1,10 +1,8 @@
 import json
-from django_datatables_view.base_datatable_view import BaseDatatableView
-from django.utils.html import escape
 
 from widgetpages.views import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust
-from widgetpages.views import FiltersView, extra_in_filter
-from widgetpages.rawmodel import RawModel
+from widgetpages.views import extra_in_filter
+from db.rawmodel import RawModel
 from widgetpages import queries
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 
