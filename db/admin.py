@@ -4,6 +4,7 @@ from db.models import Org, Employee, Market, Org_log
 class Org_log_Inline(admin.TabularInline):
     model = Org_log
     readonly_fields = ('org', 'time', 'description')
+    ordering = ('-time',)
     extra = 0
 
     def has_add_permission(self, request, obj=None):
