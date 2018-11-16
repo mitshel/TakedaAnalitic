@@ -20,6 +20,7 @@ function processAjaxData(data, src_id) {
 }
 
 function query_data() {
+    action_url = '{{ ajax_url }}';
     {% for flt in filters %}
         {% if flt.type == 'btn' %}
             // Создаем список активных кнопок сотрудников
@@ -84,7 +85,6 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
 });
 
 function test_timeout(tt) {
-    action_url = '{{ ajax_url }}';
     $('button[id^=empl_]').not(':disabled').each(function() {
        if (Math.floor(Math.random() * 2))
            $(this).addClass('active');
