@@ -19,26 +19,9 @@ function processAjaxData(data, src_id) {
     ChartsUpdate3(data,src_id);
 }
 
-$(document).on('click', '.btn-filter:not(.disabled)', function(event) {
-    action_url = '{{ ajax_url }}';
-    ctrlPress = (event.ctrlKey == true);
-    src_id = $(this).attr('id').substr(0,5);
-
+function query_data() {
     {% for flt in filters %}
         {% if flt.type == 'btn' %}
-            // С нажатой ctrl работает мультивыделение кнопок выбора сотрудников
-            if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active')))
-            if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
-               $('button[id^={{ flt.id }}_].active').removeClass('active');
-               $(this).addClass('active');
-            };
-
-            // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
-            if ($('button[id^={{ flt.id }}_].active').length == $('button[id^={{ flt.id }}_]').length )
-                $('#{{ flt.id }}-check').addClass('active');
-            else
-                $('#{{ flt.id }}-check').removeClass('active');
-
             // Создаем список активных кнопок сотрудников
             var arr = [];
             $('button[id^={{ flt.id }}_].active').each(function() {
@@ -71,7 +54,53 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
                     alert('Error loading data. ' + str);
             }
         }) }, 500);
+
+}
+
+$(document).on('click', '.btn-filter:not(.disabled)', function(event) {
+    if (event) ctrlPress = (event.ctrlKey == true); else ctrlPress = false;
+    src_id = $(this).attr('id').substr(0,5);
+
+    {% for flt in filters %}
+        {% if flt.type == 'btn' %}
+            // С нажатой ctrl работает мультивыделение кнопок выбора сотрудников
+            if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active')))
+            if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
+               $('button[id^={{ flt.id }}_].active').removeClass('active');
+               $(this).addClass('active');
+            };
+
+            // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+            if ($('button[id^={{ flt.id }}_].active').length == $('button[id^={{ flt.id }}_]').length )
+                $('#{{ flt.id }}-check').addClass('active');
+            else
+                $('#{{ flt.id }}-check').removeClass('active');
+        {% endif %}
+    {% endfor %}
+
+    query_data();
+
     return true;
 });
+
+function test_timeout(tt) {
+    action_url = '{{ ajax_url }}';
+    $('button[id^=empl_]').not(':disabled').each(function() {
+       if (Math.floor(Math.random() * 2))
+           $(this).addClass('active');
+        else
+           $(this).removeClass('active');
+    });
+    query_data();
+
+    if ($('#serv-test').hasClass('active'))
+       setTimeout(function () { test_timeout(tt); }, tt);
+}
+
+$(document).on('click', '#serv-test', function(event) {
+    src_id = 'empl_'
+    test_timeout(5000);
+});
+
 
 </script>
