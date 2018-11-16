@@ -99,7 +99,7 @@ function test_timeout(tt) {
 
 $(document).on('click', '#serv-test', function(event) {
     src_id = 'empl_'
-    test_timeout(5000);
+    test_timeout(parseInt( $('#test_time').val() )*1000 );
 });
 
 
