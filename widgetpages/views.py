@@ -8,7 +8,7 @@ from db.models import Hs_create
 from django.views.generic import View
 from django.urls import reverse_lazy
 
-from widgetpages.queries import q_employees, q_markets, q_markets_hs, q_years_hs, q_status, q_status_hs
+from widgetpages import queries
 from db.rawmodel import RawModel
 
 # Filters identification
@@ -37,6 +37,14 @@ def extra_in_filter(model, field, flt):
 
     return ef
 
+# Удаление неуникальных элементов из списка
+def unique(obj: iter):
+    args = []
+    for a in obj:
+        if a not in args:
+            args.append(a)
+            yield a
+
 def Home(request):
     args={}
     return render(request,'ta_hello.html', args)
@@ -55,7 +63,7 @@ class FiltersView(View):
         return org_id
 
     def filter_empl(self, flt_active=None, org_id=0):
-        employee_raw = RawModel(q_employees).filter(username=self.request.user.username)
+        employee_raw = RawModel(queries.q_employees).filter(username=self.request.user.username)
         if not flt_active:
             employee_enabled = employee_raw.filter(fields='id as iid, name').order_by('name')
         else:
@@ -66,9 +74,9 @@ class FiltersView(View):
 
     def filter_mrkt(self, flt_active=None, org_id=0):
         if not flt_active:
-            market_enabled = RawModel(q_markets).filter(fields="id as iid, name").filter(org_id=org_id).order_by('name')
+            market_enabled = RawModel(queries.q_markets).filter(fields="id as iid, name").filter(org_id=org_id).order_by('name')
         else:
-            market_enabled = RawModel(q_markets_hs).filter(fields="a.id as iid").filter(org_id=org_id)
+            market_enabled = RawModel(queries.q_markets_hs).filter(fields="a.id as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
                 market_enabled = market_enabled.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
         market_list = list(market_enabled.open().fetchall())
@@ -77,9 +85,9 @@ class FiltersView(View):
 
     def filter_year(self, flt_active=None, org_id=0):
         if not flt_active:
-            year_enabled = RawModel(q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name").filter(org_id=org_id).order_by('PlanTYear')
+            year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name").filter(org_id=org_id).order_by('PlanTYear')
         else:
-            year_enabled = RawModel(q_years_hs).filter(fields="PlanTYear as iid").filter(org_id=org_id)
+            year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
                 year_enabled = year_enabled.filter(employee_in=extra_in_filter('b', 'employee_id', flt_active[fempl]))
         year_list = list(year_enabled.open().fetchall())
@@ -88,9 +96,9 @@ class FiltersView(View):
 
     def filter_stat(self, flt_active=None, org_id=0):
         if not flt_active:
-            status_enabled = RawModel(q_status).filter(fields="id as iid, name").order_by('name')
+            status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name").order_by('name')
         else:
-            status_enabled = RawModel(q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
+            status_enabled = RawModel(queries.q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
                 status_enabled = status_enabled.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
         status_list = list(status_enabled.open().fetchall())
@@ -182,24 +190,26 @@ class SalessheduleView(FiltersView):
     def data(self, flt=None, flt_active=None, org_id=0):
         pivot_data = {}
         if flt:
-            hs_active = self.Hs.objects.exclude(cust_id=0).exclude(PlanTYear__isnull=True)
+            hsy_active = RawModel(queries.q_sales_year).filter(org_id=org_id).order_by('1', '2')
+            hsm_active = RawModel(queries.q_sales_month).filter(org_id=org_id).order_by('1', '2')
             if flt_active:
                 if not (0 in flt_active[fempl]['list']):
                     # Если не выбрано 'Без учета Таргет' то фильтруем по сотрудникам
-                    hs_active = hs_active.filter(cust_id__employee__in=flt_active[fempl]['list'])
+                    hsy_active = hsy_active.filter( employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]) )
+                    hsm_active = hsm_active.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
 
-                hs_active = hs_active.filter(PlanTYear__in=flt_active[fyear]['list'], \
-                                             market_id__in=flt_active[fmrkt]['list']).\
-                                             extra(where=[extra_in_filter(self.Hs,'Cust_ID',flt_active[fcust])])
+                hsy_active = hsy_active.filter(years_in=extra_in_filter('a','PlanTYear',flt_active[fyear]), \
+                                               markets_in=extra_in_filter('a','market_id',flt_active[fmrkt]), \
+                                               lpus_in = extra_in_filter('a', 'Cust_ID',flt_active[fcust]))
+                hsm_active = hsm_active.filter(years_in=extra_in_filter('a','PlanTYear',flt_active[fyear]), \
+                                               markets_in=extra_in_filter('a','market_id',flt_active[fmrkt]), \
+                                               lpus_in = extra_in_filter('a', 'Cust_ID',flt_active[fcust]))
 
-            pivot_data['year'] = list(hs_active.values(iid=F('PlanTYear')).distinct().order_by('iid'))
-            pivot_data['pivot1'] = list(hs_active.values('market_name',iid=F('PlanTYear')).annotate(
-                product_cost_sum=Sum('TenderPrice') / 1000000). \
-                values('iid', 'market_name', 'product_cost_sum').order_by('market_name', 'iid'))
-            pivot_data['pivot2'] = list(hs_active.annotate(mon=Extract('ProcDt', 'month')).values('market_name', 'mon'). \
-                annotate(product_cost_sum=Sum('TenderPrice') / 1000000, product_count=Count('market_id')). \
-                values('market_name', 'mon', 'product_cost_sum', 'product_count').order_by('market_name', 'mon'))
-
+            pivot_data['pivot1'] = list (hsy_active.open().fetchall())
+            pivot_data['pivot2'] = list (hsm_active.open().fetchall())
+            pivot_data['year'] = list( unique([e['iid'] for e in pivot_data['pivot1']]) )
+            hsy_active.close()
+            hsm_active.close()
         return pivot_data
 
 class CompetitionsView(FiltersView):

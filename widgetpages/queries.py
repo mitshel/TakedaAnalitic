@@ -74,3 +74,24 @@ select distinct {{ fields }} from db_statusT a
 inner join org_CACHE_{{ org_id }} b on a.id=b.statusT_ID and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee c on b.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
 """
+
+q_sales_year = """
+select b.name as market_name, PlanTYear as iid, Sum(TenderPrice)/1000000 as product_cost_sum
+from org_CACHE_{{ org_id }} a
+left join db_market b on a.market_id=b.id and org_id={{ org_id }}
+{% if employee_in %}inner join db_lpu_employee c on a.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
+where PlanTYear is not NULL and a.cust_id<>0
+group by b.name, PlanTYear
+"""
+
+q_sales_month = """
+select b.name as market_name, month(ProcDt) as mon, Sum(TenderPrice)/1000000 as product_cost_sum, count(*) as product_count
+from org_CACHE_{{ org_id }} a
+left join db_market b on a.market_id=b.id and org_id={{ org_id }}
+{% if employee_in %}inner join db_lpu_employee c on a.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
+where PlanTYear is not NULL and a.cust_id<>0
+{% if years_in %}and {{ years_in }} {% endif %}
+{% if markets_in %}and ({{ markets_in }}) {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %}    
+group by b.name, month(ProcDt)
+"""

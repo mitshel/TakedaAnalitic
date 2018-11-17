@@ -2,7 +2,7 @@
     var config1 = {
         type: 'line',
         data: {
-            labels: [{% for y in data.year %}{{ y.iid }}{% if not forloop.last %},{% endif %}{% endfor %}],
+            labels: [{% for y in data.year %}{{ y }}{% if not forloop.last %},{% endif %}{% endfor %}],
             datasets: [
                 {% regroup data.pivot1 by market_name as market_list %}
                 {% for market in market_list %}
@@ -57,7 +57,7 @@
     function ChartsUpdate1(data, src_id) {
         labels_data = [];
         data.data.year.forEach(function(year) {
-           labels_data.push(year.iid)
+           labels_data.push(year)
         });
         config1.data.labels = labels_data;
         config1.data.datasets.forEach(function(dataset) {
