@@ -59,7 +59,6 @@ class FiltersView(View):
     def init_dynamic_org(self):
         org = Org.objects.filter(employee__users=self.request.user)
         org_id = org[0].id if org else 0
-        self.Hs = Hs_create('org_CACHE_{}'.format(org_id))
         return org_id
 
     def filter_empl(self, flt_active=None, org_id=0):
@@ -221,12 +220,9 @@ class CompetitionsView(FiltersView):
     def data(self, flt=None, flt_active=None, org_id=0):
         data = {}
         if not flt_active:
-            years_active = list(self.Hs.objects.exclude(PlanTYear__isnull=True).\
-                values('PlanTYear').distinct().order_by('PlanTYear').\
-                values_list('PlanTYear', flat=True))
+            years_active = [y['iid'] for y in self.get_filter(flt, fyear)['data']]
         else:
             years_active = flt_active[fyear]['list']
 
         data['year'] = years_active
-
         return data
