@@ -8,7 +8,7 @@ from db.models import Hs_create
 from django.views.generic import View
 from django.urls import reverse_lazy
 
-from widgetpages.queries import q_employees
+from widgetpages.queries import q_employees, q_markets, q_markets_hs
 from db.rawmodel import RawModel
 
 # Filters identification
@@ -52,17 +52,14 @@ class FiltersView(View):
     def init_dynamic_org(self):
         org = Org.objects.filter(employee__users=self.request.user)
         org_id = org[0].id if org else 0
-        print('1==>', org[0].id, org[0].name)
         self.Hs = Hs_create('org_CACHE_{}'.format(org_id))
         return org_id
 
     def filter_empl(self, flt_active=None, org_id=0):
         employee_raw = RawModel(q_employees).filter(username=self.request.user.username)
         if not flt_active:
-            #employee_enabled = Employee.objects.filter(users=self.request.user).values('name', iid=F('id')).order_by('name')
             employee_enabled = employee_raw.filter(fields='id as iid, name').order_by('name')
         else:
-            #employee_enabled = Employee.objects.filter(users=self.request.user).values(iid=F('id'))
             employee_enabled = employee_raw.filter(fields='id as iid')
         employee_list=list(employee_enabled.open().fetchall())
         employee_enabled.close()
@@ -70,14 +67,14 @@ class FiltersView(View):
 
     def filter_mrkt(self, flt_active=None, org_id=0):
         if not flt_active:
-            market_enabled = Market.objects.filter(org_id=org_id).values('name', iid=F('id')).order_by('name')
+            market_enabled = RawModel(q_markets).filter(fields="id as iid, name").filter(org_id=org_id).order_by('name')
         else:
-
-            hs_enabled = self.Hs.objects.exclude(cust_id=0)
+            market_enabled = RawModel(q_markets_hs).filter(fields="a.id as iid").filter(cust_id=0, org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
-                hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
-            market_enabled = hs_enabled.values('market_id').annotate(id=F('market_id')).distinct().values(iid=F('market_id'))
-        return list(market_enabled)
+                market_enabled = market_enabled.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
+        market_list = list(market_enabled.open().fetchall())
+        market_enabled.close()
+        return market_list
 
     def filter_year(self, flt_active=None, org_id=0):
         if not flt_active:
