@@ -8,7 +8,7 @@ from db.models import Hs_create
 from django.views.generic import View
 from django.urls import reverse_lazy
 
-from widgetpages.queries import q_employees, q_markets, q_markets_hs
+from widgetpages.queries import q_employees, q_markets, q_markets_hs, q_years_hs
 from db.rawmodel import RawModel
 
 # Filters identification
@@ -47,7 +47,6 @@ class FiltersView(View):
     template_name = 'ta_competitions.html'
     view_id = 'blank'
     view_name = 'Пустая страница'
-    org_id = 1
 
     def init_dynamic_org(self):
         org = Org.objects.filter(employee__users=self.request.user)
@@ -69,7 +68,7 @@ class FiltersView(View):
         if not flt_active:
             market_enabled = RawModel(q_markets).filter(fields="id as iid, name").filter(org_id=org_id).order_by('name')
         else:
-            market_enabled = RawModel(q_markets_hs).filter(fields="a.id as iid").filter(cust_id=0, org_id=org_id)
+            market_enabled = RawModel(q_markets_hs).filter(fields="a.id as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
                 market_enabled = market_enabled.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
         market_list = list(market_enabled.open().fetchall())
@@ -78,15 +77,14 @@ class FiltersView(View):
 
     def filter_year(self, flt_active=None, org_id=0):
         if not flt_active:
-            year_enabled = self.Hs.objects.exclude(PlanTYear__isnull=True).\
-                extra(select={'iid': 'PlanTYear', 'name': 'PlanTYear'}). \
-                values('name', 'iid').distinct().order_by('name')
+            year_enabled = RawModel(q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name").filter(org_id=org_id).order_by('PlanTYear')
         else:
-            hs_enabled = self.Hs.objects.exclude(cust_id=0)
+            year_enabled = RawModel(q_years_hs).filter(fields="PlanTYear as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
-                hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
-            year_enabled = hs_enabled.values('PlanTYear').distinct().values(iid=F('PlanTYear'))
-        return list(year_enabled)
+                year_enabled = year_enabled.filter(employee_in=extra_in_filter('b', 'employee_id', flt_active[fempl]))
+        year_list = list(year_enabled.open().fetchall())
+        year_enabled.close()
+        return year_list
 
     def filter_stat(self, flt_active=None, org_id=0):
         if not flt_active:

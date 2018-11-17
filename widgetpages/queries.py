@@ -54,8 +54,13 @@ select {{fields}} from db_market a where org_id={{org_id}}
 
 q_markets_hs = """
 select distinct {{ fields }} from db_market a
-inner join org_CACHE_{{ org_id }} b on a.id=b.market_id 
-           {% if cust_id %}and cust_id={{ cust_id }} {% endif %}
+inner join org_CACHE_{{ org_id }} b on a.id=b.market_id and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee c on b.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
 {% if org_id %}where a.org_id = {{ org_id }} {% endif %}
+"""
+
+q_years_hs = """
+select distinct {{ fields }} from org_CACHE_{{ org_id }} a
+{% if employee_in %}inner join db_lpu_employee b on a.cust_id=b.lpu_id and {{ employee_in }} {% endif %}
+where a.PlanTYear is not Null and a.cust_id is Not Null
 """
