@@ -8,7 +8,7 @@ from db.models import Hs_create
 from django.views.generic import View
 from django.urls import reverse_lazy
 
-from widgetpages.queries import q_employees, q_markets, q_markets_hs, q_years_hs
+from widgetpages.queries import q_employees, q_markets, q_markets_hs, q_years_hs, q_status, q_status_hs
 from db.rawmodel import RawModel
 
 # Filters identification
@@ -88,13 +88,14 @@ class FiltersView(View):
 
     def filter_stat(self, flt_active=None, org_id=0):
         if not flt_active:
-            status_enabled = StatusT.objects.values('name',iid=F('id')).order_by('name')
+            status_enabled = RawModel(q_status).filter(fields="id as iid, name").order_by('name')
         else:
-            hs_enabled = self.Hs.objects.exclude(cust_id=0)
+            status_enabled = RawModel(q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
-                hs_enabled = hs_enabled.filter(cust_id__employee__in=flt_active[fempl]['list'])
-            status_enabled = hs_enabled.annotate(iid=F('StatusT_ID')).distinct().values('iid')
-        return list(status_enabled)
+                status_enabled = status_enabled.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
+        status_list = list(status_enabled.open().fetchall())
+        status_enabled.close()
+        return list(status_list)
 
     def filter_innr(self, flt_active=None, org_id=0):
         return []

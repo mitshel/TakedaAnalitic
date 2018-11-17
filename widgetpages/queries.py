@@ -64,3 +64,13 @@ select distinct {{ fields }} from org_CACHE_{{ org_id }} a
 {% if employee_in %}inner join db_lpu_employee b on a.cust_id=b.lpu_id and {{ employee_in }} {% endif %}
 where a.PlanTYear is not Null and a.cust_id is Not Null
 """
+
+q_status = """
+select distinct {{fields}} from db_statusT a 
+"""
+
+q_status_hs = """
+select distinct {{ fields }} from db_statusT a
+inner join org_CACHE_{{ org_id }} b on a.id=b.statusT_ID and b.cust_id<>0
+{% if employee_in %}inner join db_lpu_employee c on b.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
+"""
