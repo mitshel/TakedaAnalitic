@@ -42,10 +42,10 @@ class CompetitionsAjaxTable(AjaxRawDatatableView):
                            markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
                            status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active else ''),
                            employees=','.join([str(e) for e in flt_active[fempl]['list']] if flt_active and not (0 in flt_active[fempl]['list']) else ''),
-                           lpus_in=extra_in_filter('l','Cust_ID',flt_active[fcust] if flt_active else ''),
-                           winrs_in=extra_in_filter('w', 'id', flt_active[fwinr] if flt_active else ''),
-                           innrs_in = extra_in_filter('s', 'InnNx', flt_active[finnr] if flt_active else ''),
-                           trnrs_in = extra_in_filter('s', 'TradeNx', flt_active[ftrnr] if flt_active else ''),
+                           lpus_in=extra_in_filter('l.Cust_ID',flt_active[fcust] if flt_active else ''),
+                           winrs_in=extra_in_filter('w.id', flt_active[fwinr] if flt_active else ''),
+                           innrs_in = extra_in_filter('s.InnNx', flt_active[finnr] if flt_active else ''),
+                           trnrs_in = extra_in_filter('s.TradeNx', flt_active[ftrnr] if flt_active else ''),
                            org_id = org[0].id if org else 0,
                            ).order_by('l.Org_CustNm', 'pvt.tradeNx')
         else:

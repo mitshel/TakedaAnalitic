@@ -1,10 +1,7 @@
 from django.shortcuts import render
-from django.db.models import Count, Sum, F
-from django.db.models.functions import Extract
 from django.http import JsonResponse
 
-from db.models import Market, StatusT, Org
-from db.models import Hs_create
+from db.models import Org
 from django.views.generic import View
 from django.urls import reverse_lazy
 
@@ -22,12 +19,26 @@ ftrnr = 'trnr'
 fwinr = 'winr'
 
 # Create your views here.
-def extra_in_filter(model, field, flt):
-    db_table = model if isinstance(model,str) else model._meta.db_table
+# def extra_in_filter(model, field, flt):
+#     db_table = model if isinstance(model,str) else model._meta.db_table
+#     if flt:
+#         if (len(flt['list']) > 0):
+#             ef = '[{}].{} {}in ({})'. \
+#                 format(db_table, field,
+#                        'not ' if flt['select'] else '',
+#                        ','.join([str(e) for e in flt['list']]))
+#         else:
+#             ef = '1=1' if flt['select'] else '1>1'
+#     else:
+#         ef = '1=1'
+#
+#     return ef
+
+def extra_in_filter(field, flt):
     if flt:
         if (len(flt['list']) > 0):
-            ef = '[{}].{} {}in ({})'. \
-                format(db_table, field,
+            ef = '{} {}in ({})'. \
+                format(field,
                        'not ' if flt['select'] else '',
                        ','.join([str(e) for e in flt['list']]))
         else:
@@ -77,7 +88,7 @@ class FiltersView(View):
         else:
             market_enabled = RawModel(queries.q_markets_hs).filter(fields="a.id as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
-                market_enabled = market_enabled.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
+                market_enabled = market_enabled.filter(employee_in=extra_in_filter('employee_id', flt_active[fempl]))
         market_list = list(market_enabled.open().fetchall())
         market_enabled.close()
         return market_list
@@ -88,7 +99,7 @@ class FiltersView(View):
         else:
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
-                year_enabled = year_enabled.filter(employee_in=extra_in_filter('b', 'employee_id', flt_active[fempl]))
+                year_enabled = year_enabled.filter(employee_in=extra_in_filter('employee_id', flt_active[fempl]))
         year_list = list(year_enabled.open().fetchall())
         year_enabled.close()
         return year_list
@@ -99,7 +110,7 @@ class FiltersView(View):
         else:
             status_enabled = RawModel(queries.q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
             if not (0 in flt_active[fempl]['list']):
-                status_enabled = status_enabled.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
+                status_enabled = status_enabled.filter(employee_in=extra_in_filter('employee_id', flt_active[fempl]))
         status_list = list(status_enabled.open().fetchall())
         status_enabled.close()
         return list(status_list)
@@ -194,15 +205,15 @@ class SalessheduleView(FiltersView):
             if flt_active:
                 if not (0 in flt_active[fempl]['list']):
                     # Если не выбрано 'Без учета Таргет' то фильтруем по сотрудникам
-                    hsy_active = hsy_active.filter( employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]) )
-                    hsm_active = hsm_active.filter(employee_in=extra_in_filter('c', 'employee_id', flt_active[fempl]))
+                    hsy_active = hsy_active.filter( employee_in=extra_in_filter('employee_id', flt_active[fempl]) )
+                    hsm_active = hsm_active.filter(employee_in=extra_in_filter('employee_id', flt_active[fempl]))
 
-                hsy_active = hsy_active.filter(years_in=extra_in_filter('a','PlanTYear',flt_active[fyear]), \
-                                               markets_in=extra_in_filter('a','market_id',flt_active[fmrkt]), \
-                                               lpus_in = extra_in_filter('a', 'Cust_ID',flt_active[fcust]))
-                hsm_active = hsm_active.filter(years_in=extra_in_filter('a','PlanTYear',flt_active[fyear]), \
-                                               markets_in=extra_in_filter('a','market_id',flt_active[fmrkt]), \
-                                               lpus_in = extra_in_filter('a', 'Cust_ID',flt_active[fcust]))
+                hsy_active = hsy_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
+                                               markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
+                                               lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
+                hsm_active = hsm_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
+                                               markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
+                                               lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
 
             pivot_data['pivot1'] = list (hsy_active.open().fetchall())
             pivot_data['pivot2'] = list (hsm_active.open().fetchall())
