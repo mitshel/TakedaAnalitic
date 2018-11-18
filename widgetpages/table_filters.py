@@ -13,6 +13,10 @@ class FilterListJson(AjaxRawDatatableView):
     order_columns = ['name', 'ext']
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
 
+    def zero_in(self, flt_active, fname):
+        return ((flt_active[fname]['select'] == 1) and not (0 in flt_active[fname]['list'])) or \
+               ((flt_active[fname]['select'] == 0) and (0 in flt_active[fname]['list']))
+
     def initial_innr(self):
         innr_enabled = InNR.objects.filter(hs__isnull=False).distinct().values('name', iid=F('id')).order_by('name')
         return innr_enabled
@@ -33,7 +37,7 @@ class FilterListJson(AjaxRawDatatableView):
         if not flt_active:
             return qs
 
-        if not (0 in flt_active[fempl]['list']):
+        if not self.zero_in(flt_active, fempl):
             if self.kwargs['flt_id'] == fcust:
                 qs = qs.filter(employee__in=flt_active[fempl]['list'])
             else:

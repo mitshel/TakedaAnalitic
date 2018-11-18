@@ -23,7 +23,7 @@
                 <button type="button" id='{{ flt.id }}_{{ e.iid }}' data-id="{{ e.iid }}" class="btn btn-secondary btn-sm active inline btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
               {% endfor %}
         {% endif %}
-        {% if flt.type == 'tbl' %}
+        {% if flt.type == 'ajx' or flt.type == 'tbl' %}
               <table class="table table-sm table-hover display w-100 datatable" width="100%" id="tbl_{{ flt.id }}">
               </table>
         {% endif %}
@@ -58,7 +58,7 @@ $('#{{ flt.id }}-check').on('click', function () {
 </script>
 {% endif %}
 
-{% if flt.type == 'tbl' %}
+{% if flt.type == 'ajx' or flt.type == 'tbl' %}
 <script type="text/javascript">
 var {{ flt.id }}_data = [
                     {% for e in flt.data %} {DT_RowId:'{{ flt.id }}_{{ e.iid }}', iid: '{{ e.iid }}', name:'{{ e.name }}', ext:'{{ e.ext }}', disabled:'0' } {% if not forloop.last %},{% endif %}
@@ -76,25 +76,31 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                     { "name": "name", "targets": [ 0 ], "visible": true, "searchable": true },
                     { "name": "ext", "targets": [ 1 ], "visible": false, "searchable": true },
                     { "name": "iid", "targets": [ 2 ], "visible": false, "searchable": false }
-                    //{   "name": "disabled", "targets": [ 3 ], "visible": false, "searchable": false }
+                    {% if flt.type == 'tbl' %}
+                       ,{ "name": "disabled", "targets": [ 3 ], "visible": false, "searchable": false }
+                    {% endif %}
                 ],
-                "processing": true,
-                "serverSide": true,
-                //"stateSave" : true,
-                "ajax": {
-                    "url": "{% url 'widgetpages:jdata' flt.id %}",
-                    "type": "POST",
-                    "data": function ( d ) {
-                        d.filters_ajax_request = JSON.stringify(filters_ajax_request);
-                        d.csrfmiddlewaretoken = '{{ csrf_token }}';
-                    }
-                },
-                 //data: {{ flt.id }}_data,
-                //columns: [ { data: 'name' }, { data: 'ext' }, { data: 'iid' }, { data: 'disabled' } ],
+                {% if flt.type == 'ajx' %}
+                    "processing": true,
+                    "serverSide": true,
+                    //"stateSave" : true,
+                    "ajax": {
+                        "url": "{% url 'widgetpages:jdata' flt.id %}",
+                        "type": "POST",
+                        "data": function ( d ) {
+                            d.filters_ajax_request = JSON.stringify(filters_ajax_request);
+                            d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                        }
+                    },
+                {% endif %}
+                {% if flt.type == 'tbl' %}
+                    data: {{ flt.id }}_data,
+                    columns: [ { data: 'name' }, { data: 'ext' }, { data: 'iid' }, { data: 'disabled' } ],
+                {% endif %}
                 "rowCallback": function( row, data ) {
                     $(row).addClass('btn-filter');
-                    $(row).attr('id', '{{ flt.id }}_'+data[2].toString());
-                    if ( $.inArray(data[2], {{ flt.id }}_selected) !== -1 ) {
+                    $(row).attr('id', '{{ flt.id }}_'+data{% if flt.type == 'ajx' %}[2]{% else %}.iid{% endif %}.toString());
+                    if ( $.inArray(data{% if flt.type == 'ajx' %}[2]{% else %}.iid{% endif %}, {{ flt.id }}_selected) !== -1 ) {
                         if ({{ flt.id }}_selectAll) $(row).removeClass('selected');
                         else $(row).addClass('selected');
                     } else {
@@ -130,7 +136,7 @@ $('#{{ flt.id }}-check').on('click', function () {
 });
 
 $('#tbl_{{ flt.id }} tbody').on('click', 'tr', function (event) {
-    var id = tbl_{{ flt.id }}.row(this).data()[2];
+    var id = tbl_{{ flt.id }}.row(this).data(){% if flt.type == 'ajx' %}[2]{% else %}.iid{% endif %};
     var ctrlPress = (event.ctrlKey == true);
 
     // Если не включен мультивыбор сначала сбрасываем все выбор

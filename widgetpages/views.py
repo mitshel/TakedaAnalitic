@@ -18,22 +18,6 @@ finnr = 'innr'
 ftrnr = 'trnr'
 fwinr = 'winr'
 
-# Create your views here.
-# def extra_in_filter(model, field, flt):
-#     db_table = model if isinstance(model,str) else model._meta.db_table
-#     if flt:
-#         if (len(flt['list']) > 0):
-#             ef = '[{}].{} {}in ({})'. \
-#                 format(db_table, field,
-#                        'not ' if flt['select'] else '',
-#                        ','.join([str(e) for e in flt['list']]))
-#         else:
-#             ef = '1=1' if flt['select'] else '1>1'
-#     else:
-#         ef = '1=1'
-#
-#     return ef
-
 def extra_in_filter(field, flt):
     if flt:
         if (len(flt['list']) > 0):
@@ -72,6 +56,10 @@ class FiltersView(View):
         org_id = org[0].id if org else 0
         return org_id
 
+    def zero_in(self, flt_active, fname):
+        return ((flt_active[fname]['select'] == 1) and not (0 in flt_active[fname]['list'])) or \
+               ((flt_active[fname]['select'] == 0) and (0 in flt_active[fname]['list']))
+
     def filter_empl(self, flt_active=None, org_id=0):
         employee_raw = RawModel(queries.q_employees).filter(username=self.request.user.username)
         if not flt_active:
@@ -80,72 +68,105 @@ class FiltersView(View):
             employee_enabled = employee_raw.filter(fields='id as iid')
         employee_list=list(employee_enabled.open().fetchall())
         employee_enabled.close()
-        return [{'name':'Без учета Таргет','iid':0}]+employee_list
+        return {'id': fempl,
+                'type': 'tbl',
+                'name': 'Таргет',
+                'icon':'user',
+                'expanded': 'false',
+                'data': [{'name':'Без учета Таргет','iid':0}]+employee_list}
 
     def filter_mrkt(self, flt_active=None, org_id=0):
         if not flt_active:
             market_enabled = RawModel(queries.q_markets).filter(fields="id as iid, name").filter(org_id=org_id).order_by('name')
         else:
             market_enabled = RawModel(queries.q_markets_hs).filter(fields="a.id as iid").filter(org_id=org_id)
-            if not (0 in flt_active[fempl]['list']):
-                market_enabled = market_enabled.filter(employee_in=extra_in_filter('employee_id', flt_active[fempl]))
+            if not self.zero_in(flt_active, fempl):
+                market_enabled = market_enabled.filter(employee_in=extra_in_filter('c.employee_id', flt_active[fempl]))
         market_list = list(market_enabled.open().fetchall())
         market_enabled.close()
-        return market_list
+        return {'id': fmrkt,
+                'type': 'btn',
+                'name': 'Рынок',
+                'icon':'shopping-cart',
+                'data': market_list}
 
     def filter_year(self, flt_active=None, org_id=0):
         if not flt_active:
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name").filter(org_id=org_id).order_by('PlanTYear')
         else:
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid").filter(org_id=org_id)
-            if not (0 in flt_active[fempl]['list']):
-                year_enabled = year_enabled.filter(employee_in=extra_in_filter('employee_id', flt_active[fempl]))
+            if not self.zero_in(flt_active, fempl):
+                year_enabled = year_enabled.filter(employee_in=extra_in_filter('b.employee_id', flt_active[fempl]))
         year_list = list(year_enabled.open().fetchall())
         year_enabled.close()
-        return year_list
+        return {'id': fyear,
+                'type': 'tbl',
+                'name': 'Год поставки',
+                'icon':'calendar',
+                'data': year_list}
 
     def filter_stat(self, flt_active=None, org_id=0):
         if not flt_active:
             status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name").order_by('name')
         else:
             status_enabled = RawModel(queries.q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
-            if not (0 in flt_active[fempl]['list']):
-                status_enabled = status_enabled.filter(employee_in=extra_in_filter('employee_id', flt_active[fempl]))
+            if not self.zero_in(flt_active, fempl):
+                status_enabled = status_enabled.filter(employee_in=extra_in_filter('c.employee_id', flt_active[fempl]))
         status_list = list(status_enabled.open().fetchall())
         status_enabled.close()
-        return list(status_list)
+        return {'id': fstat,
+                'type': 'btn',
+                'name': 'Статус торгов',
+                'icon':'check-square',
+                'data': status_list}
 
     def filter_innr(self, flt_active=None, org_id=0):
-        return []
+        return {'id': finnr,
+                'type': 'ajx',
+                'name': 'МНН',
+                'icon':'globe',
+                'data': []}
 
     def filter_trnr(self, flt_active=None, org_id=0):
-        return []
+        return {'id': ftrnr,
+                'type': 'ajx',
+                'name': 'Торговое наименование',
+                'icon':'trademark',
+                'data': []}
 
     def filter_winr(self, flt_active=None, org_id=0):
-        return []
+        return {'id': fwinr,
+                'type': 'ajx',
+                'name': 'Победитель торгов',
+                'icon':'handshake',
+                'data': []}
 
     def filter_cust(self, flt_active=None, org_id=0):
-        return []
+        return {'id': fcust,
+                'type': 'ajx',
+                'name': 'Грузополучатель',
+                'icon':'ambulance',
+                'data': []}
 
     def filters(self, flt_active=None, org_id=0):
         filters = []
         for f in self.filters_list:
-            if fempl == f :
-                filters.append({'id': fempl, 'type': 'btn', 'name': 'Таргет', 'icon':'user', 'expanded': 'false', 'data': self.filter_empl(flt_active, org_id)})
+            if fempl == f:
+                filters.append(self.filter_empl(flt_active, org_id))
             if fmrkt == f:
-                filters.append({'id': fmrkt, 'type': 'btn', 'name': 'Рынок', 'icon':'shopping-cart','data': self.filter_mrkt(flt_active, org_id)})
+                filters.append(self.filter_mrkt(flt_active, org_id))
             if fyear == f:
-                filters.append({'id': fyear, 'type': 'btn', 'name': 'Год поставки', 'icon':'calendar', 'data': self.filter_year(flt_active, org_id)})
+                filters.append(self.filter_year(flt_active, org_id))
             if fstat == f:
-                filters.append({'id': fstat, 'type': 'btn', 'name': 'Статус торгов', 'icon':'check-square', 'data': self.filter_stat(flt_active, org_id)})
+                filters.append(self.filter_stat(flt_active, org_id))
             if finnr == f:
-                filters.append({'id': finnr, 'type': 'tbl', 'name': 'МНН', 'icon':'globe', 'data': self.filter_innr(flt_active, org_id)})
+                filters.append(self.filter_innr(flt_active, org_id))
             if ftrnr == f:
-                filters.append({'id': ftrnr, 'type': 'tbl', 'name': 'Торговое наименование', 'icon':'trademark', 'data': self.filter_trnr(flt_active, org_id)})
+                filters.append(self.filter_trnr(flt_active, org_id))
             if fwinr == f:
-                filters.append({'id': fwinr, 'type': 'tbl', 'name': 'Победитель торгов', 'icon':'handshake', 'data': self.filter_winr(flt_active, org_id)})
+                filters.append(self.filter_winr(flt_active, org_id))
             if fcust == f:
-                filters.append({'id': fcust, 'type': 'tbl', 'name': 'Грузополучатель', 'icon':'ambulance', 'data': self.filter_cust(flt_active, org_id)})
+                filters.append(self.filter_cust(flt_active, org_id))
 
         return filters
 
@@ -203,10 +224,10 @@ class SalessheduleView(FiltersView):
             hsy_active = RawModel(queries.q_sales_year).filter(org_id=org_id).order_by('1', '2')
             hsm_active = RawModel(queries.q_sales_month).filter(org_id=org_id).order_by('1', '2')
             if flt_active:
-                if not (0 in flt_active[fempl]['list']):
+                if not self.zero_in(flt_active, fempl):
                     # Если не выбрано 'Без учета Таргет' то фильтруем по сотрудникам
-                    hsy_active = hsy_active.filter( employee_in=extra_in_filter('employee_id', flt_active[fempl]) )
-                    hsm_active = hsm_active.filter(employee_in=extra_in_filter('employee_id', flt_active[fempl]))
+                    hsy_active = hsy_active.filter( employee_in=extra_in_filter('c.employee_id', flt_active[fempl]) )
+                    hsm_active = hsm_active.filter(employee_in=extra_in_filter('c.employee_id', flt_active[fempl]))
 
                 hsy_active = hsy_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
                                                markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \

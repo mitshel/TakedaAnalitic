@@ -1,6 +1,17 @@
 <script type="text/javascript">
 var timerID = 0;
 
+// Спец фильтр, который скрывает строки с установленным полем DISABLED  в таблицах Datatables
+$.fn.dataTable.ext.search.push(
+    function( settings, data, DataIndex ) {
+        var disabled = settings.aoData[DataIndex]._aData.disabled;
+        if (disabled == '0')
+            return true
+        else
+            return false;
+    }
+);
+
 function processAjaxData(data, src_id) {
 
     {% for flt in filters %}
@@ -9,6 +20,15 @@ function processAjaxData(data, src_id) {
             for (var i in data.filters.{{ flt.id }}.data) $('#{{ flt.id }}_'+data.filters.{{ flt.id }}.data[i].iid).removeClass('disabled');
         {% endif %}
         {% if flt.type == 'tbl' %}
+            // Скрываем (дисаблим) строки
+            tbl_{{ flt.id }}.data().each( function (d) { d.disabled = '1'; } );
+            for (var i in data.filters.{{ flt.id }}.data) {
+                d = tbl_{{ flt.id }}.row('#{{ flt.id }}_'+data.filters.{{ flt.id }}.data[i].iid);
+                if ( d && d.data() ) d.data().disabled = '0';
+            }
+            tbl_{{ flt.id }}.draw();
+        {% endif %}
+        {% if flt.type == 'ajx' %}
             // Таблицу перегружаем только если перегрузка не иницирована этой же таблицей
             if (src_id != '{{ flt.id }}_') tbl_{{ flt.id }}.ajax.reload( null, true );
         {% endif %}
@@ -31,7 +51,7 @@ function query_data() {
             var {{ flt.id }}_active = arr.join(',');
         {% endif %}
 
-        {% if flt.type == 'tbl' %}
+        {% if flt.type == 'ajx' or flt.type == 'tbl' %}
             var {{ flt.id }}_active = {{ flt.id }}_selected.join(',');
         {% endif %}
     {% endfor %}
