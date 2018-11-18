@@ -2,17 +2,11 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.utils.html import escape
 from db.models import Org
 
-from db.models import Hs_create
-
 class AjaxRawDatatableView(BaseDatatableView):
-    Hs = None
-
-    def get_initial_queryset(self):
+    def init_dynamic_org(self):
         org = Org.objects.filter(employee__users=self.request.user)
-        print('2==>', org[0].id, org[0].name)
-        self.Hs = Hs_create('org_CACHE_{}'.format(org[0].id if org else 0))
-        #self.Hs = Hs_create('Test_CACHE_1')
-        return []
+        org_id = org[0].id if org else 0
+        return org_id
 
     def render_column(self, row, column):
         value = row.get(column,'')

@@ -60,7 +60,7 @@ q_markets_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_market a
 inner join org_CACHE_{{ org_id }} b on a.id=b.market_id and b.cust_id<>0
-{% if employee_in %}inner join db_lpu_employee c on b.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
+{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 {% if org_id %}where a.org_id = {{ org_id }} {% endif %}
 {% endautoescape %} 
 """
@@ -68,7 +68,7 @@ inner join org_CACHE_{{ org_id }} b on a.id=b.market_id and b.cust_id<>0
 q_years_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from org_CACHE_{{ org_id }} a
-{% if employee_in %}inner join db_lpu_employee b on a.cust_id=b.lpu_id and {{ employee_in }} {% endif %}
+{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where a.PlanTYear is not Null and a.cust_id is Not Null
 {% endautoescape %} 
 """
@@ -83,7 +83,41 @@ q_status_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_statusT a
 inner join org_CACHE_{{ org_id }} b on a.id=b.statusT_ID and b.cust_id<>0
-{% if employee_in %}inner join db_lpu_employee c on b.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
+{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+{% endautoescape %} 
+"""
+
+q_innr_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from db_innr a
+inner join org_CACHE_{{ org_id }} b on a.id=b.innNx and b.cust_id<>0
+{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+{% if market_in %}inner join db_market_innrs m on a.id=m.innr_id and {{ market_in }} {% endif %}
+{% endautoescape %} 
+"""
+
+q_tradenr_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from db_tradenr a
+inner join org_CACHE_{{ org_id }} b on a.id=b.tradeNx and b.cust_id<>0
+{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+{% if market_in %}inner join db_market_tmnrs m on a.id=m.tradenr_id and {{ market_in }} {% endif %}
+{% endautoescape %} 
+"""
+
+q_winner_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from db_winnerorg a
+inner join org_CACHE_{{ org_id }} b on a.id=b.winner_id and b.cust_id<>0
+{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+{% endautoescape %} 
+"""
+
+q_lpu_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from db_lpu a
+inner join org_CACHE_{{ org_id }} b on a.cust_id=b.cust_id and b.cust_id<>0
+{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 {% endautoescape %} 
 """
 
@@ -92,7 +126,7 @@ q_sales_year = """
 select b.name as market_name, PlanTYear as iid, Sum(TenderPrice)/1000000 as product_cost_sum
 from org_CACHE_{{ org_id }} a
 left join db_market b on a.market_id=b.id and org_id={{ org_id }}
-{% if employee_in %}inner join db_lpu_employee c on a.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
+{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where PlanTYear is not NULL and a.cust_id<>0
 {% if years_in %}and {{ years_in }} {% endif %}
 {% if markets_in %}and {{ markets_in }} {% endif %}
@@ -106,7 +140,7 @@ q_sales_month = """
 select b.name as market_name, month(ProcDt) as mon, Sum(TenderPrice)/1000000 as product_cost_sum, count(*) as product_count
 from org_CACHE_{{ org_id }} a
 left join db_market b on a.market_id=b.id and org_id={{ org_id }}
-{% if employee_in %}inner join db_lpu_employee c on a.cust_id=c.lpu_id and {{ employee_in }} {% endif %}
+{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where PlanTYear is not NULL and a.cust_id<>0
 {% if years_in %}and {{ years_in }} {% endif %}
 {% if markets_in %}and {{ markets_in }} {% endif %}

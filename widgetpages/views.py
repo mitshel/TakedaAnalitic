@@ -81,7 +81,7 @@ class FiltersView(View):
         else:
             market_enabled = RawModel(queries.q_markets_hs).filter(fields="a.id as iid").filter(org_id=org_id)
             if not self.zero_in(flt_active, fempl):
-                market_enabled = market_enabled.filter(employee_in=extra_in_filter('c.employee_id', flt_active[fempl]))
+                market_enabled = market_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
         market_list = list(market_enabled.open().fetchall())
         market_enabled.close()
         return {'id': fmrkt,
@@ -96,7 +96,7 @@ class FiltersView(View):
         else:
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid").filter(org_id=org_id)
             if not self.zero_in(flt_active, fempl):
-                year_enabled = year_enabled.filter(employee_in=extra_in_filter('b.employee_id', flt_active[fempl]))
+                year_enabled = year_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
         year_list = list(year_enabled.open().fetchall())
         year_enabled.close()
         return {'id': fyear,
@@ -111,7 +111,7 @@ class FiltersView(View):
         else:
             status_enabled = RawModel(queries.q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
             if not self.zero_in(flt_active, fempl):
-                status_enabled = status_enabled.filter(employee_in=extra_in_filter('c.employee_id', flt_active[fempl]))
+                status_enabled = status_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
         status_list = list(status_enabled.open().fetchall())
         status_enabled.close()
         return {'id': fstat,
@@ -226,8 +226,8 @@ class SalessheduleView(FiltersView):
             if flt_active:
                 if not self.zero_in(flt_active, fempl):
                     # Если не выбрано 'Без учета Таргет' то фильтруем по сотрудникам
-                    hsy_active = hsy_active.filter( employee_in=extra_in_filter('c.employee_id', flt_active[fempl]) )
-                    hsm_active = hsm_active.filter(employee_in=extra_in_filter('c.employee_id', flt_active[fempl]))
+                    hsy_active = hsy_active.filter( employee_in=extra_in_filter('e.employee_id', flt_active[fempl]) )
+                    hsm_active = hsm_active.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
 
                 hsy_active = hsy_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
                                                markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
