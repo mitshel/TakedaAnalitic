@@ -69,7 +69,7 @@ class FiltersView(View):
         employee_list=list(employee_enabled.open().fetchall())
         employee_enabled.close()
         return {'id': fempl,
-                'type': 'tbl',
+                'type': 'btn',
                 'name': 'Таргет',
                 'icon':'user',
                 'expanded': 'false',
@@ -100,7 +100,7 @@ class FiltersView(View):
         year_list = list(year_enabled.open().fetchall())
         year_enabled.close()
         return {'id': fyear,
-                'type': 'tbl',
+                'type': 'btn',
                 'name': 'Год поставки',
                 'icon':'calendar',
                 'data': year_list}
