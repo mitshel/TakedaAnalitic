@@ -38,8 +38,6 @@
 
 <script>
     function ChartsUpdate1(data, src_id) {
-        ta_competitions_table.ajax.reload( null, true );
-
         // Скрываем/показываем столбцы в соответсвии с активностью кнопок по годам
         var s = [];
         var h = [];
@@ -48,7 +46,8 @@
                 .attr('data-id').toString()+':name')
                 .visible($(this).hasClass('active') & !$(this).hasClass('disabled'),false);
         });
-        ta_competitions_table.columns.adjust().draw( true );
+        ta_competitions_table.ajax.reload( null, true );
+        //ta_competitions_table.columns.adjust().draw( true );
     }
     function ChartsUpdate2(data, src_id) {
     }
