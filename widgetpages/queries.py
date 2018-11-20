@@ -1,8 +1,8 @@
 # Конкурентный анализ
 #
-q_competitions = """
+q_competitions_lpu = """
 {% autoescape off %}
-select pvt.cust_id as id, l.Org_CustINN, l.Org_CustNm, pvt.tradeNx, t.name 
+select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.tradeNx, t.name 
     {% for y in years %},[{{y}}]{% endfor %}
     from
     (
@@ -20,7 +20,7 @@ select pvt.cust_id as id, l.Org_CustINN, l.Org_CustNm, pvt.tradeNx, t.name
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if lpu__icontains %}and l.Org_CustNm like '%{{ lpu__icontains }}%' {% endif %}
+        {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
     ) m
     PIVOT
     (
@@ -28,6 +28,37 @@ select pvt.cust_id as id, l.Org_CustINN, l.Org_CustNm, pvt.tradeNx, t.name
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
     left join db_lpu l on pvt.cust_id = l.cust_id
+    left join db_TradeNR t on pvt.TradeNx = t.id
+{% endautoescape %}  
+"""
+
+q_competitions_market = """
+{% autoescape off %}
+select pvt.market_id as id, pvt.market_name as Nm, pvt.tradeNx, t.name 
+    {% for y in years %},[{{y}}]{% endfor %}
+    from
+    (
+        select s.market_id, s.market_name, tradeNx, PlanTYear, TenderPrice from [dbo].[org_CACHE_{{org_id}}] s
+        left join db_lpu l on s.cust_id = l.cust_id
+        left join db_WinnerOrg w on s.Winner_ID = w.id
+        left join db_TradeNR t on s.TradeNx = t.id
+        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        where s.TradeNx > 0
+        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+        {% if employees %}and e.employee_id in ({{employees}}) {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %}    
+        {% if winrs_in %}and {{winrs_in}} {% endif %} 
+        {% if innrs_in %}and {{innrs_in}} {% endif %}
+        {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
+    ) m
+    PIVOT
+    (
+    sum(TenderPrice)
+    for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
+    ) as pvt
     left join db_TradeNR t on pvt.TradeNx = t.id
 {% endautoescape %}  
 """

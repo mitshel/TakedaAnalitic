@@ -20,8 +20,24 @@
         table.table-hover tbody tr td:hover {
             background-color: #bfbfe0;
         }
-    </style>
+        .navbar-nav li:hover > ul.dropdown-menu {
+            display: block;
+        }
+        .dropdown-submenu {
+            position:relative;
+        }
+        .dropdown-submenu>.dropdown-menu {
+            top:0;
+            left:100%;
+            margin-top:-6px;
+        }
 
+        /* rotate caret on hover */
+        .dropdown-menu > li > a:hover:after {
+            text-decoration: underline;
+            transform: rotate(-90deg);
+        }
+    </style>
 </head>
 <body style="padding:60px 0 0 0;">
     <nav class="navbar navbar-expand-md navbar-dark fixed-top" style="background-color: #0a76bf;">
@@ -37,16 +53,21 @@
           </li>
           <li class="nav-item dropdown active">
             <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Аналитика <span class="sr-only">(current)</span></a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href="{% url 'widgetpages:salesshedule' %}">График продаж</a>
-              <a class="dropdown-item disabled" href="#">Анализ упаковок</a>
-              <a class="dropdown-item disabled" href="#">Анализ средней цены</a>
-              <a class="dropdown-item" href="{% url 'widgetpages:competitions' %}">Конкурентный анализ</a>
-              <a class="dropdown-item disabled" href="#">Каналы финансирования</a>
-              <a class="dropdown-item disabled" href="#">Доля</a>
-              <a class="dropdown-item disabled" href="#">Анализ продаж</a>
-              <a class="dropdown-item disabled" href="#">Анализ учреждений</a>
-            </div>
+            <ul class="dropdown-menu">
+              <li><a class="dropdown-item" href="{% url 'widgetpages:salesshedule' %}">График продаж</a></li>
+              <li><a class="dropdown-item disabled" href="#">Анализ упаковок</a></li>
+              <li><a class="dropdown-item disabled" href="#">Анализ средней цены</a></li>
+              <li class="dropdown-submenu"><a class="dropdown-item dropdown-toggle" href="#">Конкурентный анализ</a>
+                <ul class="dropdown-menu" aria-labelledby="dropdown1-1">
+                    <li><a class="dropdown-item" href="{% url 'widgetpages:competitions_lpu' %}">По ЛПУ</a></li>
+                    <li><a class="dropdown-item" href="{% url 'widgetpages:competitions_market' %}">По Рынкам</a></li>
+                </ul>
+              </li>
+              <li><a class="dropdown-item disabled" href="#">Каналы финансирования</a></li>
+              <li><a class="dropdown-item disabled" href="#">Доля</a></li>
+              <li><a class="dropdown-item disabled" href="#">Анализ продаж</a></li>
+              <li><a class="dropdown-item disabled" href="#">Анализ учреждений</a></li>
+            </ul>
           </li>
         </ul>
 

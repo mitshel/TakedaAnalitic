@@ -243,11 +243,12 @@ class SalessheduleView(FiltersView):
             hsm_active.close()
         return pivot_data
 
+
 class CompetitionsView(FiltersView):
     template_name = 'ta_competitions.html'
     ajax_url = reverse_lazy('widgetpages:competitions')
     view_id = 'competitions'
-    view_name = 'Конкурентный анализ (тыс.руб.)'
+    view_name = 'Конкурентный анализ(тыс.руб.)'
 
     def data(self, flt=None, flt_active=None, org_id=0):
         data = {}
@@ -258,3 +259,15 @@ class CompetitionsView(FiltersView):
 
         data['year'] = years_active
         return data
+
+class CompetitionsLpuView(CompetitionsView):
+    ajax_url = reverse_lazy('widgetpages:competitions_lpu')
+    view_id = 'competitions_lpu'
+    view_name = 'Конкурентный анализ по ЛПУ (тыс.руб.)'
+
+class CompetitionsMarketView(CompetitionsView):
+    ajax_url = reverse_lazy('widgetpages:competitions_market')
+    view_id = 'competitions_market'
+    view_name = 'Конкурентный анализ по рынкам (тыс.руб.)'
+
+

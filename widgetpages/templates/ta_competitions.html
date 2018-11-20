@@ -22,7 +22,7 @@
 
     </style>
 	<div class="col-12">
-        <h5>&nbsp;{{ view.name }}</h5>
+        <h5>&nbsp;{{ view.name }} ({% if view.id == "competitions_lpu" %}<a href="{% url "widgetpages:competitions_market" %}">по Рынкам</a>{% else %}<a href="{% url "widgetpages:competitions_lpu" %}">по ЛПУ</a>{% endif %})</h5>
         <br>
 		<table class="table table-sm table-hover display w-100 datatable" width="100%" id="ta_competitions_table">
         <thead class="position-sticky sticky-top">
@@ -84,8 +84,8 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 //responsive: true,
                 "pageLength": 25,
                 "columnDefs": [
-                    { "name": "Org_CustINN", "targets": 0 , "visible": false, "searchable": true },
-                    { "name": "Org_CustNm", "targets": 1, "visible": false, "searchable": true },
+                    { "name": "ext", "targets": 0 , "visible": false, "searchable": true },
+                    { "name": "Nm", "targets": 1, "visible": false, "searchable": true },
                     { "name": "name", "targets": 2, "visible": true, "searchable": false },
                     {% for y in data.year %}
                     { "name": "{{ y }}", "targets": {{ forloop.counter0|add:3 }}, "visible": true, "searchable": false,
@@ -100,6 +100,7 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                     "type": "POST",
                     "data": function ( d ) {
                         d.filters_ajax_request = JSON.stringify(filters_ajax_request);
+                        d.view_id = '{{ view.id }}';
                         d.csrfmiddlewaretoken = '{{ csrf_token }}';
                     }
                 },
@@ -132,19 +133,6 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 },
                 "language": lang_russian
             });
-
-ta_competitions_table.on('responsive-resize', function (event, datatable, columns) {
-    // show/ hide group-end cells for columns that became visible/ invisible
-    //var activeColumns = {};
-
-    //activeColumns = columns.filter(function (value, index) {
-    //    return (value === true || value === false) ? true : false;
-    //});
-
-    $('tr.dtrg-end').each(function () {
-        $('td', this).css('display', 'none');
-    });
-});
 
 </script>
 {%  endblock %}

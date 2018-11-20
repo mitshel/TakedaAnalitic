@@ -13,6 +13,7 @@ class CompetitionsAjaxTable(AjaxRawDatatableView):
 
     def get_initial_queryset(self):
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
+        view_id = self.request.POST.get('view_id', 'competitions_lpu')
         flt = json.loads(filters_ajax_request)
         flt_active = {}
         if flt:
@@ -31,7 +32,8 @@ class CompetitionsAjaxTable(AjaxRawDatatableView):
             years_active = flt_active[fyear]['list']
 
         if years_active:
-            rawmodel = RawModel(queries.q_competitions)
+            q_competitions = queries.q_competitions_lpu if view_id == 'competitions_lpu' else queries.q_competitions_market
+            rawmodel = RawModel(q_competitions)
             rawmodel = rawmodel.filter(years=years_active,
                            markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
                            status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active else ''),
@@ -41,7 +43,7 @@ class CompetitionsAjaxTable(AjaxRawDatatableView):
                            innrs_in = extra_in_filter('s.InnNx', flt_active[finnr] if flt_active else ''),
                            trnrs_in = extra_in_filter('s.TradeNx', flt_active[ftrnr] if flt_active else ''),
                            org_id = org_id,
-                           ).order_by('l.Org_CustNm', 'pvt.tradeNx')
+                           ).order_by('l.Org_CustNm' if view_id == 'competitions_lpu' else 'pvt.market_id', 'pvt.tradeNx')
         else:
             rawmodel = RawModel('select null as Org_CustINN, null as Org_CustNm, null as name')
 
@@ -50,6 +52,6 @@ class CompetitionsAjaxTable(AjaxRawDatatableView):
     def filter_queryset(self, qs):
         search = self.request.POST.get('search[value]', None)
         if search:
-            qs = qs.filter(lpu__icontains=search)
+            qs = qs.filter(icontains=search)
 
         return qs
