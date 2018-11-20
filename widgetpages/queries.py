@@ -6,7 +6,7 @@ select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.tradeNx,
     {% for y in years %},[{{y}}]{% endfor %}
     from
     (
-        select s.cust_id, tradeNx, PlanTYear, TenderPrice from [dbo].[org_CACHE_{{org_id}}] s
+        select s.cust_id, tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.TradeNx = t.id
@@ -24,7 +24,7 @@ select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.tradeNx,
     ) m
     PIVOT
     (
-    sum(TenderPrice)
+    sum(Summa)
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
     left join db_lpu l on pvt.cust_id = l.cust_id
@@ -38,7 +38,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.tradeNx, t.name
     {% for y in years %},[{{y}}]{% endfor %}
     from
     (
-        select s.market_id, s.market_name, tradeNx, PlanTYear, TenderPrice from [dbo].[org_CACHE_{{org_id}}] s
+        select s.market_id, s.market_name, tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.TradeNx = t.id
@@ -56,7 +56,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.tradeNx, t.name
     ) m
     PIVOT
     (
-    sum(TenderPrice)
+    sum(Summa)
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
     left join db_TradeNR t on pvt.TradeNx = t.id
@@ -154,7 +154,7 @@ inner join org_CACHE_{{ org_id }} b on a.cust_id=b.cust_id and b.cust_id<>0
 
 q_sales_year = """
 {% autoescape off %}
-select b.name as market_name, PlanTYear as iid, Sum(TenderPrice)/1000000 as product_cost_sum
+select b.name as market_name, PlanTYear as iid, Sum(Summa)/1000000 as product_cost_sum
 from org_CACHE_{{ org_id }} a
 left join db_market b on a.market_id=b.id and org_id={{ org_id }}
 {% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
@@ -168,7 +168,7 @@ group by b.name, PlanTYear
 
 q_sales_month = """
 {% autoescape off %}
-select b.name as market_name, month(ProcDt) as mon, Sum(TenderPrice)/1000000 as product_cost_sum, count(*) as product_count
+select b.name as market_name, month(ProcDt) as mon, Sum(Summa)/1000000 as product_cost_sum, count(*) as product_count
 from org_CACHE_{{ org_id }} a
 left join db_market b on a.market_id=b.id and org_id={{ org_id }}
 {% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}

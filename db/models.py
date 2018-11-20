@@ -125,6 +125,7 @@ class WinnerOrg(models.Model):
 #     Order_Price = models.FloatField(db_column='Order_Price', null=True)
 #     Order_Count = models.IntegerField(db_column='Order_Count', null=True)
 #     Order_Sum = models.FloatField(db_column='Order_Sum', null=True)
+#     Summa = models.FloatField(db_column='Summa', null=True)
 #     Ship_FinalPrice = models.FloatField(db_column='Ship_FinalPrice', null=True)
 #     Winner_ID = models.ForeignKey(WinnerOrg, db_column='Winner_ID', null=True, db_index=True, on_delete=models.SET_NULL)
 #
