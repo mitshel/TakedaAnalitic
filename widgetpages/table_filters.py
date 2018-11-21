@@ -39,8 +39,8 @@ class FilterListJson(AjaxRawDatatableView):
         if not self.zero_in(flt_active, fempl):
             qs = qs.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
 
-        if self.kwargs['flt_id'] in (finnr, ftrnr):
-                qs = qs.filter(market_in=extra_in_filter('m.market_id', flt_active[fmrkt]))
+        #if self.kwargs['flt_id'] in (finnr, ftrnr):
+        #        qs = qs.filter(market_in=extra_in_filter('m.market_id', flt_active[fmrkt]))
 
         return qs
 
