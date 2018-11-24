@@ -12,6 +12,7 @@ select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.{{ marke
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         left join db_lpu_employee e on s.cust_id=e.lpu_id
         --where s.{{ market_type_prefix }}TradeNx > 0
+        where 1=1 
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
@@ -44,6 +45,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         left join db_lpu_employee e on s.cust_id=e.lpu_id
         --where s.{{ market_type_prefix }}TradeNx > 0
+        where 1=1 
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}

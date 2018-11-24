@@ -26,9 +26,9 @@ def extra_in_filter(field, flt):
                        'not ' if flt['select'] else '',
                        ','.join([str(e) for e in flt['list']]))
         else:
-            ef = '1=1' if flt['select'] else '1>1'
+            ef = '' if flt['select'] else '1>1'  #1=1
     else:
-        ef = '1=1'
+        ef = '' #1=1
 
     return ef
 

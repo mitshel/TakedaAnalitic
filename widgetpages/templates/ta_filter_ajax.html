@@ -39,8 +39,7 @@ function processAjaxData(data, src_id) {
     ChartsUpdate3(data,src_id);
 }
 
-function query_data() {
-    action_url = '{{ ajax_url }}';
+function make_request() {
     {% for flt in filters %}
         {% if flt.type == 'btn' %}
             // Создаем список активных кнопок сотрудников
@@ -64,6 +63,13 @@ function query_data() {
                             {% endfor %}
                             'market_type': market_type,
                             'csrfmiddlewaretoken': '{{ csrf_token }}' }
+
+    return filters_ajax_request;
+}
+
+function query_data() {
+    action_url = '{{ ajax_url }}';
+    make_request();
 
     if (timerID) clearTimeout(timerID);
     timerID = setTimeout(function () {
@@ -149,5 +155,6 @@ cookie = getCookie('marketType');
 if (cookie) {
     $('#marketType').val(cookie);
 }
+//make_request();
 
 </script>

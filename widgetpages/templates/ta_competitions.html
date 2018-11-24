@@ -42,12 +42,14 @@
         var s = [];
         var h = [];
         $('button[id^=year_]').each(function() {
-            ta_competitions_table.columns($(this)
-                .attr('data-id').toString()+':name')
-                .visible($(this).hasClass('active') & !$(this).hasClass('disabled'),false);
+            show_status = $(this).hasClass('active') & !$(this).hasClass('disabled');
+            column = ta_competitions_table.columns( $(this).attr('data-id').toString()+':name' )
+            if (column.visible()[0]!=show_status) {
+                column.visible(show_status, false);
+            };
         });
-        //ta_competitions_table.ajax.reload( null, true );
-        ta_competitions_table.columns.adjust().draw( true );
+        ta_competitions_table.ajax.reload( null, true );
+        //ta_competitions_table.columns.adjust().draw( true );
     }
     function ChartsUpdate2(data, src_id) {
     }
@@ -99,7 +101,7 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                     "url": "{% url 'widgetpages:jcompetitions' %}",
                     "type": "POST",
                     "data": function ( d ) {
-                        d.filters_ajax_request = JSON.stringify(filters_ajax_request);
+                        d.filters_ajax_request = JSON.stringify(make_request());
                         d.view_id = '{{ view.id }}';
                         d.csrfmiddlewaretoken = '{{ csrf_token }}';
                     }
