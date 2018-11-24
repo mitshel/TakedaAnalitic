@@ -128,7 +128,26 @@ $(document).on('click', '#serv-test', function(event) {
 $('#marketType').on('change', function() {
   src_id = 'empl_';
   query_data();
+
+    // задаём время, через которое наш cookie истечёт
+    var date = new Date();
+    date.setDate(date.getDate() + 7);
+
+    // записываем cookie
+    document.cookie = 'marketType=' + $('#marketType').val() +'; path=/; expires=' + date.toUTCString();
 });
 
+// возвращает cookie с именем name, если есть, если нет, то undefined
+function getCookie(name) {
+    var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+    ));
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+cookie = getCookie('marketType');
+if (cookie) {
+    $('#marketType').val(cookie);
+}
 
 </script>
