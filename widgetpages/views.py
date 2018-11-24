@@ -53,7 +53,7 @@ class FiltersView(View):
     select_market_type = 0
 
     def init_dynamic_org(self):
-        org = Org.objects.filter(employee__users=self.request.user)
+        org = Org.objects.filter(users=self.request.user)
         org_id = org[0].id if org else 0
         return org_id
 

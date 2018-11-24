@@ -16,6 +16,7 @@ class Org_log_Inline(admin.TabularInline):
 class Org_admin(admin.ModelAdmin):
     list_display = ('name','sync_time')
     inlines = (Org_log_Inline, )
+    filter_horizontal = ('users',)
 
 class Employee_admin(admin.ModelAdmin):
     list_filter = ['org__name']
