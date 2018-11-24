@@ -56,10 +56,13 @@ function query_data() {
         {% endif %}
     {% endfor %}
 
+    market_type = $('#marketType').val();
+
     filters_ajax_request = {{% for flt in filters %}
                             '{{ flt.id }}_active': {{ flt.id }}_active,
                             '{{ flt.id }}_select': {{ flt.id }}_selectAll,
                             {% endfor %}
+                            'market_type': market_type,
                             'csrfmiddlewaretoken': '{{ csrf_token }}' }
 
     if (timerID) clearTimeout(timerID);
@@ -118,8 +121,13 @@ function test_timeout(tt) {
 }
 
 $(document).on('click', '#serv-test', function(event) {
-    src_id = 'empl_'
+    src_id = 'empl_';
     test_timeout(parseInt( $('#test_time').val() )*1000 );
+});
+
+$('#marketType').on('change', function() {
+  src_id = 'empl_';
+  query_data();
 });
 
 

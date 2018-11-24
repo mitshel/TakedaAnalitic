@@ -17,8 +17,18 @@
 
     <div id="collapse_serv" class="collapse" aria-labelledby="heading_serv">
       <div class="card-body">
-            <button type="button" id="serv-test" class="btn btn-secondary btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">Автотест</button>
+          <div class="row"><div class="container">
+            <button type="button" id="serv-test" class="btn btn-secondary btn-sm inline" data-toggle="button" aria-pressed="false" autocomplete="off">Автотест</button>
             Задержка, сек.: <input type="text" class="form-control-sm inline" id="test_time" style="width: 30px;" value="5">
+          </div></div>
+          {% if view.select_market_type %}
+              <div class="row"><div class="container" style="margin-top:5px">
+              <select class="form-control" id="marketType">
+                      <option selected value="1">Торг.марка по аукциону</option>
+                      <option value="2">Торг.марка по контракту</option>
+              </select>
+              </div></div>
+          {% endif %}
       </div>
     </div>
   </div>

@@ -10,3 +10,6 @@ https://code.djangoproject.com/wiki/DynamicModels
 
 Responsive SubTotal:
 https://codepen.io/jasonblewis/pen/PWgwPL
+
+Bootstrap widgets:
+https://developer.snapappointments.com/bootstrap-select/

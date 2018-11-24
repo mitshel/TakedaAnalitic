@@ -50,6 +50,7 @@ class FiltersView(View):
     template_name = 'ta_competitions.html'
     view_id = 'blank'
     view_name = 'Пустая страница'
+    select_market_type = 0
 
     def init_dynamic_org(self):
         org = Org.objects.filter(employee__users=self.request.user)
@@ -188,7 +189,7 @@ class FiltersView(View):
         data = self.data(filters, None, org_id)
         return render(request, self.template_name, {'filters': filters,
                                                     'data': data,
-                                                    'view': {'id': self.view_id, 'name': self.view_name},
+                                                    'view': {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type},
                                                     'ajax_url': self.ajax_url})
 
     def post(self, request, *args, **kwargs):
@@ -205,7 +206,7 @@ class FiltersView(View):
                 data = self.data(filters, flt_active, org_id)
                 response = {'filters': self.get_filters_dict(filters),
                             'data': data,
-                            'view': {'id' : self.view_id, 'name': self.view_name},
+                            'view': {'id' : self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type},
                             'ajax_url': self.ajax_url}
                 return JsonResponse(response)
 
@@ -249,6 +250,7 @@ class CompetitionsView(FiltersView):
     ajax_url = reverse_lazy('widgetpages:competitions')
     view_id = 'competitions'
     view_name = 'Конкурентный анализ(тыс.руб.)'
+    select_market_type = 1
 
     def data(self, flt=None, flt_active=None, org_id=0):
         data = {}

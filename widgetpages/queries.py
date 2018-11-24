@@ -2,16 +2,16 @@
 #
 q_competitions_lpu = """
 {% autoescape off %}
-select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.tradeNx, t.name 
+select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.{{ market_type_prefix }}tradeNx as tradeNx, t.name 
     {% for y in years %},[{{y}}]{% endfor %}
     from
     (
-        select s.cust_id, tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
+        select s.cust_id, {{ market_type_prefix }}tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
-        left join db_TradeNR t on s.TradeNx = t.id
+        left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         left join db_lpu_employee e on s.cust_id=e.lpu_id
-        where s.TradeNx > 0
+        where s.{{ market_type_prefix }}TradeNx > 0
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
@@ -28,22 +28,22 @@ select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.tradeNx,
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
     left join db_lpu l on pvt.cust_id = l.cust_id
-    left join db_TradeNR t on pvt.TradeNx = t.id
+    left join db_TradeNR t on pvt.{{ market_type_prefix }}TradeNx = t.id
 {% endautoescape %}  
 """
 
 q_competitions_market = """
 {% autoescape off %}
-select pvt.market_id as id, pvt.market_name as Nm, pvt.tradeNx, t.name 
+select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}tradeNx as tradeNx, t.name 
     {% for y in years %},[{{y}}]{% endfor %}
     from
     (
-        select s.market_id, s.market_name, tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
+        select s.market_id, s.market_name, {{ market_type_prefix }}tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
-        left join db_TradeNR t on s.TradeNx = t.id
+        left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         left join db_lpu_employee e on s.cust_id=e.lpu_id
-        where s.TradeNx > 0
+        where s.{{ market_type_prefix }}TradeNx > 0
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
@@ -59,7 +59,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.tradeNx, t.name
     sum(Summa)
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
-    left join db_TradeNR t on pvt.TradeNx = t.id
+    left join db_TradeNR t on pvt.{{ market_type_prefix }}TradeNx = t.id
 {% endautoescape %}  
 """
 

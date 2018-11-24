@@ -46,8 +46,8 @@
                 .attr('data-id').toString()+':name')
                 .visible($(this).hasClass('active') & !$(this).hasClass('disabled'),false);
         });
-        ta_competitions_table.ajax.reload( null, true );
-        //ta_competitions_table.columns.adjust().draw( true );
+        //ta_competitions_table.ajax.reload( null, true );
+        ta_competitions_table.columns.adjust().draw( true );
     }
     function ChartsUpdate2(data, src_id) {
     }
@@ -82,7 +82,7 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 //fixedHeader: true,
                 //"scrollX": true,
                 //responsive: true,
-                "pageLength": 25,
+                "pageLength": 50,
                 "columnDefs": [
                     { "name": "ext", "targets": 0 , "visible": false, "searchable": true },
                     { "name": "Nm", "targets": 1, "visible": false, "searchable": true },
