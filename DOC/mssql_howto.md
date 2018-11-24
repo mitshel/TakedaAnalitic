@@ -13,3 +13,7 @@ https://codepen.io/jasonblewis/pen/PWgwPL
 
 Bootstrap widgets:
 https://developer.snapappointments.com/bootstrap-select/
+
+Tree:
+https://www.jstree.com/demo/
+https://habr.com/post/151239/

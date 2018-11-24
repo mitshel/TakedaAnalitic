@@ -1,0 +1,16 @@
+{% extends "ta_main.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block content %}
+        <div id="mySidenav" class="sidenav">
+        </div>
+
+         <div id="page-content" style="padding:0;">
+             <div style="padding-left:0.5rem; padding-right:0;">
+                  {% block page %}{% endblock %}
+             </div>
+         </div>
+
+{% block afterpage %}{% endblock %}
+{% endblock %}

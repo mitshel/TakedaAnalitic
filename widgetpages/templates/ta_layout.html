@@ -111,34 +111,29 @@
              <div style="padding-left:0.5rem; padding-right:0;">
                   {% block page %}{% endblock %}
              </div>
-             <hr class="my-3">
-             <footer class="container">
-              <p>&copy; ФармАналитика 2018</p>
-             </footer>
          </div>
-     </div>
 
     <script>
-function openNav() {
-    document.getElementById("mySidenav").style.width = "350px";
-    if (window.matchMedia('(max-width: 767px)').matches) {
-        document.getElementById("page-content").style.marginLeft = "0";
-    } else {
-        document.getElementById("page-content").style.marginLeft = "350px";
-    }
-    $('#open-button').css("display","none");
-}
+        function openNav() {
+            document.getElementById("mySidenav").style.width = "350px";
+            if (window.matchMedia('(max-width: 767px)').matches) {
+                document.getElementById("page-content").style.marginLeft = "0";
+            } else {
+                document.getElementById("page-content").style.marginLeft = "350px";
+            }
+            $('#open-button').css("display","none");
+        }
 
-/* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
-function closeNav() {
-    document.getElementById("mySidenav").style.width = "0";
-    document.getElementById("page-content").style.marginLeft = "0";
-    $('#open-button').css("display","block");
-}
+        /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
+        function closeNav() {
+            document.getElementById("mySidenav").style.width = "0";
+            document.getElementById("page-content").style.marginLeft = "0";
+            $('#open-button').css("display","block");
+        }
 
-$(document).ready(function() {
-    openNav()
-});
+        $(document).ready(function() {
+            openNav()
+        });
     </script>
 
 {% block afterpage %}{% endblock %}

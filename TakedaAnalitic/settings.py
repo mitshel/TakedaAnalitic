@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'db',
     'bi_auth',
     'widgetpages',
+    'farmadmin',
 ]
 
 MIDDLEWARE = [

@@ -69,9 +69,25 @@
               <li><a class="dropdown-item disabled" href="#">Анализ учреждений</a></li>
             </ul>
           </li>
+
         </ul>
 
         <ul class="navbar-nav mr-left">
+
+          {% if user.is_superuser or user.is_staff %}
+              <li class="nav-item dropdown active">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-cogs"></i>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{% url 'farmadmin:employee' %}">Сотрудники</a></li>
+                  <li><a class="dropdown-item" href="{% url 'farmadmin:market' %}">Рынки</a></li>
+                  <li class="dropdown-divider"></li>
+                  <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fa fa-wrench"></i> Настройки</a></li>
+                </ul>
+              </li>
+          {% endif %}
+
           {% if bi_auth %}
               <li class="nav-item active">
             {% if user.is_authenticated %}
@@ -79,12 +95,6 @@
             {% else %}
                 <a class="nav-link" href="{% url "login" %}"><i class="fa fa-torsos"></i>Вход</a>
             {% endif %}
-              </li>
-          {% endif %}
-
-          {% if user.is_superuser or user.is_staff %}
-              <li class="nav-item active">
-                <a class="nav-link" href="{% url 'admin:index' %}"><i class="fa fa-cogs"></i></a>
               </li>
           {% endif %}
          </ul>
@@ -101,7 +111,6 @@
     {% endif %}
 
     {% block content %}
-
     <main role="main">
       {% block main-content %}
       {% block body %} {% endblock %}  {# body #}
@@ -111,6 +120,13 @@
         <!-- Example row of columns -->
     </main>
     {% endblock %}  {# content #}
+
+    <!-- Footer -->
+    <hr class="my-3">
+    <footer class="container">
+     <p>&copy; ФармАналитика 2018</p>
+    </footer>
+
     {% block js-block0 %}    {% endblock %}
     {% block js-block1 %}    {% endblock %}
     {% block js-block2 %}    {% endblock %}
