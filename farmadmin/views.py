@@ -64,3 +64,9 @@ class EmployeeAdminView(FarmAdminDetailView):
     template_name = 'fa_employee.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
     model = Employee
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['parents'] = Employee.objects.filter(org=self.org).exclude(id=kwargs['object'].id)
+
+        return context

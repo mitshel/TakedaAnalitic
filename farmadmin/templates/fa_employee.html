@@ -5,8 +5,34 @@
 {% block page %}
 <div class="container-fluid mx-3">
 <div class="row">
-<div class="col">
-    <b>{{ object.name }}</b><br>
+<div class="col-12">
+
+<div class="row">
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <label for="nameInput">Сотрудник</label>
+        <input type="text" class="form-control" id="nameInput" placeholder="" value="{{ object.name }}">
+      </div>
+
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <label for="parentSelect">Руководитель</label>
+        <select class="form-control" id="parentSelect">
+           {% for p in parents %}
+               <option {% if p == object.parent %}selected{% endif %}>{{ p.name }}</option>
+           {% endfor %}
+        </select>
+      </div>
+</div>
+<div class="row">
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="isTarget" {% if object.istarget %}checked{% endif %}>
+          <label class="form-check-label" for="isTarget">
+            Показывать как таргет
+          </label>
+        </div>
+      </div>
+</div>
+
     <br>
     <b>ГРУЗОПОЛУЧАТЕЛИ:</b><br>
     {% for l in object.lpu.all %}
