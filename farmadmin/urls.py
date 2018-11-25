@@ -6,6 +6,7 @@ from farmadmin import views
 
 
 urlpatterns = [
-    path('employee/', bi_login(views.EmployeeAdminView.as_view()), name='employee'),
-    path('market/', bi_login(views.MarketAdminView.as_view()), name='market'),
+    path('employees/', bi_login(views.EmployeesAdminView.as_view()), name='employees'),
+    path('employee/<int:pk>/$', bi_login(views.EmployeeAdminView.as_view()), name='employee'),
+    path('market/', bi_login(views.MarketsAdminView.as_view()), name='markets'),
 ]

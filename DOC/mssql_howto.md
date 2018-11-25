@@ -17,3 +17,6 @@ https://developer.snapappointments.com/bootstrap-select/
 Tree:
 https://www.jstree.com/demo/
 https://habr.com/post/151239/
+
+К такому внешнему виду можно потом перейти (стремится):
+www.skinsme.com/theme/templates/admin/index.html

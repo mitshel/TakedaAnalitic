@@ -92,6 +92,33 @@
 
 </style>
 
+<script type="text/javascript">
+    var filters_ajax_request = {};
+
+    {% include "dt_language.html" %}
+
+    function openNav() {
+        document.getElementById("mySidenav").style.width = "350px";
+        if (window.matchMedia('(max-width: 767px)').matches) {
+            document.getElementById("page-content").style.marginLeft = "0";
+        } else {
+            document.getElementById("page-content").style.marginLeft = "350px";
+        }
+        $('#open-button').css("display","none");
+    }
+
+    /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
+    function closeNav() {
+        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("page-content").style.marginLeft = "0";
+        $('#open-button').css("display","block");
+    }
+
+    $(document).ready(function() {
+        openNav()
+    });
+</script>
+
         <button class="menu-button" id="open-button" onclick="openNav()"></button>
 
         <div id="mySidenav" class="sidenav">
@@ -112,29 +139,6 @@
                   {% block page %}{% endblock %}
              </div>
          </div>
-
-    <script>
-        function openNav() {
-            document.getElementById("mySidenav").style.width = "350px";
-            if (window.matchMedia('(max-width: 767px)').matches) {
-                document.getElementById("page-content").style.marginLeft = "0";
-            } else {
-                document.getElementById("page-content").style.marginLeft = "350px";
-            }
-            $('#open-button').css("display","none");
-        }
-
-        /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
-        function closeNav() {
-            document.getElementById("mySidenav").style.width = "0";
-            document.getElementById("page-content").style.marginLeft = "0";
-            $('#open-button').css("display","block");
-        }
-
-        $(document).ready(function() {
-            openNav()
-        });
-    </script>
 
 {% block afterpage %}{% endblock %}
 {% endblock %}

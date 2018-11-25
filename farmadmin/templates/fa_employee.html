@@ -1,0 +1,28 @@
+{% extends "fa_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+<div class="container-fluid mx-3">
+<div class="row">
+<div class="col">
+    <b>{{ object.name }}</b><br>
+    <br>
+    <b>ГРУЗОПОЛУЧАТЕЛИ:</b><br>
+    {% for l in object.lpu.all %}
+        {{ l.inn }} {{ l.name }} <br>
+    {% endfor %}
+    <br>
+    <b>ПРИВЯЗАННЫЕ АККАУНТЫ:</b><br>
+    {% for u in object.users.all %}
+        {{ u.username }} <br>
+    {% endfor %}
+</div>
+</div>
+</div>
+
+<script>
+
+</script>
+
+{% endblock %}

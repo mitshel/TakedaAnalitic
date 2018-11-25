@@ -3,14 +3,23 @@
 {% load i18n %}
 
 {% block content %}
-        <div id="mySidenav" class="sidenav">
-        </div>
 
-         <div id="page-content" style="padding:0;">
-             <div style="padding-left:0.5rem; padding-right:0;">
-                  {% block page %}{% endblock %}
-             </div>
-         </div>
+<script type="text/javascript">
+{% include "dt_language.html" %}
+</script>
+
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item active" aria-current="page">Настройки</li>
+        {% if org %}<li class="breadcrumb-item active" aria-current="page">{{ org.name }}</li>{% endif %}
+        {% for b in breadcrumbs %}
+            <li class="breadcrumb-item active" aria-current="page"><a href="{{ b.url }}">{{ b.name }}</a></li>
+        {% endfor %}
+        {% if object %}<li class="breadcrumb-item active" aria-current="page">{{ object.name }}</li>{% endif %}
+      </ol>
+    </nav>
+
+    {% block page %}{% endblock %}
 
 {% block afterpage %}{% endblock %}
 {% endblock %}

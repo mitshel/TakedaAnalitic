@@ -80,10 +80,10 @@
                     <i class="fa fa-cogs"></i>
                 </a>
                 <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url 'farmadmin:employee' %}">Сотрудники</a></li>
-                  <li><a class="dropdown-item" href="{% url 'farmadmin:market' %}">Рынки</a></li>
+                  <li><a class="dropdown-item" href="{% url 'farmadmin:employees' %}">Сотрудники</a></li>
+                  <li><a class="dropdown-item" href="{% url 'farmadmin:markets' %}">Рынки</a></li>
                   <li class="dropdown-divider"></li>
-                  <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fa fa-wrench"></i> Настройки</a></li>
+                  <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fa fa-wrench"></i> Администратор</a></li>
                 </ul>
               </li>
           {% endif %}

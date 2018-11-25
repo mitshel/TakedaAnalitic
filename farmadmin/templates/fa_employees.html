@@ -1,0 +1,83 @@
+{% extends "fa_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+<div class="container-fluid mx-3">
+<div class="row">
+    <div style="width:900px;">
+        <div class="row">
+        <div class="col-6">
+            <button type="button" class="btn btn-primary btn-sm"><i class="fa fa-plus"></i> Добавить сотрудника</button>
+        </div>
+        <div class="col-6">
+             <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">Поиск</span>
+              </div>
+              <input type="text" class="form-control" id="searchEmployee" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+            </div>
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-12">
+           <table id="tblEmployee" class="table table-hover table-sm table-striped display w-100"></table>
+        </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+var dsEmployee = [
+    {% for row in object_list %}
+        [{{ row.id }}, '{{ row.name }}', '{{ row.parent.name }}', '{{ row.istarget }}', '{% for u in row.users.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+$(document).ready(function() {
+    var tblEmployee = $('#tblEmployee').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        paging : false,
+        ordering:  true,
+        "order": [[ 1, "asc" ]],
+        data: dsEmployee,
+        columns: [
+            { title: "employee_id", visible: false, searchable: false},
+            { title: "Сотрудник", searchable: true },
+            { title: "Руководитель", searchable: false },
+            { title: "Таргет", searchable: false, //className: 'text-center',
+                 render:function(data, type, row, meta) {
+                     if (data == "True") {
+                         icon = "fa-check";
+                         style = "color:green;"
+                     }
+                     else {
+                         icon = "fa-times";
+                         style = "color:red;"
+                     }
+                     return "<i style='"+ style +"' class='fa "+ icon +"'></i>"
+                 }
+            },
+            { title: "Привязка аккаунтов", searchable: false }
+        ],
+        language: lang_russian
+    } );
+
+    $("#searchEmployee").keyup(function(){
+        tblEmployee.search( this.value ).draw();
+    });
+
+    $('#tblEmployee').on('click', 'tr', function (event) {
+        var id = tblEmployee.row(this).data()[0];
+        location.href='{% url 'farmadmin:employee' 90000000000000009 %}'.replace('90000000000000009',id);
+    } );
+
+} );
+
+
+</script>
+
+{% endblock %}
