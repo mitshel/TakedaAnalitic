@@ -1,7 +1,8 @@
-from django.shortcuts import render
 from django.views.generic import View, TemplateView, ListView, DetailView
-from db.models import Org, Employee, Market
+from db.models import Org, Employee, Market, Lpu
 from django.urls import reverse_lazy
+from django.db.models import Q
+from django_datatables_view.base_datatable_view import BaseDatatableView
 
 # Create your views here.
 class FarmAdminListView(ListView):
@@ -70,3 +71,35 @@ class EmployeeAdminView(FarmAdminDetailView):
         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=kwargs['object'].id)
 
         return context
+
+
+class AjaxLpuAllDatatableView(BaseDatatableView):
+    order_columns = ['name','inn']
+    columns = ['id','inn','name']
+
+    def get_initial_queryset(self):
+        employee = self.request.POST.get('employee', '0')
+        return Lpu.objects.exclude(employee=employee).order_by('name','inn')
+
+    def filter_queryset(self, qs):
+        search = self.request.POST.get('search[value]', None)
+        if search:
+            qs = qs.filter(Q(name__icontains=search)|Q(inn__icontains=search))
+
+        return qs
+
+
+class AjaxLpuEmpDatatableView(BaseDatatableView):
+    order_columns = ['name','inn']
+    columns = ['id','inn','name']
+
+    def get_initial_queryset(self):
+        employee = self.request.POST.get('employee','0')
+        return Lpu.objects.filter(employee=employee).order_by('name','inn')
+
+    def filter_queryset(self, qs):
+        search = self.request.POST.get('search[value]', None)
+        if search:
+            qs = qs.filter(Q(name__icontains=search)|Q(inn__icontains=search))
+
+        return qs

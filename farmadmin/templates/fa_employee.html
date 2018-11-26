@@ -3,6 +3,14 @@
 {% load i18n %}
 
 {% block page %}
+<style>
+table.datatable tr {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 0.9rem;
+}
+</style>
+
 <div class="container-fluid px-4">
 <div class="row">
 <div class="col-12">
@@ -32,12 +40,62 @@
         </div>
       </div>
 </div>
+<br>
+<b>ГРУЗОПОЛУЧАТЕЛИ:</b><br>
+<div class="row" style="background-color: #E5E5F5">
+    <div class="col-lg-6 col-sm-12 pt-4">
 
-    <br>
-    <b>ГРУЗОПОЛУЧАТЕЛИ:</b><br>
-    {% for l in object.lpu.all %}
-        {{ l.inn }} {{ l.name }} <br>
-    {% endfor %}
+        <div class="row">
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchLpuAll" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-6">
+                <button type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-list"></i> ИНН</button>
+                <button type="button" class="btn btn-outline-primary btn-sm float-right">Добавить ЛПУ&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblLpuAll" class="table datatable table-hover table-sm table-striped display w-100"></table>
+            </div>
+         </div>
+
+    </div>
+
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                <button type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить ЛПУ</button>
+            </div>
+
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchLpuEmp" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblLpuEmp" class="table datatable table-hover table-sm table-striped display w-100"></table>
+            </div>
+         </div>
+
+    </div>
+
+
+</div>
+
     <br>
     <b>ПРИВЯЗАННЫЕ АККАУНТЫ:</b><br>
     {% for u in object.users.all %}
@@ -48,6 +106,75 @@
 </div>
 
 <script>
+
+$(document).ready(function() {
+    var tblLpuAll = $('#tblLpuAll').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        select: { style: 'multi' },
+        ordering:  false,
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        deferRender: true,
+        scroller: { loadingIndicator: true },
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "cust_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "ИНН", name: "inn", "targets": 1, "visible": true, "searchable": true },
+                    { title: "ЛПУ", name: "name", "targets": 2, "visible": true, "searchable": true },
+        ],
+        "processing": true,
+        "serverSide": true,
+        //"stateSave" : true,
+        "ajax": {
+            "url": "{% url 'farmadmin:jlpuall' %}",
+            "type": "POST",
+            "data": function ( d ) {
+                d.employee = '{{ object.id }}';
+                d.csrfmiddlewaretoken = '{{ csrf_token }}';
+            }
+        },
+        language: lang_russian
+    } );
+
+    $("#searchLpuAll").keyup(function(){
+        tblLpuAll.search( this.value ).draw();
+    });
+
+    var tblLpuEmp = $('#tblLpuEmp').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        select: { style: 'multi' },
+        ordering:  false,
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        deferRender: true,
+        scroller: { loadingIndicator: true },
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "cust_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "ИНН", name: "inn", "targets": 1, "visible": true, "searchable": true },
+                    { title: "ЛПУ", name: "name", "targets": 2, "visible": true, "searchable": true },
+        ],
+        "processing": true,
+        "serverSide": true,
+        //"stateSave" : true,
+        "ajax": {
+            "url": "{% url 'farmadmin:jlpuemp' %}",
+            "type": "POST",
+            "data": function ( d ) {
+                d.employee = '{{ object.id }}';
+                d.csrfmiddlewaretoken = '{{ csrf_token }}';
+            }
+        },
+        language: lang_russian
+    } );
+
+    $("#searchLpuEmp").keyup(function(){
+        tblLpuEmp.search( this.value ).draw();
+    });
+
+} );
 
 </script>
 
