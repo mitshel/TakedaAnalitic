@@ -29,7 +29,7 @@ class Org_log(models.Model):
 class Lpu(models.Model):
     cust_id = models.IntegerField(db_column='Cust_ID', primary_key=True, db_index=True, null=False, blank=False)
     inn = models.CharField(db_column='Org_CustINN', max_length=12, db_index=True, null=False, blank=False, verbose_name='ИНН')
-    name = models.CharField(db_column='Org_CustNm', max_length=2000, null=False, blank=False, verbose_name='Грузополучатель')
+    name = models.CharField(db_column='Org_CustNm', max_length=2000, db_index=True, null=False, blank=False, verbose_name='Грузополучатель')
     employee = models.ManyToManyField('Employee', related_name='employees', verbose_name='Сотрудник')
 
     class Meta:

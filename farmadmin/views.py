@@ -69,17 +69,19 @@ class EmployeeAdminView(FarmAdminDetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=kwargs['object'].id)
+        context['lpu'] = Lpu.objects.filter(employee__id=kwargs['object'].id).order_by('name','inn')
 
         return context
 
 
 class AjaxLpuAllDatatableView(BaseDatatableView):
     order_columns = ['name','inn']
-    columns = ['id','inn','name']
+    columns = ['cust_id','inn','name']
 
     def get_initial_queryset(self):
         employee = self.request.POST.get('employee', '0')
-        return Lpu.objects.exclude(employee=employee).order_by('name','inn')
+        return Lpu.objects.order_by('name', 'inn')
+        #return Lpu.objects.exclude(employee=employee).order_by('name','inn')
 
     def filter_queryset(self, qs):
         search = self.request.POST.get('search[value]', None)
@@ -88,18 +90,17 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
 
         return qs
 
-
-class AjaxLpuEmpDatatableView(BaseDatatableView):
-    order_columns = ['name','inn']
-    columns = ['id','inn','name']
-
-    def get_initial_queryset(self):
-        employee = self.request.POST.get('employee','0')
-        return Lpu.objects.filter(employee=employee).order_by('name','inn')
-
-    def filter_queryset(self, qs):
-        search = self.request.POST.get('search[value]', None)
-        if search:
-            qs = qs.filter(Q(name__icontains=search)|Q(inn__icontains=search))
-
-        return qs
+# class AjaxLpuEmpDatatableView(BaseDatatableView):
+#     order_columns = ['name','inn']
+#     columns = ['id','inn','name']
+#
+#     def get_initial_queryset(self):
+#         employee = self.request.POST.get('employee','0')
+#         return Lpu.objects.filter(employee=employee).order_by('name','inn')
+#
+#     def filter_queryset(self, qs):
+#         search = self.request.POST.get('search[value]', None)
+#         if search:
+#             qs = qs.filter(Q(name__icontains=search)|Q(inn__icontains=search))
+#
+#         return qs
