@@ -62,7 +62,7 @@ table.datatable tr {
             </div>
             <div class="col-6">
                 <button type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-list"></i> ИНН</button>
-                <button type="button" class="btn btn-outline-primary btn-sm float-right">Добавить ЛПУ&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+                <button type="button" class="btn btn-outline-primary btn-sm float-right"  id="addLpu">Добавить ЛПУ&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
             </div>
         </div>
 
@@ -78,7 +78,7 @@ table.datatable tr {
 
         <div class="row">
             <div class="col-6">
-                <button type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить ЛПУ</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="removeLpu"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить ЛПУ</button>
             </div>
 
             <div class="col-6">
@@ -117,13 +117,14 @@ $(document).ready(function() {
 
     var dsLpuEmp = [
         {%  for l in lpu %}
-            { 'cust_id': {{ l.cust_id }}, 'inn': '{{ l.inn }}', 'name': '{{ l.name }}' }{% if not forloop.last %}, {% endif %}
+            { 'cust_id': '{{ l.cust_id }}', 'inn': '{{ l.inn }}', 'name': '{{ l.name }}' }{% if not forloop.last %}, {% endif %}
         {% endfor %}
     ];
     var tblLpuEmp = $('#tblLpuEmp').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
         select: { style: 'multi' },
-        ordering:  false,
+        ordering:  true,
+        order: [[ 2, "asc" ]],
         scrollY: "300px",
         scrollX: false,
         scrollCollapse: true,
@@ -136,9 +137,9 @@ $(document).ready(function() {
         //            { title: "ЛПУ", name: "name", "targets": 2, "visible": true, "searchable": true },
         //],
         columns: [
-                    { "name": "id",  "data": "cust_id", "visible": false, "searchable": false },
-                    { "name": "ИНН", "data": "inn", "visible": true, "searchable": true },
-                    { "name": "ЛПУ", "data": "name", "visible": true, "searchable": true },
+                    { "title": "id",  "data": "cust_id", "visible": false, "searchable": false },
+                    { "title": "ИНН", "data": "inn", "visible": true, "searchable": true },
+                    { "title": "ЛПУ", "data": "name", "visible": true, "searchable": true },
         ],
         data: dsLpuEmp,
         //"processing": true,
@@ -176,7 +177,7 @@ $(document).ready(function() {
         ],
         rowCallback: function(row, data){
             //var fnd = dsLpuEmp.find(e => e['cust_id'] === Number(data[0]));
-            var fnd = tblLpuEmp.column( 0 ).data().toArray().indexOf(Number(data[0]))>=0;
+            var fnd = tblLpuEmp.column( 0 ).data().toArray().indexOf(data[0])>=0;
             if (fnd) $(row).addClass("rowGrayed");
         },
         "processing": true,
@@ -195,6 +196,21 @@ $(document).ready(function() {
 
     $("#searchLpuAll").keyup(function(){
         tblLpuAll.search( this.value ).draw();
+    });
+
+    $("#addLpu").on( 'click', function () {
+        var rows_selected = tblLpuAll.rows('.selected').data();
+        $.each(rows_selected,function(i,v){
+            var fnd = tblLpuEmp.column( 0 ).data().toArray().indexOf(v[0])>=0;
+            if (!fnd)
+                tblLpuEmp.row.add( {'cust_id':v[0],'inn':v[1],'name':v[2]} ).draw();
+        });
+        tblLpuAll.rows('.selected').deselect().draw();
+    });
+
+    $("#removeLpu").on( 'click', function () {
+       tblLpuEmp.rows('.selected').remove().draw();
+       tblLpuAll.draw();
     });
 
 } );
