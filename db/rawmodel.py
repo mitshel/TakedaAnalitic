@@ -37,7 +37,7 @@ class RawModel(object):
     def __getitem__(self, key):
         if isinstance(key, slice):
             self._offset = key.start
-            self._limit = key.stop
+            self._limit = key.stop - key.start
             # self._step = key.step
         else:
             self._offset = None
