@@ -126,6 +126,7 @@ select distinct {{ fields }} from db_innr a
 inner join org_CACHE_{{ org_id }} b on a.id=b.innNx and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 {% if market_in %}inner join db_market_innrs m on a.id=m.innr_id and {{ market_in }} {% endif %}
+{% if name__icontains %} where name like '%{{ name__icontains }}%'{% endif %}
 {% endautoescape %} 
 """
 
@@ -135,6 +136,7 @@ select distinct {{ fields }} from db_tradenr a
 inner join org_CACHE_{{ org_id }} b on a.id=b.tradeNx and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 {% if market_in %}inner join db_market_tmnrs m on a.id=m.tradenr_id and {{ market_in }} {% endif %}
+{% if name__icontains %} where name like '%{{ name__icontains }}%'{% endif %}
 {% endautoescape %} 
 """
 
@@ -143,6 +145,7 @@ q_winner_hs = """
 select distinct {{ fields }} from db_winnerorg a
 inner join org_CACHE_{{ org_id }} b on a.id=b.winner_id and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+{% if name__icontains %} where name like '%{{ name__icontains }}%'{% endif %}
 {% endautoescape %} 
 """
 
@@ -151,6 +154,7 @@ q_lpu_hs = """
 select distinct {{ fields }} from db_lpu a
 inner join org_CACHE_{{ org_id }} b on a.cust_id=b.cust_id and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+{% if name__icontains %} where a.Org_CustNm like '%{{ name__icontains }}%'{% endif %}
 {% endautoescape %} 
 """
 
