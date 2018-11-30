@@ -81,26 +81,8 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
     def get_initial_queryset(self):
         employee = self.request.POST.get('employee', '0')
         return Lpu.objects.order_by('name', 'inn')
-        #return Lpu.objects.exclude(employee=employee).order_by('name','inn')
 
-    def filter_queryset(self, qs):
-        search = self.request.POST.get('search[value]', None)
-        if search:
-            qs = qs.filter(Q(name__icontains=search)|Q(inn__icontains=search))
-
+    def paging(self, qs):
+        """ Не используем пакинацию, а возвращаем весь датасет
+        """
         return qs
-
-# class AjaxLpuEmpDatatableView(BaseDatatableView):
-#     order_columns = ['name','inn']
-#     columns = ['id','inn','name']
-#
-#     def get_initial_queryset(self):
-#         employee = self.request.POST.get('employee','0')
-#         return Lpu.objects.filter(employee=employee).order_by('name','inn')
-#
-#     def filter_queryset(self, qs):
-#         search = self.request.POST.get('search[value]', None)
-#         if search:
-#             qs = qs.filter(Q(name__icontains=search)|Q(inn__icontains=search))
-#
-#         return qs

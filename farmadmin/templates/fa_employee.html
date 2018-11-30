@@ -123,11 +123,6 @@ table.datatable tr {
 <script>
 
 $(document).ready(function() {
-    var LpuA_selectAll = 0;
-    var LpuE_selectAll = 0;
-    var LpuA_selected = [];
-    var LpuE_selected = [];
-
     var dsLpuEmp = [
         {%  for l in lpu %}
             { 'cust_id': '{{ l.cust_id }}', 'inn': '{{ l.inn }}', 'name': '{{ l.name }}' }{% if not forloop.last %}, {% endif %}
@@ -135,8 +130,8 @@ $(document).ready(function() {
     ];
     var tblLpuEmp = $('#tblLpuEmp').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-        //select: { style: 'multi' },
-        select: { style: 'api' },
+        select: { style: 'multi' },
+        //select: { style: 'api' },
         ordering:  true,
         order: [[ 2, "asc" ]],
         scrollY: "300px",
@@ -156,15 +151,6 @@ $(document).ready(function() {
                     { "title": "ЛПУ", "data": "name", "visible": true, "searchable": true },
         ],
         data: dsLpuEmp,
-        rowCallback: function(row, data){
-            if ( $.inArray(data[0], LpuE_selected) !== -1 ) {
-                if (LpuE_selectAll) $(row).removeClass('selected');
-                else $(row).addClass('selected');
-            } else {
-                 if (LpuE_selectAll) $(row).addClass('selected');
-                else $(row).removeClass('selected');
-            }
-        },
         //"processing": true,
         //"serverSide": true,
         //"stateSave" : true,
@@ -185,14 +171,14 @@ $(document).ready(function() {
 
     var tblLpuAll = $('#tblLpuAll').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-        //select: { style: 'multi' },
-        select: { style: 'api' },
+        select: { style: 'multi' },
+        //select: { style: 'api' },
         ordering:  false,
         scrollY: "300px",
         scrollX: false,
         scrollCollapse: true,
         deferRender: true,
-        scroller: { loadingIndicator: true },
+        scroller: true,
         paging: true,
         "columnDefs": [
                     { title: "id", name: "cust_id", "targets": 0 , "visible": false, "searchable": false },
@@ -200,20 +186,13 @@ $(document).ready(function() {
                     { title: "ЛПУ", name: "name", "targets": 2, "visible": true, "searchable": true },
         ],
         rowCallback: function(row, data){
-            var fnd = tblLpuEmp.column( 0 ).data().toArray().indexOf(data[0])>=0;
+            var fnd = tblLpuEmp.column(0).data().toArray().indexOf(data[0]) >= 0;
             if (fnd) $(row).addClass("rowGrayed");
-
-            if ( $.inArray(data[0], LpuA_selected) !== -1 ) {
-                if (LpuA_selectAll) $(row).removeClass('selected');
-                else $(row).addClass('selected');
-            } else {
-                 if (LpuA_selectAll) $(row).addClass('selected');
-                else $(row).removeClass('selected');
-            }
+            //console.log("row creation");
         },
-        "processing": true,
-        "serverSide": true,
-        //"stateSave" : true,
+        //"processing": true,
+        //"serverSide": true,
+        "stateSave" : true,
         "ajax": {
             "url": "{% url 'farmadmin:jlpuall' %}",
             "type": "POST",
@@ -229,21 +208,7 @@ $(document).ready(function() {
         tblLpuAll.search( this.value ).draw();
     });
 
-    //$("#addLpu").on( 'click', function () {
-    //    var rows_selected = tblLpuAll.rows('.selected').data();
-    //    $.each(rows_selected,function(i,v){
-    //        var fnd = tblLpuEmp.column( 0 ).data().toArray().indexOf(v[0])>=0;
-    //        if (!fnd)
-    //            tblLpuEmp.row.add( {'cust_id':v[0],'inn':v[1],'name':v[2]} ).draw();
-    //    });
-    //    tblLpuAll.rows('.selected').deselect().draw();
-    //});
-
     $("#addLpu").on( 'click', function () {
-        if (LpuA_selectAll) {
-        }
-        else {
-        };
         var rows_selected = tblLpuAll.rows('.selected').data();
         $.each(rows_selected,function(i,v){
             var fnd = tblLpuEmp.column( 0 ).data().toArray().indexOf(v[0])>=0;
@@ -257,127 +222,6 @@ $(document).ready(function() {
        tblLpuEmp.rows('.selected').remove().draw();
        tblLpuAll.draw();
     });
-
-// Выделяет всю таблицу либо сбрасывает ее выделение
-function LpuA_check( mode ) {
-    if (mode) {
-        tblLpuAll.rows().select();
-        LpuA_selectAll = 1;
-        $('#lpua-check').addClass('active');
-    }
-    else {
-        tblLpuAll.rows().deselect();
-        LpuA_selectAll = 0;
-        $('#lpua-check').removeClass('active');
-    }
-    // чистим массив с идентификаторами выделенных/не выделенных строк
-    LpuA_selected.length = 0;
-}
-
-function LpuE_check( mode ) {
-    if (mode) {
-        tblLpuEmp.rows().select();
-        LpuE_selectAll = 1;
-        $('#lpue-check').addClass('active');
-    }
-    else {
-        tblLpuEmp.rows().deselect();
-        LpuE_selectAll = 0;
-        $('#lpue-check').removeClass('active');
-    }
-    // чистим массив с идентификаторами выделенных/не выделенных строк
-    LpuE_selected.length = 0;
-}
-
-$('#lpua-check').on('click', function () {
-    // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех ЛПУ
-    LpuA_check( !$('#lpua-check').hasClass('active') );
-});
-
-$('#lpue-check').on('click', function () {
-    // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех ЛПУ
-    LpuE_check( !$('#lpue-check').hasClass('active') );
-});
-
-$('#tblLpuAll tbody').on('click', 'tr', function (event) {
-    var id = tblLpuAll.row(this).data()[0];
-    var ctrlPress = (event.ctrlKey == true);
-
-    // Если не включен мультивыбор сначала сбрасываем все выбор
-    if ((!ctrlPress) & (!$('#lpua-ctrl').hasClass('active'))) {
-        LpuA_check(0);
-    }
-
-    var thisSelected = $(this).hasClass('selected');
-
-    // Ищем наш элемент в массиве запомненных selected/deselected элементов
-    var index = $.inArray(id, LpuA_selected);
-
-    if (thisSelected & LpuA_selectAll) {
-        // делаем деселект и добавляем в массив selected (который сейчас какбы массив deselected)
-        $(this).removeClass('selected');
-        if ( index === -1 ) LpuA_selected.push( id );
-    }
-
-    if (thisSelected & !LpuA_selectAll) {
-        // делаем деселект и удаляем из массива selected
-        $(this).removeClass('selected');
-        if ( index !== -1 ) LpuA_selected.splice( index, 1 );
-    }
-
-    if (!thisSelected & LpuA_selectAll) {
-        // делаем селект и удаляем из массива selected (который сейчас какбы массив deselected)
-        $(this).addClass('selected');
-        if ( index !== -1 ) LpuA_selected.splice( index, 1 );
-    }
-
-    if (!thisSelected & !LpuA_selectAll) {
-        // делаем селект и добавляем в массив selected
-        $(this).addClass('selected');
-        if ( index === -1 ) LpuA_selected.push( id );
-    }
-
-} );
-
-$('#tblLpuEmp tbody').on('click', 'tr', function (event) {
-    var id = tblLpuEmp.row(this).data()[0];
-    var ctrlPress = (event.ctrlKey == true);
-
-    // Если не включен мультивыбор сначала сбрасываем все выбор
-    if ((!ctrlPress) & (!$('#lpue-ctrl').hasClass('active'))) {
-        LpuE_check(0);
-    }
-
-    var thisSelected = $(this).hasClass('selected');
-
-    // Ищем наш элемент в массиве запомненных selected/deselected элементов
-    var index = $.inArray(id, LpuE_selected);
-
-    if (thisSelected & LpuE_selectAll) {
-        // делаем деселект и добавляем в массив selected (который сейчас какбы массив deselected)
-        $(this).removeClass('selected');
-        if ( index === -1 ) LpuE_selected.push( id );
-    }
-
-    if (thisSelected & !LpuE_selectAll) {
-        // делаем деселект и удаляем из массива selected
-        $(this).removeClass('selected');
-        if ( index !== -1 ) LpuE_selected.splice( index, 1 );
-    }
-
-    if (!thisSelected & LpuE_selectAll) {
-        // делаем селект и удаляем из массива selected (который сейчас какбы массив deselected)
-        $(this).addClass('selected');
-        if ( index !== -1 ) LpuE_selected.splice( index, 1 );
-    }
-
-    if (!thisSelected & !LpuE_selectAll) {
-        // делаем селект и добавляем в массив selected
-        $(this).addClass('selected');
-        if ( index === -1 ) LpuE_selected.push( id );
-    }
-
-} );
 
 } );
 
