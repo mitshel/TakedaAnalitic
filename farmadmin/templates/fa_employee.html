@@ -140,28 +140,13 @@ $(document).ready(function() {
         deferRender: true,
         scroller: { loadingIndicator: true },
         paging: true,
-        //"columnDefs": [
-        //            { title: "id", name: "cust_id", "targets": 0 , "visible": false, "searchable": false },
-        //            { title: "ИНН", name: "inn", "targets": 1, "visible": true, "searchable": true },
-        //            { title: "ЛПУ", name: "name", "targets": 2, "visible": true, "searchable": true },
-        //],
         columns: [
                     { "title": "id",  "data": "cust_id", "visible": false, "searchable": false },
                     { "title": "ИНН", "data": "inn", "visible": true, "searchable": true },
                     { "title": "ЛПУ", "data": "name", "visible": true, "searchable": true },
         ],
         data: dsLpuEmp,
-        //"processing": true,
-        //"serverSide": true,
-        //"stateSave" : true,
-        //"ajax": {
-        //    "url": "{ % url 'farmadmin:jlpuemp' %}",
-        //    "type": "POST",
-        //    "data": function ( d ) {
-        //        d.employee = '{{ object.id }}';
-        //        d.csrfmiddlewaretoken = '{{ csrf_token }}';
-        //    }
-        //},
+        "stateSave" : true,
         language: lang_russian
     } );
 
@@ -187,11 +172,9 @@ $(document).ready(function() {
         ],
         rowCallback: function(row, data){
             var fnd = tblLpuEmp.column(0).data().toArray().indexOf(data[0]) >= 0;
-            if (fnd) $(row).addClass("rowGrayed");
+            if (fnd) $(row).addClass("rowGrayed"); else $(row).removeClass("rowGrayed");
             //console.log("row creation");
         },
-        //"processing": true,
-        //"serverSide": true,
         "stateSave" : true,
         "ajax": {
             "url": "{% url 'farmadmin:jlpuall' %}",
@@ -206,6 +189,10 @@ $(document).ready(function() {
 
     $("#searchLpuAll").keyup(function(){
         tblLpuAll.search( this.value ).draw();
+    });
+
+    $("#lpua-check").on('click',function(){
+        tblLpuAll.rows({ search:'applied' }).select().draw();
     });
 
     $("#addLpu").on( 'click', function () {
