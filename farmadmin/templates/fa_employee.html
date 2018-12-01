@@ -130,8 +130,8 @@ $(document).ready(function() {
     ];
     var tblLpuEmp = $('#tblLpuEmp').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-        select: { style: 'multi' },
-        //select: { style: 'api' },
+        //select: { style: 'multi' },
+        select: { style: 'api' },
         ordering:  true,
         order: [[ 2, "asc" ]],
         scrollY: "300px",
@@ -150,14 +150,10 @@ $(document).ready(function() {
         language: lang_russian
     } );
 
-    $("#searchLpuEmp").keyup(function(){
-        tblLpuEmp.search( this.value ).draw();
-    });
-
     var tblLpuAll = $('#tblLpuAll').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-        select: { style: 'multi' },
-        //select: { style: 'api' },
+        //select: { style: 'multi' },
+        select: { style: 'api' },
         ordering:  false,
         scrollY: "300px",
         scrollX: false,
@@ -187,14 +183,50 @@ $(document).ready(function() {
         language: lang_russian
     } );
 
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВСЕХ ИЗВЕСТНЫХ  ЛПУ
+    //
+
+    // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+    function lpua_check_update() {
+    if ( tblLpuAll.rows('.selected').data().length >= tblLpuAll.rows({search: 'applied'}).data().length )
+        $('#lpua-check').addClass('active');
+    else
+        $('#lpua-check').removeClass('active');
+    }
+
+    // Поиск
     $("#searchLpuAll").keyup(function(){
         tblLpuAll.search( this.value ).draw();
+        lpua_check_update();
     });
 
+    // SelectAll/DeselectAll
     $("#lpua-check").on('click',function(){
-        tblLpuAll.rows({ search:'applied' }).select().draw();
+        if (!$('#lpua-check').hasClass('active')) {
+            tblLpuAll.rows({search: 'applied'}).select().draw();
+            $('#lpua-check').addClass('active');
+        }
+        else {
+            tblLpuAll.rows().deselect().draw();
+            $('#lpua-check').removeClass('active');
+        }
     });
 
+    // Обработка клика на строку таблицы (Select/Deselect)
+    $('#tblLpuAll tbody').on('click', 'tr', function (event) {
+        var ctrlPress = (event.ctrlKey == true);
+
+        // Если не включен мультивыбор сначала сбрасываем все выбор
+        if ((!ctrlPress) & (!$('#lpua-ctrl').hasClass('active'))) {
+            tblLpuAll.rows().deselect().draw();
+        }
+        $(this).toggleClass('selected');
+
+        lpua_check_update();
+    } );
+
+    // Обработка кнопки "Добавить ЛПУ"
     $("#addLpu").on( 'click', function () {
         var rows_selected = tblLpuAll.rows('.selected').data();
         $.each(rows_selected,function(i,v){
@@ -205,6 +237,51 @@ $(document).ready(function() {
         tblLpuAll.rows('.selected').deselect().draw();
     });
 
+
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВЫБРАННЫХ ЛПУ ДЛЯ СОТРУДНИКА
+    //
+
+    // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+    function lpue_check_update() {
+    if ( tblLpuEmp.rows('.selected').data().length >= tblLpuEmp.rows({search: 'applied'}).data().length )
+        $('#lpue-check').addClass('active');
+    else
+        $('#lpue-check').removeClass('active');
+    }
+
+    // Поиск
+    $("#searchLpuEmp").keyup(function(){
+        tblLpuEmp.search( this.value ).draw();
+        lpue_check_update();
+    });
+
+    // SelectAll/DeselectAll
+    $("#lpue-check").on('click',function(){
+        if (!$('#lpue-check').hasClass('active')) {
+            tblLpuEmp.rows({search: 'applied'}).select().draw();
+            $('#lpue-check').addClass('active');
+        }
+        else {
+            tblLpuEmp.rows().deselect().draw();
+            $('#lpue-check').removeClass('active');
+        }
+    });
+
+    // Обработка клика на строку таблицы (Select/Deselect)
+    $('#tblLpuEmp tbody').on('click', 'tr', function (event) {
+        var ctrlPress = (event.ctrlKey == true);
+
+        // Если не включен мультивыбор сначала сбрасываем все выбор
+        if ((!ctrlPress) & (!$('#lpue-ctrl').hasClass('active'))) {
+            tblLpuEmp.rows().deselect().draw();
+        }
+        $(this).toggleClass('selected');
+
+        lpue_check_update();
+    } );
+
+    // Обработка кнопки "Удалить ЛПУ"
     $("#removeLpu").on( 'click', function () {
        tblLpuEmp.rows('.selected').remove().draw();
        tblLpuAll.draw();
