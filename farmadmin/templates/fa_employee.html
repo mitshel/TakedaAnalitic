@@ -48,6 +48,31 @@ table.datatable tr {
 </div>
 <br>
 <b>ГРУЗОПОЛУЧАТЕЛИ:</b><br>
+
+<!-- Modal -->
+<div class="modal fade" id="innModal" tabindex="-1" role="dialog" aria-labelledby="innModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="innModalTitle">Список ИНН</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="innTextarea">Введите список ИНН</label>
+            <textarea class="form-control" id="innTextarea" rows="5"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" id="innBtn">Применить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row" style="background-color: #E5E5F5">
     <div class="col-lg-6 col-sm-12 pt-4">
 
@@ -62,7 +87,7 @@ table.datatable tr {
             </div>
             <div class="col-6">
 
-                <button type="button" class="btn btn-outline-primary btn-sm"><i class="fa fa-list"></i> ИНН</button>
+                <button type="button" class="btn btn-outline-primary btn-sm" id="lpua-inn"><i class="fa fa-list"  title="Установить/снять фильтр по ИНН"></i> ИНН</button>
                 <div class="float-right">
                     <button type="button" id="lpua-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
                     <button type="button" id="lpua-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
@@ -146,7 +171,7 @@ $(document).ready(function() {
                     { "title": "ЛПУ", "data": "name", "visible": true, "searchable": true },
         ],
         data: dsLpuEmp,
-        "stateSave" : true,
+        //stateSave : true,
         language: lang_russian
     } );
 
@@ -171,7 +196,7 @@ $(document).ready(function() {
             if (fnd) $(row).addClass("rowGrayed"); else $(row).removeClass("rowGrayed");
             //console.log("row creation");
         },
-        "stateSave" : true,
+        //"stateSave" : true,
         "ajax": {
             "url": "{% url 'farmadmin:jlpuall' %}",
             "type": "POST",
@@ -195,9 +220,32 @@ $(document).ready(function() {
         $('#lpua-check').removeClass('active');
     }
 
+     // Вызываем модальное окно для ввода ИНН
+     $("#lpua-inn").on('click',function() {
+         if (!$("#lpua-inn").hasClass('active')) {
+                $('#innModal').modal('show')
+         }
+         else {
+             tblLpuAll.column(1).search('').draw();
+             $("#lpua-inn").removeClass('active');
+         }
+     });
+
+    // Фильтруем данные по введенным ИНН
+    $("#innBtn").on('click',function() {
+        //var inn_str = '2536230401 7825663650 7530007886 7227001273';
+         var inn_str = $('#innTextarea').val();
+         var inn_list = inn_str.split(/,|;| |\n/);
+         inn_str = inn_list.join('|');
+
+         tblLpuAll.column(1).search(inn_str, true).draw();
+         $("#lpua-inn").addClass('active');
+         $('#innModal').modal('hide')
+    });
+
     // Поиск
     $("#searchLpuAll").keyup(function(){
-        tblLpuAll.search( this.value ).draw();
+        tblLpuAll.search( this.value, false ).draw();
         lpua_check_update();
     });
 
