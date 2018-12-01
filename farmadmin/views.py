@@ -1,6 +1,6 @@
-from django.views.generic import View, TemplateView, ListView, DetailView
+from django.views.generic import View, TemplateView, ListView, DetailView, UpdateView, CreateView
 from db.models import Org, Employee, Market, Lpu
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
@@ -41,10 +41,72 @@ class MarketsAdminView(FarmAdminListView):
     def get_queryset(self):
         return Market.objects.filter(org=self.org)
 
+# class FarmAdminDetailView(DetailView):
+#     template_name = 'fa_layout.html'
+#     breadcrumbs = []
+#
+#     def dispatch(self, request, *args, **kwargs):
+#         try:
+#             self.org = Org.objects.get(users=self.request.user)
+#         except:
+#             self.org = None
+#
+#         return super().dispatch(request, *args, **kwargs)
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['org'] = self.org
+#         context['breadcrumbs'] = self.breadcrumbs
+#
+#         return context
+#
+# class EmployeeAdminView(FarmAdminDetailView):
+#     template_name = 'fa_employee.html'
+#     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
+#     model = Employee
+#
+#     def get_context_data(self, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=kwargs['object'].id)
+#         context['lpu'] = Lpu.objects.filter(employee__id=kwargs['object'].id).order_by('name','inn')
+#
+#         return context
 
-class FarmAdminDetailView(DetailView):
-    template_name = 'fa_layout.html'
-    breadcrumbs = []
+class SuccessView(TemplateView):
+    template_name = 'fa_ajax_success.html'
+
+class EmployeeUpdateAdminView(UpdateView):
+    template_name = 'fa_employee.html'
+    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
+    model = Employee
+    fields = ['id','name','parent','istarget','lpu']
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.org = Org.objects.get(users=self.request.user)
+        except:
+            self.org = None
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object = self.get_object()
+        context['org'] = self.org
+        context['breadcrumbs'] = self.breadcrumbs
+        context['parents'] = Employee.objects.filter(org=self.org).exclude(id=object.id).exclude(parent_id=object.id)
+
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
+
+class EmployeeCreateAdminView(CreateView):
+    template_name = 'fa_employee.html'
+    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
+    model = Employee
+    fields = ['id','org', 'name','parent','istarget','lpu']
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -58,28 +120,19 @@ class FarmAdminDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context['org'] = self.org
         context['breadcrumbs'] = self.breadcrumbs
+        context['parents'] = Employee.objects.filter(org=self.org)
 
         return context
 
-class EmployeeAdminView(FarmAdminDetailView):
-    template_name = 'fa_employee.html'
-    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
-    model = Employee
+    def get_success_url(self):
+        return reverse('farmadmin:success')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['parents'] = Employee.objects.filter(org=self.org).exclude(id=kwargs['object'].id)
-        context['lpu'] = Lpu.objects.filter(employee__id=kwargs['object'].id).order_by('name','inn')
-
-        return context
-
-
+# Загрузка полной таблицы со всеми учреждениями
 class AjaxLpuAllDatatableView(BaseDatatableView):
     order_columns = ['name','inn']
     columns = ['cust_id','inn','name']
 
     def get_initial_queryset(self):
-        employee = self.request.POST.get('employee', '0')
         return Lpu.objects.order_by('name', 'inn')
 
     def paging(self, qs):

@@ -30,6 +30,7 @@ table.datatable tr {
       <div class="form-group col-lg-3 col-md-4 col-sm-6">
         <label for="parentSelect">Руководитель</label>
         <select class="form-control" id="parentSelect">
+               <option value="" {% if p == "" %}selected{% endif %}>---</option>
            {% for p in parents %}
                <option value="{{ p.id }}" {% if p == object.parent %}selected{% endif %}>{{ p.name }}</option>
            {% endfor %}
@@ -60,20 +61,45 @@ table.datatable tr {
 <div class="row">
     <div class="float-right">
             <a href="{% url 'farmadmin:employees' %}" role="button" class="btn btn-secondary">Выйти без сохранения</a>
-            <a role="button" class="btn btn-primary" id="emplSubmit">Сохранить</a>
+            <a href="#" role="button" class="btn btn-primary" id="emplSubmit">Сохранить</a>
      </div>
 </div>
 
+<br>
+<br>
+
 <script>
+
+$(document).ready(function() {
     $("#emplSubmit").on('click', function(){
-        $.post( "{%  url 'farmadmin:employees' %}", {
-            "empl_id": {{ object_id }},
-            "name": $("#nameInput").val(),
-            "name": $("#nameInput").val(),
-            "parent_id": $("#parentSelect").val(),
-            "lpu": tblLpuEmp.column(0).toArray()
-        });
+        var lpue_array = tblLpuEmp.column(0).data().toArray();
+        var istarget = $("#isTarget").prop("checked");
+        var parent = $("#parentSelect").val();
+        var name = $("#nameInput").val();
+
+        $.ajax({
+            type: 'POST',
+            url: "{% if object %}{%  url 'farmadmin:employee' object.id %}{% else %}{%  url 'farmadmin:employee' %}{% endif %}",
+            traditional: true,
+            async: false,
+            data: {
+                {% if object %}"id": {{ object.id }}{% else %}"org": {{ org.id }}{% endif %},
+                "name": name,
+                "parent": parent,
+                "istarget": istarget,
+                "lpu": lpue_array,
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            },
+            success: function (data) {
+
+            },
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+            }
+        })
+        window.location = "{%  url 'farmadmin:employees' %}";
     });
+});
 </script>
 </div>
 </div>

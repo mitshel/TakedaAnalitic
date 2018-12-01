@@ -88,12 +88,12 @@
 
 <script>
 
-$(document).ready(function() {
     var dsLpuEmp = [
-        {%  for l in lpu %}
+        {%  for l in object.lpu.all %}
             { 'cust_id': '{{ l.cust_id }}', 'inn': '{{ l.inn }}', 'name': '{{ l.name }}' }{% if not forloop.last %}, {% endif %}
         {% endfor %}
     ];
+
     var tblLpuEmp = $('#tblLpuEmp').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
         //select: { style: 'multi' },
@@ -103,7 +103,7 @@ $(document).ready(function() {
         scrollY: "300px",
         scrollX: false,
         scrollCollapse: true,
-        deferRender: true,
+        //deferRender: true,
         scroller: { loadingIndicator: true },
         paging: true,
         columns: [
@@ -124,7 +124,7 @@ $(document).ready(function() {
         scrollY: "300px",
         scrollX: false,
         scrollCollapse: true,
-        deferRender: true,
+        //deferRender: true,
         scroller: true,
         paging: true,
         "columnDefs": [
@@ -149,6 +149,7 @@ $(document).ready(function() {
         language: lang_russian
     } );
 
+$(document).ready(function() {
     //
     // РАБОТА С ТАБЛИЦЕЙ ВСЕХ ИЗВЕСТНЫХ  ЛПУ
     //
@@ -159,6 +160,14 @@ $(document).ready(function() {
         $('#lpua-check').addClass('active');
     else
         $('#lpua-check').removeClass('active');
+    }
+
+    // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+    function lpue_check_update() {
+    if ( tblLpuEmp.rows('.selected').data().length >= tblLpuEmp.rows({search: 'applied'}).data().length )
+        $('#lpue-check').addClass('active');
+    else
+        $('#lpue-check').removeClass('active');
     }
 
      // Вызываем модальное окно для ввода ИНН
@@ -208,36 +217,44 @@ $(document).ready(function() {
 
         // Если не включен мультивыбор сначала сбрасываем все выбор
         if ((!ctrlPress) & (!$('#lpua-ctrl').hasClass('active'))) {
-            tblLpuAll.rows().deselect().draw();
+            //tblLpuAll.rows().deselect();
+            $('#tblLpuAll tbody > tr').removeClass('selected');
         }
         $(this).toggleClass('selected');
-
+        //tblLpuAll.draw('full-hold');
         lpua_check_update();
     } );
 
     // Обработка кнопки "Добавить ЛПУ"
     $("#addLpu").on( 'click', function () {
         var rows_selected = tblLpuAll.rows('.selected').data();
-        $.each(rows_selected,function(i,v){
-            var fnd = tblLpuEmp.column( 0 ).data().toArray().indexOf(v[0])>=0;
-            if (!fnd)
-                tblLpuEmp.row.add( {'cust_id':v[0],'inn':v[1],'name':v[2]} ).draw();
-        });
-        tblLpuAll.rows('.selected').deselect().draw();
+        if (rows_selected.length > {{ BI_MAX_EMPLOYEE_LPU }} ) {
+            alert('Выделено слишком много ЛПУ. Пожалуйста уменьшите количеcтво строк для переноса сотруднику.');
+        }
+        else {
+            $.each(rows_selected, function (i, v) {
+                var fnd = tblLpuEmp.column(0).data().toArray().indexOf(v[0]) >= 0;
+                if (!fnd) {
+                    if (tblLpuEmp.rows().data().length < {{ BI_MAX_EMPLOYEE_LPU }}) {
+                        tblLpuEmp.row.add({'cust_id': v[0], 'inn': v[1], 'name': v[2]}).draw();
+                    }
+                    else {
+                        alert('Количество ЛПУ у этого сотрудника достигло максимально возможного значения.');
+                        return false;
+                    }
+                }
+            });
+            //tblLpuAll.rows('.selected').deselect().draw('full-hold');
+            $('#tblLpuAll tbody > tr').removeClass('selected');
+        }
+        lpua_check_update();
+        lpue_check_update();
     });
 
 
     //
     // РАБОТА С ТАБЛИЦЕЙ ВЫБРАННЫХ ЛПУ ДЛЯ СОТРУДНИКА
     //
-
-    // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
-    function lpue_check_update() {
-    if ( tblLpuEmp.rows('.selected').data().length >= tblLpuEmp.rows({search: 'applied'}).data().length )
-        $('#lpue-check').addClass('active');
-    else
-        $('#lpue-check').removeClass('active');
-    }
 
     // Поиск
     $("#searchLpuEmp").keyup(function(){
@@ -263,17 +280,20 @@ $(document).ready(function() {
 
         // Если не включен мультивыбор сначала сбрасываем все выбор
         if ((!ctrlPress) & (!$('#lpue-ctrl').hasClass('active'))) {
-            tblLpuEmp.rows().deselect().draw();
+            //tblLpuEmp.rows().deselect();
+            $('#tblLpuEmp tbody > tr').removeClass('selected');
         }
         $(this).toggleClass('selected');
-
+        //tblLpuEmp.draw('full-hold');
         lpue_check_update();
     } );
 
     // Обработка кнопки "Удалить ЛПУ"
     $("#removeLpu").on( 'click', function () {
-       tblLpuEmp.rows('.selected').remove().draw();
-       tblLpuAll.draw();
+       tblLpuEmp.rows('.selected').remove().draw('full-hold');
+       tblLpuAll.draw('full-hold');
+       lpue_check_update();
+       lpua_check_update();
     });
 
 } );

@@ -18,12 +18,6 @@ def bi_login(function=None, redirect_field_name=REDIRECT_FIELD_NAME, url=loginUr
         return actual_decorator(function)
     return actual_decorator
 
-def bi_processor(request):
-    args={}
-    args['bi_auth'] = settings.BI_AUTH
-    return args
-
-
 def loginView(request):
     args = {}
     args.update(csrf(request))

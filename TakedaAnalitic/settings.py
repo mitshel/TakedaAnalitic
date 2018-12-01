@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'db',
+    'bi_base',
     'bi_auth',
     'widgetpages',
     'farmadmin',
@@ -69,7 +70,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'bi_auth.views.bi_processor',
+                'bi_base.views.bi_processor',
             ],
         },
     },
@@ -175,3 +176,4 @@ ADMIN_MEDIA_PREFIX = '/media/'
 
 
 BI_AUTH = True
+BI_MAX_EMPLOYEE_LPU = 999
