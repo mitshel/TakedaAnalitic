@@ -32,7 +32,7 @@
 <script>
 var dsEmployee = [
     {% for row in object_list %}
-        [{{ row.id }}, '{{ row.name }}', '{{ row.parent.name }}', '{{ row.istarget }}', '{% for u in row.users.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
+        [{{ row.id }}, '{{ row.name }}', '{{ row.parent.name }}', '{{ row.istarget }}', '{% for u in row.users.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}','{{ row.lpu.count }}']{% if not forloop.last %},{% endif %}
     {% endfor %}
 ];
 
@@ -61,7 +61,8 @@ $(document).ready(function() {
                      return "<i style='"+ style +"' class='fa "+ icon +"'></i>"
                  }
             },
-            { title: "Привязка аккаунтов", searchable: false }
+            { title: "Привязка аккаунтов", searchable: false },
+            { title: "Кол-во ЛПУ", searchable: false }
         ],
         language: lang_russian
     } );

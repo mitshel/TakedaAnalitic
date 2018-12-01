@@ -1,0 +1,281 @@
+<!-- Modal -->
+<div class="modal fade" id="innModal" tabindex="-1" role="dialog" aria-labelledby="innModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="innModalTitle">Список ИНН</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="innTextarea">Введите список ИНН</label>
+            <textarea class="form-control" id="innTextarea" rows="5"></textarea>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary" id="innBtn">Применить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row" style="background-color: #E5E5F5">
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchLpuAll" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-6">
+
+                <button type="button" class="btn btn-outline-primary btn-sm" id="lpua-inn"><i class="fa fa-list"  title="Установить/снять фильтр по ИНН"></i> ИНН</button>
+                <div class="float-right">
+                    <button type="button" id="lpua-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                    <button type="button" id="lpua-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                    <button type="button" class="btn btn-outline-primary btn-sm"  id="addLpu">Добавить ЛПУ&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblLpuAll" class="table datatable table-hover table-sm display w-100"></table>
+            </div>
+         </div>
+
+    </div>
+
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                <div>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="removeLpu"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить ЛПУ</button>
+                    <button type="button" id="lpue-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                    <button type="button" id="lpue-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                </div>
+            </div>
+
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchLpuEmp" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblLpuEmp" class="table datatable table-hover table-sm display w-100"></table>
+            </div>
+         </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+$(document).ready(function() {
+    var dsLpuEmp = [
+        {%  for l in lpu %}
+            { 'cust_id': '{{ l.cust_id }}', 'inn': '{{ l.inn }}', 'name': '{{ l.name }}' }{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    ];
+    var tblLpuEmp = $('#tblLpuEmp').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        //select: { style: 'multi' },
+        select: { style: 'api' },
+        ordering:  true,
+        order: [[ 2, "asc" ]],
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        deferRender: true,
+        scroller: { loadingIndicator: true },
+        paging: true,
+        columns: [
+                    { "title": "id",  "data": "cust_id", "visible": false, "searchable": false },
+                    { "title": "ИНН", "data": "inn", "visible": true, "searchable": true },
+                    { "title": "ЛПУ", "data": "name", "visible": true, "searchable": true },
+        ],
+        data: dsLpuEmp,
+        //stateSave : true,
+        language: lang_russian
+    } );
+
+    var tblLpuAll = $('#tblLpuAll').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        //select: { style: 'multi' },
+        select: { style: 'api' },
+        ordering:  false,
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        deferRender: true,
+        scroller: true,
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "cust_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "ИНН", name: "inn", "targets": 1, "visible": true, "searchable": true },
+                    { title: "ЛПУ", name: "name", "targets": 2, "visible": true, "searchable": true },
+        ],
+        rowCallback: function(row, data){
+            var fnd = tblLpuEmp.column(0).data().toArray().indexOf(data[0]) >= 0;
+            if (fnd) $(row).addClass("rowGrayed"); else $(row).removeClass("rowGrayed");
+            //console.log("row creation");
+        },
+        //"stateSave" : true,
+        "ajax": {
+            "url": "{% url 'farmadmin:jlpuall' %}",
+            "type": "POST",
+            "data": function ( d ) {
+                d.employee = '{{ object.id }}';
+                d.csrfmiddlewaretoken = '{{ csrf_token }}';
+            }
+        },
+        language: lang_russian
+    } );
+
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВСЕХ ИЗВЕСТНЫХ  ЛПУ
+    //
+
+    // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+    function lpua_check_update() {
+    if ( tblLpuAll.rows('.selected').data().length >= tblLpuAll.rows({search: 'applied'}).data().length )
+        $('#lpua-check').addClass('active');
+    else
+        $('#lpua-check').removeClass('active');
+    }
+
+     // Вызываем модальное окно для ввода ИНН
+     $("#lpua-inn").on('click',function() {
+         if (!$("#lpua-inn").hasClass('active')) {
+                $('#innModal').modal('show')
+         }
+         else {
+             tblLpuAll.column(1).search('').draw();
+             $("#lpua-inn").removeClass('active');
+         }
+     });
+
+    // Фильтруем данные по введенным ИНН
+    $("#innBtn").on('click',function() {
+        //var inn_str = '2536230401 7825663650 7530007886 7227001273';
+         var inn_str = $('#innTextarea').val();
+         var inn_list = inn_str.split(/,|;| |\n/);
+         inn_str = inn_list.join('|');
+
+         tblLpuAll.column(1).search(inn_str, true).draw();
+         $("#lpua-inn").addClass('active');
+         $('#innModal').modal('hide')
+    });
+
+    // Поиск
+    $("#searchLpuAll").keyup(function(){
+        tblLpuAll.search( this.value, false ).draw();
+        lpua_check_update();
+    });
+
+    // SelectAll/DeselectAll
+    $("#lpua-check").on('click',function(){
+        if (!$('#lpua-check').hasClass('active')) {
+            tblLpuAll.rows({search: 'applied'}).select().draw();
+            $('#lpua-check').addClass('active');
+        }
+        else {
+            tblLpuAll.rows().deselect().draw();
+            $('#lpua-check').removeClass('active');
+        }
+    });
+
+    // Обработка клика на строку таблицы (Select/Deselect)
+    $('#tblLpuAll tbody').on('click', 'tr', function (event) {
+        var ctrlPress = (event.ctrlKey == true);
+
+        // Если не включен мультивыбор сначала сбрасываем все выбор
+        if ((!ctrlPress) & (!$('#lpua-ctrl').hasClass('active'))) {
+            tblLpuAll.rows().deselect().draw();
+        }
+        $(this).toggleClass('selected');
+
+        lpua_check_update();
+    } );
+
+    // Обработка кнопки "Добавить ЛПУ"
+    $("#addLpu").on( 'click', function () {
+        var rows_selected = tblLpuAll.rows('.selected').data();
+        $.each(rows_selected,function(i,v){
+            var fnd = tblLpuEmp.column( 0 ).data().toArray().indexOf(v[0])>=0;
+            if (!fnd)
+                tblLpuEmp.row.add( {'cust_id':v[0],'inn':v[1],'name':v[2]} ).draw();
+        });
+        tblLpuAll.rows('.selected').deselect().draw();
+    });
+
+
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВЫБРАННЫХ ЛПУ ДЛЯ СОТРУДНИКА
+    //
+
+    // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+    function lpue_check_update() {
+    if ( tblLpuEmp.rows('.selected').data().length >= tblLpuEmp.rows({search: 'applied'}).data().length )
+        $('#lpue-check').addClass('active');
+    else
+        $('#lpue-check').removeClass('active');
+    }
+
+    // Поиск
+    $("#searchLpuEmp").keyup(function(){
+        tblLpuEmp.search( this.value ).draw();
+        lpue_check_update();
+    });
+
+    // SelectAll/DeselectAll
+    $("#lpue-check").on('click',function(){
+        if (!$('#lpue-check').hasClass('active')) {
+            tblLpuEmp.rows({search: 'applied'}).select().draw();
+            $('#lpue-check').addClass('active');
+        }
+        else {
+            tblLpuEmp.rows().deselect().draw();
+            $('#lpue-check').removeClass('active');
+        }
+    });
+
+    // Обработка клика на строку таблицы (Select/Deselect)
+    $('#tblLpuEmp tbody').on('click', 'tr', function (event) {
+        var ctrlPress = (event.ctrlKey == true);
+
+        // Если не включен мультивыбор сначала сбрасываем все выбор
+        if ((!ctrlPress) & (!$('#lpue-ctrl').hasClass('active'))) {
+            tblLpuEmp.rows().deselect().draw();
+        }
+        $(this).toggleClass('selected');
+
+        lpue_check_update();
+    } );
+
+    // Обработка кнопки "Удалить ЛПУ"
+    $("#removeLpu").on( 'click', function () {
+       tblLpuEmp.rows('.selected').remove().draw();
+       tblLpuAll.draw();
+    });
+
+} );
+
+</script>
