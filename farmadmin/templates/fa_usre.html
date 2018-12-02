@@ -94,6 +94,7 @@
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
         select: { style: 'multi' },
         ordering:  true,
+        responsive: true,
         order: [[ 2, "asc" ]],
         scrollY: "300px",
         scrollX: false,
@@ -113,7 +114,8 @@
     var tblUsrAll = $('#tblUsrAll').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
         select: { style: 'multi' },
-        ordering:  false,
+        ordering:  true,
+        responsive: true,
         scrollY: "300px",
         scrollX: false,
         scrollCollapse: true,
