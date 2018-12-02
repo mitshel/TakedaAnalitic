@@ -1,10 +1,14 @@
-from django.views.generic import View, TemplateView, ListView, DetailView, UpdateView, CreateView
-from db.models import Org, Employee, Market, Lpu
+from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView
+from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
-# Create your views here.
+from db.models import Org, Employee, Market, Lpu
+
+class SuccessView(TemplateView):
+    template_name = 'fa_ajax_success.html'
+
 class FarmAdminListView(ListView):
     template_name = 'fa_layout.html'
     breadcrumbs = []
@@ -33,48 +37,6 @@ class EmployeesAdminView(FarmAdminListView):
     def get_queryset(self):
         return Employee.objects.filter(org=self.org)
 
-
-class MarketsAdminView(FarmAdminListView):
-    template_name = 'fa_layout.html'
-    breadcrumbs = [{'name': 'Рынки', 'url': ''}]
-
-    def get_queryset(self):
-        return Market.objects.filter(org=self.org)
-
-# class FarmAdminDetailView(DetailView):
-#     template_name = 'fa_layout.html'
-#     breadcrumbs = []
-#
-#     def dispatch(self, request, *args, **kwargs):
-#         try:
-#             self.org = Org.objects.get(users=self.request.user)
-#         except:
-#             self.org = None
-#
-#         return super().dispatch(request, *args, **kwargs)
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['org'] = self.org
-#         context['breadcrumbs'] = self.breadcrumbs
-#
-#         return context
-#
-# class EmployeeAdminView(FarmAdminDetailView):
-#     template_name = 'fa_employee.html'
-#     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
-#     model = Employee
-#
-#     def get_context_data(self, **kwargs):
-#         context = super().get_context_data(**kwargs)
-#         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=kwargs['object'].id)
-#         context['lpu'] = Lpu.objects.filter(employee__id=kwargs['object'].id).order_by('name','inn')
-#
-#         return context
-
-class SuccessView(TemplateView):
-    template_name = 'fa_ajax_success.html'
-
 class EmployeeUpdateAdminView(UpdateView):
     template_name = 'fa_employee.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
@@ -95,6 +57,7 @@ class EmployeeUpdateAdminView(UpdateView):
         context['org'] = self.org
         context['breadcrumbs'] = self.breadcrumbs
         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=object.id).exclude(parent_id=object.id)
+        context['users'] = User.objects.filter(org=self.org)
 
         return context
 
@@ -104,7 +67,8 @@ class EmployeeUpdateAdminView(UpdateView):
 
 class EmployeeCreateAdminView(CreateView):
     template_name = 'fa_employee.html'
-    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
+    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')},
+                   {'name': 'Новый сотрудник', 'url': ''}]
     model = Employee
     fields = ['id','org', 'name','parent','istarget','lpu']
 
@@ -127,6 +91,26 @@ class EmployeeCreateAdminView(CreateView):
     def get_success_url(self):
         return reverse('farmadmin:success')
 
+class EmployeeDeleteAdminView(DeleteView):
+    template_name = 'fa_employee.html'
+    model = Employee
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            self.org = Org.objects.get(users=self.request.user)
+        except:
+            self.org = None
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['org'] = self.org
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
 # Загрузка полной таблицы со всеми учреждениями
 class AjaxLpuAllDatatableView(BaseDatatableView):
     order_columns = ['name','inn']
@@ -139,3 +123,11 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
         """ Не используем пакинацию, а возвращаем весь датасет
         """
         return qs
+
+
+class MarketsAdminView(FarmAdminListView):
+    template_name = 'fa_layout.html'
+    breadcrumbs = [{'name': 'Рынки', 'url': ''}]
+
+    def get_queryset(self):
+        return Market.objects.filter(org=self.org)

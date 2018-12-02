@@ -1,0 +1,172 @@
+<div class="row" style="background-color: #E5E5F5">
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchUsrAll" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="float-right">
+                    <button type="button" class="btn btn-outline-primary btn-sm"  id="addUsr">Добавить Login&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblUsrAll" class="table datatable table-hover table-sm display w-100">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>username</th>
+                            <th>email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for u in users %}
+                        <tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+         </div>
+
+    </div>
+
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                <div>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="removeUsr"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить Login</button>
+                </div>
+            </div>
+
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchLpuEmp" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblUsrEmp" class="table datatable table-hover table-sm display w-100">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>username</th>
+                            <th>email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for u in object.users.all %}
+                        <tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+         </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+    var tblUsrEmp = $('#tblUsrEmp').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        select: { style: 'multi' },
+        ordering:  true,
+        order: [[ 2, "asc" ]],
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        scroller: { loadingIndicator: true },
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "id", name: "username", "targets": 1 , "visible": true, "searchable": true },
+                    { title: "id", name: "email", "targets": 2 , "visible": true, "searchable": true }
+        ],
+        language: lang_russian
+    } );
+
+    var tblUsrAll = $('#tblUsrAll').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        select: { style: 'multi' },
+        ordering:  false,
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        scroller: true,
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "id", name: "username", "targets": 1 , "visible": true, "searchable": true },
+                    { title: "id", name: "email", "targets": 2 , "visible": true, "searchable": true }
+        ],
+        rowCallback: function(row, data){
+            var fnd = tblUsrEmp.column(0).data().toArray().indexOf(data[0]) >= 0;
+            if (fnd) $(row).addClass("rowGrayed"); else $(row).removeClass("rowGrayed");
+        },
+        language: lang_russian
+    } );
+
+$(document).ready(function() {
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВСЕХ Пользователей
+    //
+
+    // Поиск
+    $("#searchUsrAll").keyup(function(){
+        tblUsrAll.search( this.value, false ).draw();
+    });
+
+    // Обработка кнопки "Добавить Login"
+    $("#addUsr").on( 'click', function () {
+        var rows_selected = tblUsrAll.rows('.selected').data();
+        $.each(rows_selected, function (i, v) {
+            var fnd = tblUsrEmp.column(0).data().toArray().indexOf(v[0]) >= 0;
+            if (!fnd) {
+                if (tblUsrEmp.rows().data().length < {{ BI_MAX_EMPLOYEE_LOGIN }}) {
+                    tblUsrEmp.row.add({'id': v[0], 'username': v[1], 'email': v[2]}).draw();
+                }
+                else {
+                    alert('Количество Login у этого сотрудника достигло максимально возможного значения.');
+                    return false;
+                }
+            }
+        });
+        $('#tblLpuAll tbody > tr').removeClass('selected');
+    });
+
+
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВЫБРАННЫХ ЛПУ ДЛЯ СОТРУДНИКА
+    //
+
+    // Поиск
+    $("#searchUsrEmp").keyup(function(){
+        tblUsrEmp.search( this.value ).draw();
+    });
+
+    // Обработка кнопки "Удалить Login"
+    $("#removeUsr").on( 'click', function () {
+       tblUsrEmp.rows('.selected').remove().draw('full-hold');
+       tblUsrAll.draw('full-hold');
+    });
+
+} );
+
+</script>

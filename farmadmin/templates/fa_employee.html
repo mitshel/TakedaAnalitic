@@ -21,6 +21,27 @@ table.datatable tr {
 <div class="row">
 <div class="col-12">
 
+<!-- Modal Confirm-->
+<div class="modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalTitle">Подтверждение запроса на удаление.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="confirmText">
+           Подтвердите удаление выбранного сотрудника.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
+        <button type="button" class="btn btn-danger" id="confirmBtn">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row">
       <div class="form-group col-lg-3 col-md-4 col-sm-6">
         <label for="nameInput">Сотрудник</label>
@@ -50,18 +71,16 @@ table.datatable tr {
 <br>
 <b>ГРУЗОПОЛУЧАТЕЛИ:</b><br>
 {% include "fa_lpue.html" %}
-
 <br>
 <b>ПРИВЯЗАННЫЕ АККАУНТЫ:</b><br>
-{% for u in object.users.all %}
-    {{ u.username }} <br>
-{% endfor %}
+{% include "fa_usre.html" %}
 <br>
 <hr>
 <div class="row">
-    <div class="float-right">
+    <div class="col-12 float-right">
             <a href="{% url 'farmadmin:employees' %}" role="button" class="btn btn-secondary">Выйти без сохранения</a>
             <a href="#" role="button" class="btn btn-primary" id="emplSubmit">Сохранить</a>
+            {% if object %}<a href="#" role="button" class="btn btn-danger" id="emplRemove" data-toggle="modal" data-target="#confirmModal">Удалить</a>{% endif %}
      </div>
 </div>
 
@@ -91,7 +110,6 @@ $(document).ready(function() {
                 "csrfmiddlewaretoken": '{{ csrf_token }}'
             },
             success: function (data) {
-
             },
             error: function (xhr, str) {
                     alert('Error loading data. ' + str);
@@ -99,6 +117,19 @@ $(document).ready(function() {
         })
         window.location = "{%  url 'farmadmin:employees' %}";
     });
+
+   $("#confirmBtn").on('click', function(){
+        $.ajax({
+            type: 'POST',
+            url: "{% if object %}{%  url 'farmadmin:employee_rm' object.id %}{% else %}{%  url 'farmadmin:employee' %}{% endif %}",
+            async: false,
+            data: {
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            }
+        })
+        window.location = "{%  url 'farmadmin:employees' %}";
+   });
+
 });
 </script>
 </div>
