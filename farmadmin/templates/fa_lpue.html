@@ -96,15 +96,13 @@
 
     var tblLpuEmp = $('#tblLpuEmp').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-        //select: { style: 'multi' },
         select: { style: 'api' },
         ordering:  true,
         order: [[ 2, "asc" ]],
         scrollY: "300px",
         scrollX: false,
         scrollCollapse: true,
-        //deferRender: true,
-        scroller: { loadingIndicator: true },
+        scroller: true,
         paging: true,
         columns: [
                     { "title": "id",  "data": "cust_id", "visible": false, "searchable": false },
@@ -112,19 +110,16 @@
                     { "title": "ЛПУ", "data": "name", "visible": true, "searchable": true },
         ],
         data: dsLpuEmp,
-        //stateSave : true,
         language: lang_russian
     } );
 
     var tblLpuAll = $('#tblLpuAll').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-        //select: { style: 'multi' },
         select: { style: 'api' },
         ordering:  false,
         scrollY: "300px",
         scrollX: false,
         scrollCollapse: true,
-        //deferRender: true,
         scroller: true,
         paging: true,
         "columnDefs": [
@@ -135,9 +130,7 @@
         rowCallback: function(row, data){
             var fnd = tblLpuEmp.column(0).data().toArray().indexOf(data[0]) >= 0;
             if (fnd) $(row).addClass("rowGrayed"); else $(row).removeClass("rowGrayed");
-            //console.log("row creation");
         },
-        //"stateSave" : true,
         "ajax": {
             "url": "{% url 'farmadmin:jlpuall' %}",
             "type": "POST",
@@ -184,7 +177,8 @@ $(document).ready(function() {
     // Фильтруем данные по введенным ИНН
     $("#innBtn").on('click',function() {
         //var inn_str = '2536230401 7825663650 7530007886 7227001273';
-         var inn_str = $('#innTextarea').val();
+         var inn_str = $.trim($('#innTextarea').val());
+         inn_str = inn_str.replace(/\s+/g," ")
          var inn_list = inn_str.split(/,|;| |\n/);
          inn_str = inn_list.join('|');
 
