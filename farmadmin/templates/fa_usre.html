@@ -23,13 +23,16 @@
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>username</th>
-                            <th>email</th>
+                            <th>Login</th>
+                            <th>Email</th>
+                            <th>Фамилия</th>
+                            <th>Имя</th>
+
                         </tr>
                     </thead>
                     <tbody>
                     {% for u in users %}
-                        <tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td></tr>
+                        <tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.last_name }}</td><td>{{ u.first_name }}</td></tr>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -63,13 +66,16 @@
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>username</th>
-                            <th>email</th>
+                            <th>Login</th>
+                            <th>Email</th>
+                            <th>Фамилия</th>
+                            <th>Имя</th>
+
                         </tr>
                     </thead>
                     <tbody>
                     {% for u in object.users.all %}
-                        <tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td></tr>
+                        <tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.email }}</td><td>{{ u.last_name }}</td><td>{{ u.first_name }}</td></tr>
                     {% endfor %}
                     </tbody>
                 </table>
@@ -95,9 +101,11 @@
         scroller: { loadingIndicator: true },
         paging: true,
         "columnDefs": [
-                    { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
-                    { title: "id", name: "username", "targets": 1 , "visible": true, "searchable": true },
-                    { title: "id", name: "email", "targets": 2 , "visible": true, "searchable": true }
+                    { title: "id", name: "user_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "Login", name: "username", "targets": 1 , "visible": true, "searchable": true },
+                    { title: "Email", name: "email", "targets": 2 , "visible": true, "searchable": true },
+                    { title: "Фамилия", name: "last_name", "targets": 3 , "visible": true, "searchable": true },
+                    { title: "Имя", name: "first_name", "targets": 4 , "visible": true, "searchable": false }
         ],
         language: lang_russian
     } );
@@ -112,14 +120,16 @@
         scroller: true,
         paging: true,
         "columnDefs": [
-                    { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
-                    { title: "id", name: "username", "targets": 1 , "visible": true, "searchable": true },
-                    { title: "id", name: "email", "targets": 2 , "visible": true, "searchable": true }
+                    { title: "id", name: "user_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "Login", name: "username", "targets": 1 , "visible": true, "searchable": true },
+                    { title: "Email", name: "email", "targets": 2 , "visible": true, "searchable": true },
+                    { title: "Фамилия", name: "last_name", "targets": 3 , "visible": true, "searchable": true },
+                    { title: "Имя", name: "first_name", "targets": 4 , "visible": true, "searchable": false }
         ],
-        rowCallback: function(row, data){
-            var fnd = tblUsrEmp.column(0).data().toArray().indexOf(data[0]) >= 0;
-            if (fnd) $(row).addClass("rowGrayed"); else $(row).removeClass("rowGrayed");
-        },
+        //rowCallback: function(row, data){
+        //    var fnd = tblUsrEmp.column(0).data().toArray().indexOf(data[0]) >= 0;
+        //    if (fnd) $(row).addClass("rowGrayed"); else $(row).removeClass("rowGrayed");
+        //},
         language: lang_russian
     } );
 
@@ -135,20 +145,12 @@ $(document).ready(function() {
 
     // Обработка кнопки "Добавить Login"
     $("#addUsr").on( 'click', function () {
-        var rows_selected = tblUsrAll.rows('.selected').data();
-        $.each(rows_selected, function (i, v) {
-            var fnd = tblUsrEmp.column(0).data().toArray().indexOf(v[0]) >= 0;
-            if (!fnd) {
-                if (tblUsrEmp.rows().data().length < {{ BI_MAX_EMPLOYEE_LOGIN }}) {
-                    tblUsrEmp.row.add({'id': v[0], 'username': v[1], 'email': v[2]}).draw();
-                }
-                else {
-                    alert('Количество Login у этого сотрудника достигло максимально возможного значения.');
-                    return false;
-                }
-            }
+        tblUsrAll.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+            var v = this.data();
+            tblUsrEmp.row.add([v[0], v[1], v[2], v[3], v[4]]).draw('full-hold');
         });
-        $('#tblLpuAll tbody > tr').removeClass('selected');
+        tblUsrAll.rows('.selected').remove().draw('full-hold');
+        $('#tblUsrAll tbody > tr').removeClass('selected');
     });
 
 
@@ -163,8 +165,12 @@ $(document).ready(function() {
 
     // Обработка кнопки "Удалить Login"
     $("#removeUsr").on( 'click', function () {
-       tblUsrEmp.rows('.selected').remove().draw('full-hold');
-       tblUsrAll.draw('full-hold');
+        tblUsrEmp.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+            var v = this.data();
+            tblUsrAll.row.add([v[0], v[1], v[2], v[3], v[4]]).draw('full-hold');
+        });
+        tblUsrEmp.rows('.selected').remove().draw('full-hold');
+        $('#tblUsrEmp tbody > tr').removeClass('selected');
     });
 
 } );

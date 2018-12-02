@@ -232,9 +232,9 @@ $(document).ready(function() {
             alert('Выделено слишком много ЛПУ. Пожалуйста уменьшите количеcтво строк для переноса сотруднику.');
         }
         else {
+            var arrayLpuEmp = tblLpuEmp.column(0).data().toArray();
             $.each(rows_selected, function (i, v) {
-                var fnd = tblLpuEmp.column(0).data().toArray().indexOf(v[0]) >= 0;
-                if (!fnd) {
+                if (arrayLpuEmp.indexOf(v[0]) < 0) {
                     if (tblLpuEmp.rows().data().length < {{ BI_MAX_EMPLOYEE_LPU }}) {
                         tblLpuEmp.row.add({'cust_id': v[0], 'inn': v[1], 'name': v[2]}).draw();
                     }

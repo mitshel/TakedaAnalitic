@@ -41,7 +41,7 @@ class EmployeeUpdateAdminView(UpdateView):
     template_name = 'fa_employee.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
     model = Employee
-    fields = ['id','name','parent','istarget','lpu']
+    fields = ['id','name','parent','istarget','lpu', 'users']
 
     def dispatch(self, request, *args, **kwargs):
         try:
@@ -57,7 +57,10 @@ class EmployeeUpdateAdminView(UpdateView):
         context['org'] = self.org
         context['breadcrumbs'] = self.breadcrumbs
         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=object.id).exclude(parent_id=object.id)
-        context['users'] = User.objects.filter(org=self.org)
+        users_id = Employee.objects.filter(org=self.org).values('users__id').filter(users__id__isnull=False).distinct()
+        print(users_id)
+        context['users'] = User.objects.filter(org=self.org).exclude(id__in=users_id)
+
 
         return context
 
@@ -70,7 +73,7 @@ class EmployeeCreateAdminView(CreateView):
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')},
                    {'name': 'Новый сотрудник', 'url': ''}]
     model = Employee
-    fields = ['id','org', 'name','parent','istarget','lpu']
+    fields = ['org', 'name','parent','istarget','lpu', 'users']
 
     def dispatch(self, request, *args, **kwargs):
         try:

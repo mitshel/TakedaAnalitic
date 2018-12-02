@@ -92,6 +92,7 @@ table.datatable tr {
 $(document).ready(function() {
     $("#emplSubmit").on('click', function(){
         var lpue_array = tblLpuEmp.column(0).data().toArray();
+        var usre_array = tblUsrEmp.column(0).data().toArray();
         var istarget = $("#isTarget").prop("checked");
         var parent = $("#parentSelect").val();
         var name = $("#nameInput").val();
@@ -107,6 +108,7 @@ $(document).ready(function() {
                 "parent": parent,
                 "istarget": istarget,
                 "lpu": lpue_array,
+                "users": usre_array,
                 "csrfmiddlewaretoken": '{{ csrf_token }}'
             },
             success: function (data) {
