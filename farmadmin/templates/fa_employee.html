@@ -77,10 +77,10 @@ table.datatable tr {
 <br>
 <hr>
 <div class="row">
-    <div class="col-12 float-right">
+    <div class="col-12">
             <a href="{% url 'farmadmin:employees' %}" role="button" class="btn btn-secondary">Выйти без сохранения</a>
             <a href="#" role="button" class="btn btn-primary" id="emplSubmit">Сохранить</a>
-            {% if object %}<a href="#" role="button" class="btn btn-danger" id="emplRemove" data-toggle="modal" data-target="#confirmModal">Удалить</a>{% endif %}
+            {% if object %}<a href="#" role="button" class="btn btn-danger float-right" id="emplRemove" data-toggle="modal" data-target="#confirmModal">Удалить</a>{% endif %}
      </div>
 </div>
 
