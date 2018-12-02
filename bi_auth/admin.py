@@ -19,8 +19,8 @@ class UserAdmin(UserAdmin):
     def is_orgadmin(self, obj):
         result = False
         try:
-            #result = UserProfile.objects.get(user=obj).is_orgadmin
-            result = obj.user_profile.is_orgadmin
+            result = UserProfile.objects.get(user=obj).is_orgadmin
+            #result = obj.user_profile.is_orgadmin
         except:
             pass
         return result
