@@ -10,7 +10,11 @@
 
     <nav aria-label="breadcrumb">
       <ol class="breadcrumb">
-        <li class="breadcrumb-item active" aria-current="page">Настройки</li>
+        <li class="breadcrumb-item active" aria-current="page">
+            {%  if user.is_admin or user.is_staff %}<a href="{% url 'farmadmin:org' %}">Настройки</a>
+            {% else %}Настройки
+            {% endif %}
+        </li>
         {% if org %}<li class="breadcrumb-item active" aria-current="page">{{ org.name }}</li>{% endif %}
         {% for b in breadcrumbs %}
             <li class="breadcrumb-item active" aria-current="page"><a href="{{ b.url }}">{{ b.name }}</a></li>

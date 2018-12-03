@@ -45,7 +45,7 @@ class Employee(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
     parent = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, blank=True, db_index=True, verbose_name='Руководитель')
     name = models.CharField(max_length=64, null=True, blank=True,verbose_name='Краткое имя')
-    users = models.ManyToManyField(User, verbose_name='Логин входа', blank=True)
+    users = models.ManyToManyField(User, related_name='employee_user', verbose_name='Логин входа', blank=True)
     istarget = models.BooleanField(default=True, db_index=True, verbose_name='Таргет')
     lpu = models.ManyToManyField('Lpu', through=Lpu.employee.through, related_name='lpus', blank=True, verbose_name='Грузополучатели')
 
