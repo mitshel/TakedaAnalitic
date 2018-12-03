@@ -98,8 +98,7 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
         return Lpu.objects.order_by('name', 'inn')
 
     def paging(self, qs):
-        """ Не используем пакинацию, а возвращаем весь датасет
-        """
+        """ Не используем пакинацию, а возвращаем весь датасет """
         return qs
 
 class MarketsAdminView(OrgMixin, ListView):
