@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.http import JsonResponse
 
 from db.models import Org
-from django.views.generic import View
+from django.views.generic import View, TemplateView
 from django.urls import reverse_lazy
 
 from widgetpages import queries
@@ -40,47 +40,66 @@ def unique(obj: iter):
             args.append(a)
             yield a
 
-def Home(request):
-    args={}
-    return render(request,'ta_hello.html', args)
-
 class OrgMixin(View):
-    breadcrumbs = []
     org = None
     org_id = None
 
-    def dispatch(self, request, *args, **kwargs):
+    def init_dynamic_org(self):
         user = self.request.user
-        self.org_id = None
-        self.org = None
+        org_id = None
+        org = None
+
+        # Сначала получаем информацию об организации из запроса GET или POST
+        if self.request.method == 'GET':
+            org_id = self.request.GET.get('org_id','0')
+        if self.request.method == 'POST':
+            org_id = self.request.POST.get('org_id','0')
+
+        if org_id:
+            try:
+                org_id = int(org_id)
+                org = Org.objects.get(id=org_id)
+            except:
+                org_id = None
+                org = None
 
         # Если пользователь администратор пытаемся получить текущую организацию из сессии
-        if (user.is_superuser or user.is_staff):
-            try:
-                self.org_id = int(self.request.session['org'])
-                self.org = Org.objects.get(id=self.org_id)
-            except:
-                self.org = None
-                self.org_id = None
+        if not org:
+            if (user.is_superuser or user.is_staff):
+                try:
+                    org_id = int(self.request.session['org'])
+                    org = Org.objects.get(id=org_id)
+                except:
+                    org = None
+                    org_id = None
 
-        # Если текущая организация еще неизветсна, то получаем его по привязке к пользователю
-        if not self.org:
+        # Если текущая организация еще неизвестна, то получаем его по привязке к пользователю
+        if not org:
             try:
-                self.org = Org.objects.filter(users=self.request.user)[0]
-                self.org_id = self.org.id
+                org = Org.objects.filter(users=self.request.user)[0]
+                org_id = org.id
             except:
-                self.org = None
-                self.org_id = None
+                org = None
+                org_id = None
 
+        self.org_id = org_id
+        self.org = org
+
+        return org_id
+
+    def dispatch(self, request, *args, **kwargs):
+        self.init_dynamic_org()
         return super().dispatch(request, *args, **kwargs)
+
+class HomeView(OrgMixin, TemplateView):
+    template_name = 'ta_hello.html'
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['org'] = self.org
-        context['breadcrumbs'] = self.breadcrumbs
         return context
 
-class FiltersView(View):
+class FiltersView(OrgMixin, View):
     filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
     ajax_url = '#'
     template_name = 'ta_competitions.html'
@@ -88,17 +107,17 @@ class FiltersView(View):
     view_name = 'Пустая страница'
     select_market_type = 0
 
-    def init_dynamic_org(self):
-        org = Org.objects.filter(users=self.request.user)
-        org_id = org[0].id if org else 0
-        return org_id
+    # def init_dynamic_org(self):
+    #     org = Org.objects.filter(users=self.request.user)
+    #     org_id = org[0].id if org else 0
+    #     return org_id
 
     def zero_in(self, flt_active, fname):
         return ((flt_active[fname]['select'] == 1) and not (0 in flt_active[fname]['list'])) or \
                ((flt_active[fname]['select'] == 0) and (0 in flt_active[fname]['list']))
 
     def filter_empl(self, flt_active=None, org_id=0):
-        employee_raw = RawModel(queries.q_employees).filter(username=self.request.user.username)
+        employee_raw = RawModel(queries.q_employees).filter(org_id=org_id)
         if not flt_active:
             employee_enabled = employee_raw.filter(fields='id as iid, name').order_by('name')
         else:
@@ -225,6 +244,7 @@ class FiltersView(View):
         data = self.data(filters, None, org_id)
         return render(request, self.template_name, {'filters': filters,
                                                     'data': data,
+                                                    'org_id': org_id,
                                                     'view': {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type},
                                                     'ajax_url': self.ajax_url})
 
@@ -242,6 +262,7 @@ class FiltersView(View):
                 data = self.data(filters, flt_active, org_id)
                 response = {'filters': self.get_filters_dict(filters),
                             'data': data,
+                            'org_id': org_id,
                             'view': {'id' : self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type},
                             'ajax_url': self.ajax_url}
                 return JsonResponse(response)

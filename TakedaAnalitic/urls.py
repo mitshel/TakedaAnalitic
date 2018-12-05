@@ -19,10 +19,10 @@ from django.conf.urls import url, include
 from django.conf import settings
 
 from bi_auth.views import loginView, logoutView, bi_login
-from widgetpages.views import Home
+from widgetpages.views import HomeView
 
 urlpatterns = [
-    path('', bi_login(Home), name='home'),
+    path('', bi_login(HomeView.as_view()), name='home'),
     path('login/', loginView, name='login'),
     path('logout/', logoutView, name='logout'),
     path('page/', include(('widgetpages.urls', 'widgetpages'), namespace='widgetpages')),

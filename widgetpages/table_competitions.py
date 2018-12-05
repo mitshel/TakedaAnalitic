@@ -5,8 +5,9 @@ from widgetpages.views import extra_in_filter
 from db.rawmodel import RawModel
 from widgetpages import queries
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
+from .views import OrgMixin
 
-class CompetitionsAjaxTable(AjaxRawDatatableView):
+class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
     order_columns = ['Org_CustNm', 'name']
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
     org_id = 1

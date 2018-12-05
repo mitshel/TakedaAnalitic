@@ -1,13 +1,13 @@
 import json
 
 from widgetpages.views import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust
-from widgetpages.views import extra_in_filter
+from widgetpages.views import extra_in_filter, OrgMixin
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 from widgetpages import queries
 
 from db.rawmodel import RawModel
 
-class FilterListJson(AjaxRawDatatableView):
+class FilterListJson(OrgMixin, AjaxRawDatatableView):
     columns = ['name', 'ext', 'iid']
     order_columns = ['name']
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
@@ -56,6 +56,8 @@ class FilterListJson(AjaxRawDatatableView):
 
         initial_data ={}
         org_id = self.init_dynamic_org()
+
+        print(org_id)
 
         if self.kwargs['flt_id'] == finnr:
             initial_data = self.addfilters(self.initial_innr(org_id), flt_active)

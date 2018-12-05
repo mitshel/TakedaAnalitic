@@ -3,10 +3,10 @@ from django.utils.html import escape
 from db.models import Org
 
 class AjaxRawDatatableView(BaseDatatableView):
-    def init_dynamic_org(self):
-        org = Org.objects.filter(users=self.request.user)
-        org_id = org[0].id if org else 0
-        return org_id
+    # def init_dynamic_org(self):
+    #     org = Org.objects.filter(users=self.request.user)
+    #     org_id = org[0].id if org else 0
+    #     return org_id
 
     def render_column(self, row, column):
         value = row.get(column,'')

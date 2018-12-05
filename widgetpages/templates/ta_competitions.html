@@ -103,6 +103,7 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                     "data": function ( d ) {
                         d.filters_ajax_request = JSON.stringify(make_request());
                         d.view_id = '{{ view.id }}';
+                        d.org_id = '{{ org_id }}';
                         d.csrfmiddlewaretoken = '{{ csrf_token }}';
                     }
                 },

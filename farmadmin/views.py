@@ -11,6 +11,7 @@ from db.models import Org, Employee, Market, Lpu
 class SuccessView(TemplateView):
     template_name = 'fa_ajax_success.html'
 
+
 class SetupOrgView(OrgMixin, RedirectView):
     pattern_name = 'home'
 
@@ -27,21 +28,28 @@ class SetupOrgView(OrgMixin, RedirectView):
 
         return super().get_redirect_url(*args, **kwargs)
 
+class BreadCrumbMixin(View):
+    breadcrumbs = []
 
-class OrgView(OrgMixin, ListView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['org'] = self.org
+        context['breadcrumbs'] = self.breadcrumbs
+        return context
+
+class OrgView(OrgMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_org_select.html'
     model = Org
     success_url = reverse_lazy('home')
 
-class EmployeesAdminView(OrgMixin, ListView):
+class EmployeesAdminView(OrgMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_employees.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': ''}]
 
     def get_queryset(self):
-        print('Org=',self.org)
         return Employee.objects.filter(org=self.org)
 
-class EmployeeUpdateAdminView(OrgMixin, UpdateView):
+class EmployeeUpdateAdminView(OrgMixin, BreadCrumbMixin, UpdateView):
     template_name = 'fa_employee.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
     model = Employee
@@ -60,7 +68,7 @@ class EmployeeUpdateAdminView(OrgMixin, UpdateView):
         return reverse('farmadmin:success')
 
 
-class EmployeeCreateAdminView(OrgMixin, CreateView):
+class EmployeeCreateAdminView(OrgMixin, BreadCrumbMixin, CreateView):
     template_name = 'fa_employee.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')},
                    {'name': 'Новый сотрудник', 'url': ''}]
@@ -75,7 +83,7 @@ class EmployeeCreateAdminView(OrgMixin, CreateView):
     def get_success_url(self):
         return reverse('farmadmin:success')
 
-class EmployeeDeleteAdminView(OrgMixin, DeleteView):
+class EmployeeDeleteAdminView(OrgMixin, BreadCrumbMixin, DeleteView):
     template_name = 'fa_employee.html'
     model = Employee
 
@@ -94,7 +102,7 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
         """ Не используем пакинацию, а возвращаем весь датасет """
         return qs
 
-class MarketsAdminView(OrgMixin, ListView):
+class MarketsAdminView(OrgMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_layout.html'
     breadcrumbs = [{'name': 'Рынки', 'url': ''}]
 
