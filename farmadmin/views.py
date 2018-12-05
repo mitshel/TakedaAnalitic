@@ -1,39 +1,32 @@
-from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView, View
+from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView, RedirectView, View
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django_datatables_view.base_datatable_view import BaseDatatableView
+
+from widgetpages.views import OrgMixin
 
 from db.models import Org, Employee, Market, Lpu
 
 class SuccessView(TemplateView):
     template_name = 'fa_ajax_success.html'
 
-class OrgMixin(View):
-    breadcrumbs = []
-    org = None
+class SetupOrgView(OrgMixin, RedirectView):
+    pattern_name = 'home'
 
-    def dispatch(self, request, *args, **kwargs):
-        try:
-            self.org = Org.objects.filter(users=self.request.user)[0]
-        except:
-            self.org = None
-        return super().dispatch(request, *args, **kwargs)
+    def get_redirect_url(self, *args, **kwargs):
+        org_id = '0'
+        if self.request.method == 'POST':
+            org_id = self.request.POST.get('org','0')
+        if self.request.method == 'GET':
+            org_id = self.request.GET.get('org','0')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['org'] = self.org
-        context['breadcrumbs'] = self.breadcrumbs
-        return context
+        if org_id:
+            self.request.session['org'] = org_id
+            print('SETUP ORG=', org_id)
 
-class SetupOrgView(OrgMixin, View):
-    """
-    Добавить сюда методы установки сессионной переменной для выбора конкретной организации
-    в дальнейшем для пользователей с флагами is_admin и is_staff
-    организация будет выбираться на основании сессионной переменной
-    (и этот алгоритм нужно будет добавить в OrgMixin
-    """
-    pass
+        return super().get_redirect_url(*args, **kwargs)
+
 
 class OrgView(OrgMixin, ListView):
     template_name = 'fa_org_select.html'

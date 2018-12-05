@@ -44,6 +44,42 @@ def Home(request):
     args={}
     return render(request,'ta_hello.html', args)
 
+class OrgMixin(View):
+    breadcrumbs = []
+    org = None
+    org_id = None
+
+    def dispatch(self, request, *args, **kwargs):
+        user = self.request.user
+        self.org_id = None
+        self.org = None
+
+        # Если пользователь администратор пытаемся получить текущую организацию из сессии
+        if (user.is_superuser or user.is_staff):
+            try:
+                self.org_id = int(self.request.session['org'])
+                self.org = Org.objects.get(id=self.org_id)
+            except:
+                self.org = None
+                self.org_id = None
+
+        # Если текущая организация еще неизветсна, то получаем его по привязке к пользователю
+        if not self.org:
+            try:
+                self.org = Org.objects.filter(users=self.request.user)[0]
+                self.org_id = self.org.id
+            except:
+                self.org = None
+                self.org_id = None
+
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['org'] = self.org
+        context['breadcrumbs'] = self.breadcrumbs
+        return context
+
 class FiltersView(View):
     filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
     ajax_url = '#'

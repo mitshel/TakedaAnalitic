@@ -8,18 +8,18 @@
     <div class="col-3"></div>
     <div class="col-6">
         <br>
-        <form>
-        <div class="input-group">
-          <select name="org" class="custom-select" id="orgSelect" aria-label="orgSelect_with_button">
-            <option value="0">Выберите организацию...</option>
-            {% for o in object_list %}
-                <option value="{{ o.id }}" {% if o.id == org.id %}selected{% endif %}>{{ o.name }}</option>
-            {% endfor %}
-          </select>
-          <div class="input-group-append">
-            <button class="btn btn-outline-secondary" type="submit">Выбор</button>
-          </div>
-        </div>
+        <form action="{% url 'farmadmin:setuporg' %}" method="GET">
+            <div class="input-group">
+              <select name="org" class="custom-select" id="orgSelect" aria-label="orgSelect_with_button">
+                <option value="0">Выберите организацию...</option>
+                {% for o in object_list %}
+                    <option value="{{ o.id }}" {% if o.id == org.id %}selected{% endif %}>{{ o.name }}</option>
+                {% endfor %}
+              </select>
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="submit">Выбор</button>
+              </div>
+            </div>
         </form>
         <br>
     </div>
