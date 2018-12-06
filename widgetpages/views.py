@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 
 from widgetpages import queries
 from db.rawmodel import RawModel
+from farmadmin.views import OrgBaseMixin, bOrgUSER, bOrgSESSION, bOrgPOST
 
 # Filters identification
 fempl = 'empl'
@@ -40,56 +41,8 @@ def unique(obj: iter):
             args.append(a)
             yield a
 
-class OrgMixin(View):
-    org = None
-    org_id = None
-
-    def init_dynamic_org(self):
-        user = self.request.user
-        org_id = None
-        org = None
-
-        # Сначала получаем информацию об организации из запроса GET или POST
-        if self.request.method == 'GET':
-            org_id = self.request.GET.get('org_id','0')
-        if self.request.method == 'POST':
-            org_id = self.request.POST.get('org_id','0')
-
-        if org_id:
-            try:
-                org_id = int(org_id)
-                org = Org.objects.get(id=org_id)
-            except:
-                org_id = None
-                org = None
-
-        # Если пользователь администратор пытаемся получить текущую организацию из сессии
-        if not org:
-            if (user.is_superuser or user.is_staff):
-                try:
-                    org_id = int(self.request.session['org'])
-                    org = Org.objects.get(id=org_id)
-                except:
-                    org = None
-                    org_id = None
-
-        # Если текущая организация еще неизвестна, то получаем его по привязке к пользователю
-        if not org:
-            try:
-                org = Org.objects.filter(users=self.request.user)[0]
-                org_id = org.id
-            except:
-                org = None
-                org_id = None
-
-        self.org_id = org_id
-        self.org = org
-
-        return org_id
-
-    def dispatch(self, request, *args, **kwargs):
-        self.init_dynamic_org()
-        return super().dispatch(request, *args, **kwargs)
+class OrgMixin(OrgBaseMixin):
+    SETUP_METHODS = bOrgPOST | bOrgUSER
 
 class HomeView(OrgMixin, TemplateView):
     template_name = 'ta_hello.html'
@@ -117,7 +70,7 @@ class FiltersView(OrgMixin, View):
                ((flt_active[fname]['select'] == 0) and (0 in flt_active[fname]['list']))
 
     def filter_empl(self, flt_active=None, org_id=0):
-        employee_raw = RawModel(queries.q_employees).filter(org_id=org_id)
+        employee_raw = RawModel(queries.q_employees).filter(username=self.request.user.username)
         if not flt_active:
             employee_enabled = employee_raw.filter(fields='id as iid, name').order_by('name')
         else:

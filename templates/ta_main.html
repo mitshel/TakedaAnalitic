@@ -80,6 +80,7 @@
                     <i class="fa fa-cogs"></i> Настройки
                 </a>
                 <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{% url 'farmadmin:org' %}">Организации</a></li>
                   <li><a class="dropdown-item" href="{% url 'farmadmin:employees' %}">Сотрудники</a></li>
                   <li><a class="dropdown-item" href="{% url 'farmadmin:markets' %}">Рынки</a></li>
                   {% if user.is_superuser or user.is_staff %}

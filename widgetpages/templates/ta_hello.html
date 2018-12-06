@@ -6,7 +6,7 @@
       <div class="jumbotron" style="padding: 2rem;">
         <div class="container">
           <h2 class="display-6">Платформа Бизнес-Аналитика.</h2>
-          <span class="badge badge-primary">{{ org.name }}</span>
+          <span class="badge badge-primary">{{ user.employee_user.all.0.org.name }}</span>
           <br>
           <br>
           <p><b>Приветствуем Вас, уважаемый(ая) {% if user.last_name %}{{ user.last_name }} {{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</b></p>

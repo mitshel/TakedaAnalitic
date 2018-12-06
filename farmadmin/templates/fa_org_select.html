@@ -5,25 +5,32 @@
 {% block page %}
 <div class="container">
 <div class="row">
-    <div class="col-3"></div>
-    <div class="col-6">
         <br>
-        <form action="{% url 'farmadmin:setuporg' %}" method="GET">
-            <div class="input-group">
-              <select name="org" class="custom-select" id="orgSelect" aria-label="orgSelect_with_button">
-                <option value="0">Выберите организацию...</option>
-                {% for o in object_list %}
-                    <option value="{{ o.id }}" {% if o.id == org.id %}selected{% endif %}>{{ o.name }}</option>
-                {% endfor %}
-              </select>
-              <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="submit">Выбор</button>
-              </div>
+            <div class="jumbotron">
+              <h1 class="display-4">{{ org.name }}</h1>
+              <p class="lead">Указанная выше организация выбрана Вами для выполнения операций по администрированию.
+                  Вы сможете выполнять различные операции по администрированию организации  <span class="badge badge-primary"> {{ org.name }} </span> в пределах имеющихся у Вас разрешений,
+                  воспользовавшись пунктом меню <span class="badge badge-primary"><i class="fa fa-cogs"></i> Настройки </span></p>
+              <p class="lead">Однако следует понимать, что доступ к аналитике организации определяется только привязкой Вашего Логина к сотруднику этой организации. В данный момент ваш аккаунт
+                  связан с сотрудником <b>{{ user.employee_user.all.0.name }}</b> и организацией <span class="badge badge-primary"> {{ user.employee_user.all.0.org.name }} </span>
+              <hr class="my-4">
+              <p>Если Вам необходимо выполнять админиистрирование другой организации, выберите ее из списка ниже и нажмите "Выбор":</p>
+                <form action="{% url 'farmadmin:setuporg' %}" method="GET">
+                    <div class="input-group">
+                      <select name="org" class="custom-select" id="orgSelect" aria-label="orgSelect_with_button">
+                        <option value="0">Выберите организацию...</option>
+                        {% for o in object_list %}
+                            <option value="{{ o.id }}" {% if o.id == org.id %}selected{% endif %}>{{ o.name }}</option>
+                        {% endfor %}
+                      </select>
+                      <div class="input-group-append">
+                        <button class="btn btn-primary" type="submit">Выбор</button>
+                      </div>
+                    </div>
+                </form>
             </div>
-        </form>
+
         <br>
-    </div>
-    <div class="col-3"></div>
 </div>
 </div>
 {% endblock %}
