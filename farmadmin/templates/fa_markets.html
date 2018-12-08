@@ -1,0 +1,70 @@
+{% extends "fa_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+<div class="container-fluid mx-3">
+<div class="row">
+    <div style="width:900px;">
+        <div class="row">
+        <div class="col-6">
+            <a role="button" class="btn btn-primary btn-sm" href="{% url 'farmadmin:market' %}"><i class="fa fa-plus" id="addMarket"></i> Добавить рынок</a>
+        </div>
+        <div class="col-6">
+             <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">Поиск</span>
+              </div>
+              <input type="text" class="form-control" id="searchMarket" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+            </div>
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-12">
+           <table id="tblMarket" class="table table-hover table-sm table-striped display w-100"></table>
+        </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+var dsEmployee = [
+    {% for row in object_list %}
+        [{{ row.id }}, '{{ row.name }}','{{ row.innrs.count }}','{{ row.tmnrs.count }}']{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+
+$(document).ready(function() {
+    var tblMarket = $('#tblMarket').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        paging : false,
+        ordering:  true,
+        "order": [[ 1, "asc" ]],
+        data: dsEmployee,
+        columns: [
+            { title: "market_id", visible: false, searchable: false},
+            { title: "Рынок", searchable: true },
+            { title: "Кол-во МНН", searchable: false },
+            { title: "Кол-во ТМ", searchable: false }
+        ],
+        language: lang_russian
+    } );
+
+    $("#searchMarket").keyup(function(){
+        tblMarket.search( this.value ).draw();
+    });
+
+    $('#tblMarket').on('click', 'tr', function (event) {
+        var id = tblMarket.row(this).data()[0];
+        location.href='{% url 'farmadmin:market' 90000000000000009 %}'.replace('90000000000000009',id);
+    } );
+
+} );
+
+
+</script>
+
+{% endblock %}

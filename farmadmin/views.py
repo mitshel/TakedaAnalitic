@@ -4,7 +4,7 @@ from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
-from db.models import Org, Employee, Market, Lpu
+from db.models import Org, Employee, Market, Lpu, InNR, TradeNR
 
 bOrgPOST = 4
 bOrgSESSION = 2
@@ -123,7 +123,7 @@ class EmployeeUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
         object = self.get_object()
         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=object.id).exclude(parent_id=object.id)
         users_id = Employee.objects.filter(org=self.org).values('users__id').filter(users__id__isnull=False).distinct()
-        context['users'] = User.objects.filter(org=self.org).exclude(id__in=users_id)
+        context['users'] = User.objects.filter(org=self.org).exclude(id__in=users_id).order_by('name')
 
         return context
 
@@ -166,8 +166,43 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
         return qs
 
 class MarketsAdminView(OrgAdminMixin, BreadCrumbMixin, ListView):
-    template_name = 'fa_layout.html'
+    template_name = 'fa_markets.html'
     breadcrumbs = [{'name': 'Рынки', 'url': ''}]
 
     def get_queryset(self):
         return Market.objects.filter(org=self.org)
+
+class MarketUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
+    template_name = 'fa_market.html'
+    breadcrumbs = [{'name': 'Рынки', 'url': reverse_lazy('farmadmin:markets')}]
+    model = Market
+    fields = ['org', 'name', 'innrs', 'tmnrs']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object = self.get_object()
+        # ИСключаем все INN привязанные к рынкам текущей организации
+        context['innrs'] = InNR.objects.exclude(market__org=self.org).exclude(id=54656)
+
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
+
+class MarketCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
+    template_name = 'fa_market.html'
+    breadcrumbs = [{'name': 'Рынки', 'url': reverse_lazy('farmadmin:markets')},
+                   {'name': 'Новый рынок', 'url': ''}]
+    model = Market
+    fields = ['org', 'name', 'innrs','tmnrs']
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
+class MarketDeleteAdminView(OrgAdminMixin, BreadCrumbMixin, DeleteView):
+    template_name = 'fa_market.html'
+    model = Market
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')

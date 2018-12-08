@@ -1,0 +1,122 @@
+{% extends "fa_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+<style>
+table.datatable tr {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 0.9rem;
+}
+
+.rowGrayed {
+    background-color: #a9a9a9; !important;
+    font-style: italic;
+}
+
+</style>
+
+<div class="container-fluid px-4">
+<div class="row">
+<div class="col-12">
+
+<!-- Modal Confirm-->
+<div class="modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalTitle">Подтверждение запроса на удаление.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="confirmText">
+           Подтвердите удаление выбранного рынка.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
+        <button type="button" class="btn btn-danger" id="confirmBtn">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <label for="nameInput">Рынок</label>
+        <input type="text" class="form-control" id="nameInput" placeholder="" value="{{ object.name }}">
+      </div>
+</div>
+<br>
+<b>Международные непатентованные наименования препаратов:</b><br>
+{% include "fa_mrktinn.html" %}
+<br>
+<b>Торговые марки препаратов:</b><br>
+<!--{ % include "fa_usre.html" %}-->
+<br>
+<hr>
+<div class="row">
+    <div class="col-12">
+            <a href="{% url 'farmadmin:markets' %}" role="button" class="btn btn-secondary">Выйти без сохранения</a>
+            <a href="#" role="button" class="btn btn-primary" id="marketSubmit">Сохранить</a>
+            {% if object %}<a href="#" role="button" class="btn btn-danger float-right" id="marketRemove" data-toggle="modal" data-target="#confirmModal">Удалить</a>{% endif %}
+     </div>
+</div>
+
+<br>
+<br>
+
+<script>
+
+$(document).ready(function() {
+    $("#marketSubmit").on('click', function(){
+        //var lpue_array = tblLpuEmp.column(0).data().toArray();
+        //var usre_array = tblUsrEmp.column(0).data().toArray();
+        //var istarget = $("#isTarget").prop("checked");
+        //var parent = $("#parentSelect").val();
+        //var name = $("#nameInput").val();
+
+        //$.ajax({
+        //    type: 'POST',
+        //    url: "{% if object %}{%  url 'farmadmin:employee' object.id %}{% else %}{%  url 'farmadmin:employee' %}{% endif %}",
+        //    traditional: true,
+        //    async: false,
+        //    data: {
+        //        {% if object %}"id": {{ object.id }}{% else %}"org": {{ org.id }}{% endif %},
+        //        "name": name,
+        //        "parent": parent,
+        //        "istarget": istarget,
+        //        "lpu": lpue_array,
+        //        "users": usre_array,
+        //        "csrfmiddlewaretoken": '{{ csrf_token }}'
+        //    },
+        //    success: function (data) {
+        //    },
+        //    error: function (xhr, str) {
+        //            alert('Error loading data. ' + str);
+        //    }
+        //})
+        //window.location = "{%  url 'farmadmin:employees' %}";
+    });
+
+   $("#confirmBtn").on('click', function(){
+        //$.ajax({
+        //    type: 'POST',
+        //    url: "{% if object %}{%  url 'farmadmin:employee_rm' object.id %}{% else %}{%  url 'farmadmin:employee' %}{% endif %}",
+        //    async: false,
+        //    data: {
+        //        "csrfmiddlewaretoken": '{{ csrf_token }}'
+        //    }
+        //})
+        //window.location = "{%  url 'farmadmin:employees' %}";
+   });
+
+});
+</script>
+</div>
+</div>
+</div>
+
+
+{% endblock %}

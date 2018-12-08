@@ -1,0 +1,253 @@
+<div class="row" style="background-color: #E5E5F5">
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchMnnAll" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="float-right">
+                    <button type="button" id="mnna-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                    <button type="button" id="mnna-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                    <button type="button" class="btn btn-outline-primary btn-sm"  id="addMnn">Добавить МНН&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblMnnAll" class="table datatable table-hover table-sm display w-100">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>МНН</th>
+                        </tr>
+                    </thead>
+                    <!-- <tbody>
+                    { % for i in innrs %}
+                        <tr><td>{ { i.id }}</td><td>{ { i.name }}</td></tr>
+                    { % endfor %}
+                    </tbody> -->
+                </table>
+            </div>
+         </div>
+
+    </div>
+
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                <div>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="removeMnn"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить МНН</button>
+                    <button type="button" id="mnnm-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                    <button type="button" id="mnnm-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                </div>
+            </div>
+
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchMnnMrkt" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblMnnMrkt" class="table datatable table-hover table-sm display w-100">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>МНН</th>
+                        </tr>
+                    </thead>
+                    <!-- <tbody>
+                    { % for i in object.innrs.all %}
+                        <tr><td>{ { i.id }}</td><td>{ { i.name }}</td></tr>
+                    { % endfor %}
+                    </tbody>-->
+                </table>
+            </div>
+         </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+    var dsMnnAll = [
+        {% autoescape on %}
+        {%  for l in innrs %}
+            [ '{{ l.id }}', '{{ l.name }}']{% if not forloop.last %}, {% endif %}{% endfor %}
+        {% endautoescape %}
+    ];
+
+    var dsMnnMrkt = [
+        {%  for l in object.innrs.all %}
+            [ '{{ l.id }}', '{{ l.name }}']{% if not forloop.last %}, {% endif %}{% endfor %}
+    ];
+
+    var tblMnnMrkt = $('#tblMnnMrkt').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        select: { style: 'api' },
+        ordering:  true,
+        //responsive: true,
+        order: [[ 1, "asc" ]],
+        scrollY: "300px",
+        scrollX: true,
+        scrollCollapse: true,
+        scroller: true,
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "mnn_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "МНН", name: "name", "targets": 1 , "visible": true, "searchable": true }
+        ],
+        data : dsMnnMrkt,
+        language: lang_russian
+    } );
+
+    var tblMnnAll = $('#tblMnnAll').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        select: { style: 'api' },
+        ordering:  true,
+        order: [[ 1, "asc" ]],
+        //responsive: true,
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        scroller: true,
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "mnn_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "МНН", name: "name", "targets": 1 , "visible": true, "searchable": true }
+        ],
+        data : dsMnnAll,
+        language: lang_russian
+    } );
+
+$(document).ready(function() {
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВСЕХ ИЗВЕСТНЫХ  МНН
+    //
+
+    // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+    function mnna_check_update() {
+        if ( tblMnnAll.rows('.selected').data().length >= tblMnnAll.rows({search: 'applied'}).data().length )
+            $('#mnna-check').addClass('active');
+        else
+            $('#mnna-check').removeClass('active');
+        tblMnnAll.draw();
+    }
+
+    // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
+    function mnnm_check_update() {
+        if ( tblMnnMrkt.rows('.selected').data().length >= tblMnnMrkt.rows({search: 'applied'}).data().length )
+            $('#mnnm-check').addClass('active');
+        else
+            $('#mnnm-check').removeClass('active');
+        tblMnnMrkt.draw();
+    }
+
+    // Поиск
+    $("#searchMnnAll").keyup(function(){
+        tblMnnAll.search( this.value, false ).draw();
+        //mnna_check_update();
+    });
+
+    // SelectAll/DeselectAll
+    $("#mnna-check").on('click',function(){
+        if (!$('#mnna-check').hasClass('active')) {
+            tblMnnAll.rows({search: 'applied'}).select().draw();
+            $('#mnna-check').addClass('active');
+        }
+        else {
+            tblMnnAll.rows().deselect().draw();
+            $('#mnna-check').removeClass('active');
+        }
+    });
+
+    // Обработка клика на строку таблицы (Select/Deselect)
+    $('#tblMnnAll tbody').on('click', 'tr', function (event) {
+        var ctrlPress = (event.ctrlKey == true);
+
+        // Если не включен мультивыбор сначала сбрасываем все выбор
+        if ((!ctrlPress) & (!$('#mnna-ctrl').hasClass('active'))) {
+            //tblLpuAll.rows().deselect();
+            $('#tblMnnAll tbody > tr').removeClass('selected');
+        }
+        $(this).toggleClass('selected');
+        //tblLpuAll.draw('full-hold');
+        mnna_check_update();
+    } );
+
+    // Обработка кнопки "Добавить Мнн"
+    $("#addMnn").on( 'click', function () {
+        tblMnnAll.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+            var v = this.data();
+            tblMnnMrkt.row.add([v[0], v[1]]).draw('full-hold');
+        });
+        tblMnnAll.rows('.selected').remove().draw('full-hold');
+        $('#tblMnnAll tbody > tr').removeClass('selected');
+    });
+
+
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВЫБРАННЫХ МНН ДЛЯ СОТРУДНИКА
+    //
+
+    // Поиск
+    $("#searchMnnMrkt").keyup(function(){
+        tblMnnMrkt.search( this.value ).draw();
+        mnnm_check_update();
+    });
+
+    // SelectAll/DeselectAll
+    $("#mnnm-check").on('click',function(){
+        if (!$('#mnnm-check').hasClass('active')) {
+            tblMnnMrkt.rows({search: 'applied'}).select().draw();
+            $('#mnnm-check').addClass('active');
+        }
+        else {
+            tblMnnMrkt.rows().deselect().draw();
+            $('#mnnm-check').removeClass('active');
+        }
+    });
+
+    // Обработка клика на строку таблицы (Select/Deselect)
+    $('#tblMnnMrkt tbody').on('click', 'tr', function (event) {
+        var ctrlPress = (event.ctrlKey == true);
+
+        // Если не включен мультивыбор сначала сбрасываем все выбор
+        if ((!ctrlPress) & (!$('#mnnm-ctrl').hasClass('active'))) {
+            //tblLpuEmp.rows().deselect();
+            $('#tblMnnMrkt tbody > tr').removeClass('selected');
+        }
+        $(this).toggleClass('selected');
+        //tblLpuEmp.draw('full-hold');
+        mnnm_check_update();
+    } );
+
+    // Обработка кнопки "Удалить МНН"
+    $("#removeMnn").on( 'click', function () {
+        tblMnnMrkt.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+            var v = this.data();
+            tblMnnAll.row.add([v[0], v[1]]).draw('full-hold');
+        });
+        tblMnnMrkt.rows('.selected').remove().draw('full-hold');
+        $('#tblMnnMrkt tbody > tr').removeClass('selected');
+    });
+
+} );
+
+</script>
