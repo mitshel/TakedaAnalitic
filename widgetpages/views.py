@@ -44,6 +44,12 @@ def unique(obj: iter):
 class OrgMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgPOST | bOrgUSER
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['org'] = ''
+        return context
+
+
 class HomeView(OrgMixin, TemplateView):
     template_name = 'ta_hello.html'
 
@@ -52,7 +58,7 @@ class HomeView(OrgMixin, TemplateView):
         context['org'] = self.org
         return context
 
-class FiltersView(OrgMixin, View):
+class FiltersView(OrgMixin, TemplateView):
     filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
     ajax_url = '#'
     template_name = 'ta_competitions.html'
@@ -191,20 +197,33 @@ class FiltersView(OrgMixin, View):
     def data(self, flt=None, flt_active=None, org_id=0):
         return {}
 
-    def get(self, request, *args, **kwargs):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         org_id = self.init_dynamic_org()
         filters = self.filters(None, org_id)
         data = self.data(filters, None, org_id)
-        return render(request, self.template_name, {'filters': filters,
-                                                    'data': data,
-                                                    'org_id': org_id,
-                                                    'view': {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type},
-                                                    'ajax_url': self.ajax_url})
+
+        context['filters'] = filters
+        context['data'] = data
+        context['org_id'] = org_id
+        context['view'] = {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type}
+        context['ajax_url'] = self.ajax_url
+        return context
+
+    # def get(self, request, *args, **kwargs):
+    #     org_id = self.init_dynamic_org()
+    #     filters = self.filters(None, org_id)
+    #     data = self.data(filters, None, org_id)
+    #     return render(request, self.template_name, {'filters': filters,
+    #                                                 'data': data,
+    #                                                 'org_id': org_id,
+    #                                                 'view': {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type},
+    #                                                 'ajax_url': self.ajax_url})
 
     def post(self, request, *args, **kwargs):
-        org_id = self.init_dynamic_org()
         if request.is_ajax():
             if request.POST:
+                org_id = self.init_dynamic_org()
                 flt_active = {}
                 for f in self.filters_list:
                     flt_str = request.POST.get('{}_active'.format(f), '')
@@ -220,7 +239,8 @@ class FiltersView(OrgMixin, View):
                             'ajax_url': self.ajax_url}
                 return JsonResponse(response)
 
-        return self.get(request)
+        #return self.get(request)
+        return super().post(request, *args, **kwargs)
 
 class SalessheduleView(FiltersView):
     filters_list = [fempl, fmrkt, fyear, fcust]

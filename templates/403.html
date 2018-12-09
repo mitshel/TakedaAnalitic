@@ -1,0 +1,16 @@
+{% extends "ta_main.html" %}
+{% load i18n %}
+
+{% block main-content %}
+      <!-- Main jumbotron for a primary marketing message or call to action -->
+      <div class="jumbotron" style="background-color:#f1b0b7">
+        <div class="container">
+          <h2 class="display-6">Ошибка 403. Недостаточно прав для выполнения операции.</h2>
+          <span class="badge badge-primary">{{ user.employee_user.all.0.org.name }}</span>
+          <br>
+          <br>
+          <p><b>Уважаемый(ая) {% if user.last_name %}{{ user.last_name }} {{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</b></p>
+          <p>К сожалению, у Вас недостаточно прав доступа для выполнения операции. Обратитесь к администратору системы для разрешения возникшей проблемы.</p>
+        </div>
+      </div>
+{% endblock %}  {# content #}

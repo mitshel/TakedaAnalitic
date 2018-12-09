@@ -82,7 +82,7 @@
                 <ul class="dropdown-menu">
                   {% if user.is_superuser or user.is_staff %}{% if perms.db.view_org %}
                       <li><a class="dropdown-item" href="{% url 'farmadmin:orgselect' %}">Выбор организации</a></li>
-                      <li><a class="dropdown-item" href="{% url 'farmadmin:org' org.id %}">Общие настройки</a></li>
+                      <li><a class="dropdown-item" href="{% url 'farmadmin:org' org_id %}">Общие настройки</a></li>
                   {% endif %}{% endif %}
 
                   {% if user.is_superuser or user.is_staff or user.user_profile.is_orgadmin %}{% if org %}

@@ -74,6 +74,7 @@ class OrgBaseMixin(View):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['org'] = self.org
+        context['org_id'] = self.org.id
         return context
 
 class OrgAdminMixin(OrgBaseMixin):
