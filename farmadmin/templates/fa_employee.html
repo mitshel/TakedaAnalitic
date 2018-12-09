@@ -123,7 +123,7 @@ $(document).ready(function() {
    $("#confirmBtn").on('click', function(){
         $.ajax({
             type: 'POST',
-            url: "{% if object %}{%  url 'farmadmin:employee_rm' object.id %}{% else %}{%  url 'farmadmin:employee' %}{% endif %}",
+            url: "{% if object %}{%  url 'farmadmin:employee_rm' object.id %}{% else %}{%  url 'farmadmin:employees' %}{% endif %}",
             async: false,
             data: {
                 "csrfmiddlewaretoken": '{{ csrf_token }}'

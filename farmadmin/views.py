@@ -24,7 +24,6 @@ class OrgBaseMixin(View):
         org_id = None
         org = None
 
-        print('SETUP METHODS >',self.SETUP_METHODS)
         # Сначала получаем информацию об организации из запроса GET или POST
         if (self.SETUP_METHODS & bOrgPOST)>0:
             if self.request.method == 'GET':
@@ -51,7 +50,6 @@ class OrgBaseMixin(View):
                     except:
                         org = None
                         org_id = None
-                print('SESSION >', org_id)
 
         # Если текущая организация еще неизвестна, то получаем его по привязке к пользователю
         if (self.SETUP_METHODS & bOrgUSER)>0:
@@ -62,7 +60,6 @@ class OrgBaseMixin(View):
                 except:
                     org = None
                     org_id = None
-                print('USER >', org_id)
 
             self.org_id = org_id
             self.org = org
@@ -85,6 +82,10 @@ class BreadCrumbMixin(View):
         context['breadcrumbs'] = self.breadcrumbs
         return context
 
+#
+# Выбор Организации для Администрирования
+#
+
 class SetupOrgView(OrgAdminMixin, RedirectView):
     pattern_name = 'farmadmin:org'
 
@@ -105,6 +106,10 @@ class OrgView(OrgAdminMixin, BreadCrumbMixin, ListView):
     model = Org
     success_url = reverse_lazy('farmadmin:porg')
 
+#
+# Администрирование СОТРУДНИКОВ
+#
+
 class EmployeesAdminView(OrgAdminMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_employees.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': ''}]
@@ -122,9 +127,7 @@ class EmployeeUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
         context = super().get_context_data(**kwargs)
         object = self.get_object()
         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=object.id).exclude(parent_id=object.id)
-        users_id = Employee.objects.filter(org=self.org).values('users__id').filter(users__id__isnull=False).distinct()
-        context['users'] = User.objects.filter(org=self.org).exclude(id__in=users_id).order_by('name')
-
+        context['users'] = User.objects.filter(org=self.org).filter(employee_user__isnull=True).order_by('username')
         return context
 
     def get_success_url(self):
@@ -141,6 +144,7 @@ class EmployeeCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['parents'] = Employee.objects.filter(org=self.org)
+        context['users'] = User.objects.filter(org=self.org).filter(employee_user__isnull=True).order_by('username')
         return context
 
     def get_success_url(self):
@@ -165,6 +169,10 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
         """ Не используем пакинацию, а возвращаем весь датасет """
         return qs
 
+#
+# Администрирование РЫНКОВ
+#
+
 class MarketsAdminView(OrgAdminMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_markets.html'
     breadcrumbs = [{'name': 'Рынки', 'url': ''}]
@@ -173,17 +181,19 @@ class MarketsAdminView(OrgAdminMixin, BreadCrumbMixin, ListView):
         return Market.objects.filter(org=self.org)
 
 class MarketUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
+    """ TODO: Здесь в дальнейшем при сохранении нужно сделать проверку что добавляемые МНН и ТМ не были добавлены кем-нибудь еще, в течение времени когда выполнялась работа по изменению набора МНН и ТМ в браузере
+    """
     template_name = 'fa_market.html'
     breadcrumbs = [{'name': 'Рынки', 'url': reverse_lazy('farmadmin:markets')}]
     model = Market
-    fields = ['org', 'name', 'innrs', 'tmnrs']
+    fields = ['id', 'org', 'name', 'innrs', 'tmnrs']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        object = self.get_object()
-        # ИСключаем все INN привязанные к рынкам текущей организации
-        context['innrs'] = InNR.objects.exclude(market__org=self.org).exclude(id=54656)
-
+        # ИСключаем все INN и ТМ уже привязанные к рынкам текущей организации
+        print('ORG >', self.org)
+        context['innrs'] = InNR.objects.exclude(market__org=self.org).exclude(id=54656).order_by('name')
+        context['tmnrs'] = TradeNR.objects.exclude(market__org=self.org).order_by('name')
         return context
 
     def get_success_url(self):
@@ -196,6 +206,13 @@ class MarketCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
                    {'name': 'Новый рынок', 'url': ''}]
     model = Market
     fields = ['org', 'name', 'innrs','tmnrs']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # ИСключаем все INN и ТМ уже привязанные к рынкам текущей организации
+        context['innrs'] = InNR.objects.exclude(market__org=self.org).exclude(id=54656).order_by('name')
+        context['tmnrs'] = TradeNR.objects.exclude(market__org=self.org).order_by('name')
+        return context
 
     def get_success_url(self):
         return reverse('farmadmin:success')

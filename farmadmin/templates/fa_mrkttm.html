@@ -7,25 +7,25 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">Поиск</span>
                   </div>
-                  <input type="text" class="form-control" id="searchMnnAll" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                  <input type="text" class="form-control" id="searchTmAll" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
                 </div>
             </div>
             <div class="col-6">
                 <div class="float-right">
-                    <button type="button" id="mnna-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
-                    <button type="button" id="mnna-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
-                    <button type="button" class="btn btn-outline-primary btn-sm"  id="addMnn">Добавить МНН&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+                    <button type="button" id="tma-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                    <button type="button" id="tma-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                    <button type="button" class="btn btn-outline-primary btn-sm"  id="addTm">Добавить ТН&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
                 </div>
             </div>
         </div>
 
          <div class="row">
             <div class="col-12">
-                <table id="tblMnnAll" class="table datatable table-hover table-sm table-striped display w-100">
+                <table id="tblTmAll" class="table datatable table-hover table-sm table-striped display w-100">
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>МНН</th>
+                            <th>Торговое наименование</th>
                         </tr>
                     </thead>
                     <!-- <tbody>
@@ -44,9 +44,9 @@
         <div class="row">
             <div class="col-6">
                 <div>
-                    <button type="button" class="btn btn-outline-primary btn-sm" id="removeMnn"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить МНН</button>
-                    <button type="button" id="mnnm-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
-                    <button type="button" id="mnnm-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="removeTm"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить ТН</button>
+                    <button type="button" id="tmm-check" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+                    <button type="button" id="tmm-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
                 </div>
             </div>
 
@@ -55,18 +55,18 @@
                   <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">Поиск</span>
                   </div>
-                  <input type="text" class="form-control" id="searchMnnMrkt" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                  <input type="text" class="form-control" id="searchTmMrkt" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
                 </div>
             </div>
         </div>
 
          <div class="row">
             <div class="col-12">
-                <table id="tblMnnMrkt" class="table datatable table-hover table-sm table-striped display w-100">
+                <table id="tblTmMrkt" class="table datatable table-hover table-sm table-striped display w-100">
                     <thead>
                         <tr>
                             <th>id</th>
-                            <th>МНН</th>
+                            <th>Торговое наименование</th>
                         </tr>
                     </thead>
                     <!-- <tbody>
@@ -86,19 +86,19 @@
 
 <script>
 
-    var dsMnnAll = [
+    var dsTmAll = [
         {% autoescape on %}
-        {%  for l in innrs %}
+        {%  for l in tmnrs %}
             [ '{{ l.id }}', '{{ l.name }}']{% if not forloop.last %}, {% endif %}{% endfor %}
         {% endautoescape %}
     ];
 
-    var dsMnnMrkt = [
-        {%  for l in object.innrs.all %}
+    var dsTmMrkt = [
+        {%  for l in object.tmnrs.all %}
             [ '{{ l.id }}', '{{ l.name }}']{% if not forloop.last %}, {% endif %}{% endfor %}
     ];
 
-    var tblMnnMrkt = $('#tblMnnMrkt').DataTable( {
+    var tblTmMrkt = $('#tblTmMrkt').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
         select: { style: 'api' },
         ordering:  true,
@@ -111,13 +111,13 @@
         paging: false,
         "columnDefs": [
                     { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
-                    { title: "МНН", name: "name", "targets": 1 , "visible": true, "searchable": true }
+                    { title: "Торговое наименование", name: "name", "targets": 1 , "visible": true, "searchable": true }
         ],
-        data : dsMnnMrkt,
+        data : dsTmMrkt,
         language: lang_russian
     } );
 
-    var tblMnnAll = $('#tblMnnAll').DataTable( {
+    var tblTmAll = $('#tblTmAll').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
         select: { style: 'api' },
         ordering:  true,
@@ -130,9 +130,9 @@
         paging: false,
         "columnDefs": [
                     { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
-                    { title: "МНН", name: "name", "targets": 1 , "visible": true, "searchable": true }
+                    { title: "Торговое наименование", name: "name", "targets": 1 , "visible": true, "searchable": true }
         ],
-        data : dsMnnAll,
+        data : dsTmAll,
         language: lang_russian
     } );
 
@@ -142,63 +142,64 @@ $(document).ready(function() {
     //
 
     // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
-    function mnna_check_update() {
-        if ( tblMnnAll.rows('.selected').data().length >= tblMnnAll.rows({search: 'applied'}).data().length )
-            $('#mnna-check').addClass('active');
+    function tma_check_update() {
+        if ( tblTmAll.rows('.selected').data().length >= tblTmAll.rows({search: 'applied'}).data().length )
+            $('#tma-check').addClass('active');
         else
-            $('#mnna-check').removeClass('active');
-        //tblMnnAll.draw();
+            $('#tma-check').removeClass('active');
+        //tblTmAll.draw();
     }
 
     // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
-    function mnnm_check_update() {
-        if ( tblMnnMrkt.rows('.selected').data().length >= tblMnnMrkt.rows({search: 'applied'}).data().length )
-            $('#mnnm-check').addClass('active');
+    function tmm_check_update() {
+        if ( tblTmMrkt.rows('.selected').data().length >= tblTmMrkt.rows({search: 'applied'}).data().length )
+            $('#tmm-check').addClass('active');
         else
-            $('#mnnm-check').removeClass('active');
-        //tblMnnMrkt.draw();
+            $('#tmm-check').removeClass('active');
+        //tblTmMrkt.draw();
     }
 
     // Поиск
-    $("#searchMnnAll").keyup(function(){
-        tblMnnAll.search( this.value, false ).draw();
-        //mnna_check_update();
+    $("#searchTmAll").keyup(function(){
+        tblTmAll.search( this.value, false ).draw();
+        //tma_check_update();
     });
 
     // SelectAll/DeselectAll
-    $("#mnna-check").on('click',function(){
-        if (!$('#mnna-check').hasClass('active')) {
-            tblMnnAll.rows({search: 'applied'}).select().draw();
-            $('#mnna-check').addClass('active');
+    $("#tma-check").on('click',function(){
+        if (!$('#tma-check').hasClass('active')) {
+            tblTmAll.rows({search: 'applied'}).select().draw();
+            $('#tma-check').addClass('active');
         }
         else {
-            tblMnnAll.rows().deselect().draw();
-            $('#mnna-check').removeClass('active');
+            tblTmAll.rows().deselect().draw();
+            $('#tma-check').removeClass('active');
         }
     });
 
     // Обработка клика на строку таблицы (Select/Deselect)
-    $('#tblMnnAll tbody').on('click', 'tr', function (event) {
+    $('#tblTmAll tbody').on('click', 'tr', function (event) {
         var ctrlPress = (event.ctrlKey == true);
 
         // Если не включен мультивыбор сначала сбрасываем все выбор
-        if ((!ctrlPress) & (!$('#mnna-ctrl').hasClass('active'))) {
+        if ((!ctrlPress) & (!$('#tma-ctrl').hasClass('active'))) {
             //tblLpuAll.rows().deselect();
-            $('#tblMnnAll tbody > tr').removeClass('selected');
+            $('#tblTmAll tbody > tr').removeClass('selected');
         }
         $(this).toggleClass('selected');
         //tblLpuAll.draw('full-hold');
-        mnna_check_update();
+        tma_check_update();
     } );
 
     // Обработка кнопки "Добавить Мнн"
-    $("#addMnn").on( 'click', function () {
-        tblMnnAll.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+    $("#addTm").on( 'click', function () {
+        tblTmAll.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
             var v = this.data();
-            tblMnnMrkt.row.add([v[0], v[1]]).draw('full-hold');
+            tblTmMrkt.row.add([v[0], v[1]]);
         });
-        tblMnnAll.rows('.selected').remove().draw('full-hold');
-        $('#tblMnnAll tbody > tr').removeClass('selected');
+        tblTmAll.rows('.selected').remove().draw('full-hold');
+        tblTmMrkt.draw('full-hold');
+        $('#tblTmAll tbody > tr').removeClass('selected');
     });
 
 
@@ -207,45 +208,46 @@ $(document).ready(function() {
     //
 
     // Поиск
-    $("#searchMnnMrkt").keyup(function(){
-        tblMnnMrkt.search( this.value ).draw();
-        mnnm_check_update();
+    $("#searchTmMrkt").keyup(function(){
+        tblTmMrkt.search( this.value ).draw();
+        tmm_check_update();
     });
 
     // SelectAll/DeselectAll
-    $("#mnnm-check").on('click',function(){
-        if (!$('#mnnm-check').hasClass('active')) {
-            tblMnnMrkt.rows({search: 'applied'}).select().draw();
-            $('#mnnm-check').addClass('active');
+    $("#tmm-check").on('click',function(){
+        if (!$('#tmm-check').hasClass('active')) {
+            tblTmMrkt.rows({search: 'applied'}).select().draw();
+            $('#tmm-check').addClass('active');
         }
         else {
-            tblMnnMrkt.rows().deselect().draw();
-            $('#mnnm-check').removeClass('active');
+            tblTmMrkt.rows().deselect().draw();
+            $('#tmm-check').removeClass('active');
         }
     });
 
     // Обработка клика на строку таблицы (Select/Deselect)
-    $('#tblMnnMrkt tbody').on('click', 'tr', function (event) {
+    $('#tblTmMrkt tbody').on('click', 'tr', function (event) {
         var ctrlPress = (event.ctrlKey == true);
 
         // Если не включен мультивыбор сначала сбрасываем все выбор
-        if ((!ctrlPress) & (!$('#mnnm-ctrl').hasClass('active'))) {
+        if ((!ctrlPress) & (!$('#tmm-ctrl').hasClass('active'))) {
             //tblLpuEmp.rows().deselect();
-            $('#tblMnnMrkt tbody > tr').removeClass('selected');
+            $('#tblTmMrkt tbody > tr').removeClass('selected');
         }
         $(this).toggleClass('selected');
         //tblLpuEmp.draw('full-hold');
-        mnnm_check_update();
+        tmm_check_update();
     } );
 
     // Обработка кнопки "Удалить МНН"
-    $("#removeMnn").on( 'click', function () {
-        tblMnnMrkt.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+    $("#removeTm").on( 'click', function () {
+        tblTmMrkt.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
             var v = this.data();
-            tblMnnAll.row.add([v[0], v[1]]).draw('full-hold');
+            tblTmAll.row.add([v[0], v[1]]);
         });
-        tblMnnMrkt.rows('.selected').remove().draw('full-hold');
-        $('#tblMnnMrkt tbody > tr').removeClass('selected');
+        tblTmMrkt.rows('.selected').remove().draw('full-hold');
+        tblTmAll.draw('full-hold');
+        $('#tblTmMrkt tbody > tr').removeClass('selected');
     });
 
 } );

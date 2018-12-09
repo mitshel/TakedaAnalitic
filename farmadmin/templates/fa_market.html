@@ -10,6 +10,10 @@ table.datatable tr {
     line-height: 0.9rem;
 }
 
+table.datatable tbody {
+    background-color: #FFFFFF;
+}
+
 .rowGrayed {
     background-color: #a9a9a9; !important;
     font-style: italic;
@@ -53,7 +57,7 @@ table.datatable tr {
 {% include "fa_mrktinn.html" %}
 <br>
 <b>Торговые марки препаратов:</b><br>
-<!--{ % include "fa_usre.html" %}-->
+{% include "fa_mrkttm.html" %}
 <br>
 <hr>
 <div class="row">
@@ -71,45 +75,42 @@ table.datatable tr {
 
 $(document).ready(function() {
     $("#marketSubmit").on('click', function(){
-        //var lpue_array = tblLpuEmp.column(0).data().toArray();
-        //var usre_array = tblUsrEmp.column(0).data().toArray();
-        //var istarget = $("#isTarget").prop("checked");
-        //var parent = $("#parentSelect").val();
-        //var name = $("#nameInput").val();
+        var mnn_array = tblMnnMrkt.column(0).data().toArray();
+        var tm_array = tblTmMrkt.column(0).data().toArray();
+        var name = $("#nameInput").val();
 
-        //$.ajax({
-        //    type: 'POST',
-        //    url: "{% if object %}{%  url 'farmadmin:employee' object.id %}{% else %}{%  url 'farmadmin:employee' %}{% endif %}",
-        //    traditional: true,
-        //    async: false,
-        //    data: {
-        //        {% if object %}"id": {{ object.id }}{% else %}"org": {{ org.id }}{% endif %},
-        //        "name": name,
-        //        "parent": parent,
-        //        "istarget": istarget,
-        //        "lpu": lpue_array,
-        //        "users": usre_array,
-        //        "csrfmiddlewaretoken": '{{ csrf_token }}'
-        //    },
-        //    success: function (data) {
-        //    },
-        //    error: function (xhr, str) {
-        //            alert('Error loading data. ' + str);
-        //    }
-        //})
-        //window.location = "{%  url 'farmadmin:employees' %}";
+        $.ajax({
+            type: 'POST',
+            url: "{% if object %}{%  url 'farmadmin:market' object.id %}{% else %}{%  url 'farmadmin:market' %}{% endif %}",
+            traditional: true,
+            async: false,
+            data: {
+                {% if object %}"id": {{ object.id }},{% endif %}
+                "org": {{ org.id }},
+                "name": name,
+                "innrs": mnn_array,
+                "tmnrs": tm_array,
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            },
+            success: function (data) {
+            },
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+            }
+        })
+        window.location = "{%  url 'farmadmin:markets' %}";
     });
 
    $("#confirmBtn").on('click', function(){
-        //$.ajax({
-        //    type: 'POST',
-        //    url: "{% if object %}{%  url 'farmadmin:employee_rm' object.id %}{% else %}{%  url 'farmadmin:employee' %}{% endif %}",
-        //    async: false,
-        //    data: {
-        //        "csrfmiddlewaretoken": '{{ csrf_token }}'
-        //    }
-        //})
-        //window.location = "{%  url 'farmadmin:employees' %}";
+        $.ajax({
+            type: 'POST',
+            url: "{% if object %}{%  url 'farmadmin:market_rm' object.id %}{% else %}{%  url 'farmadmin:markets' %}{% endif %}",
+            async: false,
+            data: {
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            }
+        })
+        window.location = "{%  url 'farmadmin:markets' %}";
    });
 
 });

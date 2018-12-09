@@ -141,6 +141,21 @@ go
 ALTER TABLE [dbo].[db_tradeNR] ADD PRIMARY KEY CLUSTERED 
 ([id] ASC) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
+update db_TradeNr set name = 
+LTRIM(REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(
+REPLACE(name,'\f',''),
+'\n',''),
+'\r',''),
+'\t',''),
+'\u0000',''),
+'\u0001',''),
+'\u001f',''))
+go
 
 -- Создание таблицы с Победителями Торгов (WinnerOrg)
 --

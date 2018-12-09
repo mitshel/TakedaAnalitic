@@ -14,7 +14,7 @@ urlpatterns = [
     path('employee/rm/<int:pk>/', bi_login(views.EmployeeDeleteAdminView.as_view()), name='employee_rm'),
     path('employee/', bi_login(views.EmployeeCreateAdminView.as_view()), name='employee'),
 
-    path('market/', bi_login(views.MarketsAdminView.as_view()), name='markets'),
+    path('markets/', bi_login(views.MarketsAdminView.as_view()), name='markets'),
     path('market/<int:pk>/', bi_login(views.MarketUpdateAdminView.as_view()), name='market'),
     path('market/rm/<int:pk>/', bi_login(views.MarketDeleteAdminView.as_view()), name='market_rm'),
     path('market/', bi_login(views.MarketCreateAdminView.as_view()), name='market'),
