@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django_datatables_view.base_datatable_view import BaseDatatableView
+from django.contrib.auth.mixins import PermissionRequiredMixin
 
 from db.models import Org, Employee, Market, Lpu, InNR, TradeNR
 
@@ -92,8 +93,9 @@ class BreadCrumbMixin(View):
 # Выбор Организации для Администрирования
 #
 
-class SetupOrgView(OrgAdminMixin, RedirectView):
+class SetupOrgView(PermissionRequiredMixin, OrgAdminMixin, RedirectView):
     pattern_name = 'farmadmin:orgselect'
+    permission_required = ('db.view_org', )
 
     def get_redirect_url(self, *args, **kwargs):
         org_id = '0'
@@ -107,27 +109,30 @@ class SetupOrgView(OrgAdminMixin, RedirectView):
 
         return super().get_redirect_url(*args, **kwargs)
 
-class OrgView(OrgAdminMixin, BreadCrumbMixin, ListView):
+class OrgView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_org_select.html'
     model = Org
     success_url = reverse_lazy('farmadmin:orgselect')
+    permission_required = ('db.view_org', )
 
 #
 # Администрирование СОТРУДНИКОВ
 #
 
-class EmployeesAdminView(OrgAdminMixin, BreadCrumbMixin, ListView):
+class EmployeesAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_employees.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': ''}]
+    permission_required = ('db.view_employee', )
 
     def get_queryset(self):
         return Employee.objects.filter(org=self.org)
 
-class EmployeeUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
+class EmployeeUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
     template_name = 'fa_employee.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
     model = Employee
     fields = ['id','name','parent','istarget','lpu', 'users']
+    permission_required = ('db.change_employee',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -141,12 +146,13 @@ class EmployeeUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
         return reverse('farmadmin:success')
 
 
-class EmployeeCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
+class EmployeeCreateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, CreateView):
     template_name = 'fa_employee.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')},
                    {'name': 'Новый сотрудник', 'url': ''}]
     model = Employee
     fields = ['org', 'name','parent','istarget','lpu', 'users']
+    permission_required = ('db.add_employee',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -157,9 +163,10 @@ class EmployeeCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
     def get_success_url(self):
         return reverse('farmadmin:success')
 
-class EmployeeDeleteAdminView(OrgAdminMixin, BreadCrumbMixin, DeleteView):
+class EmployeeDeleteAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, DeleteView):
     template_name = 'fa_employee.html'
     model = Employee
+    permission_required = ('db.delete_employee',)
 
     def get_success_url(self):
         return reverse('farmadmin:success')
@@ -180,20 +187,22 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
 # Администрирование РЫНКОВ
 #
 
-class MarketsAdminView(OrgAdminMixin, BreadCrumbMixin, ListView):
+class MarketsAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_markets.html'
     breadcrumbs = [{'name': 'Рынки', 'url': ''}]
+    permission_required = ('db.view_market', )
 
     def get_queryset(self):
         return Market.objects.filter(org=self.org)
 
-class MarketUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
+class MarketUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
     """ TODO: Здесь в дальнейшем при сохранении нужно сделать проверку что добавляемые МНН и ТМ не были добавлены кем-нибудь еще, в течение времени когда выполнялась работа по изменению набора МНН и ТМ в браузере
     """
     template_name = 'fa_market.html'
     breadcrumbs = [{'name': 'Рынки', 'url': reverse_lazy('farmadmin:markets')}]
     model = Market
     fields = ['id', 'org', 'name', 'innrs', 'tmnrs']
+    permission_required = ('db.change_market', )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -206,12 +215,13 @@ class MarketUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
         return reverse('farmadmin:success')
 
 
-class MarketCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
+class MarketCreateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, CreateView):
     template_name = 'fa_market.html'
     breadcrumbs = [{'name': 'Рынки', 'url': reverse_lazy('farmadmin:markets')},
                    {'name': 'Новый рынок', 'url': ''}]
     model = Market
     fields = ['org', 'name', 'innrs','tmnrs']
+    permission_required = ('db.add_market',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -223,9 +233,10 @@ class MarketCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
     def get_success_url(self):
         return reverse('farmadmin:success')
 
-class MarketDeleteAdminView(OrgAdminMixin, BreadCrumbMixin, DeleteView):
+class MarketDeleteAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, DeleteView):
     template_name = 'fa_market.html'
     model = Market
+    permission_required = ('db.delete_market',)
 
     def get_success_url(self):
         return reverse('farmadmin:success')
@@ -234,15 +245,16 @@ class MarketDeleteAdminView(OrgAdminMixin, BreadCrumbMixin, DeleteView):
 #
 # Администрирование ОРГАНИЗАЦИЙ
 #
-class OrgsAdminView(OrgAdminMixin, BreadCrumbMixin, ListView):
+class OrgsAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_orgs.html'
     breadcrumbs = [{'name': 'Организации', 'url': ''}]
     supressorg = True
+    permission_required = ('db.view_org', )
 
     def get_queryset(self):
         return Org.objects.all()
 
-class OrgUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
+class OrgUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
     """ TODO: Нужно добавить проверку, того, что при отвязке какого-либо пользователя от организации проверять не привязан ли он к сотруднику этой организации, если так, то сначала предлагать выполнить отвязку от сотрудника
     """
     template_name = 'fa_org.html'
@@ -250,6 +262,7 @@ class OrgUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
     supressorg = True
     model = Org
     fields = ['id', 'name', 'sync_time', 'sync_flag', 'users']
+    permission_required = ('db.change_org', )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -260,13 +273,14 @@ class OrgUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
         return reverse('farmadmin:success')
 
 
-class OrgCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
+class OrgCreateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, CreateView):
     template_name = 'fa_org.html'
     breadcrumbs = [{'name': 'Организации', 'url': reverse_lazy('farmadmin:orgs')},
                    {'name': 'Новая организация', 'url': ''}]
     supressorg = True
     model = Org
     fields = ['name', 'sync_time', 'sync_flag', 'users']
+    permission_required = ('db.add_org',)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -276,9 +290,10 @@ class OrgCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
     def get_success_url(self):
         return reverse('farmadmin:success')
 
-class OrgDeleteAdminView(OrgAdminMixin, BreadCrumbMixin, DeleteView):
+class OrgDeleteAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, DeleteView):
     template_name = 'fa_org.html'
     model = Org
+    permission_required = ('db.delete_org',)
 
     def get_success_url(self):
         return reverse('farmadmin:success')

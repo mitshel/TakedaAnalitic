@@ -80,17 +80,24 @@
                     <i class="fa fa-cogs"></i> Настройки
                 </a>
                 <ul class="dropdown-menu">
-                  {% if user.is_superuser or user.is_staff %}
+                  {% if user.is_superuser or user.is_staff %}{% if perms.db.view_org %}
                       <li><a class="dropdown-item" href="{% url 'farmadmin:orgselect' %}">Выбор организации</a></li>
-                  {% endif %}
-                  {% if org %}
                       <li><a class="dropdown-item" href="{% url 'farmadmin:org' org.id %}">Общие настройки</a></li>
-                      <li><a class="dropdown-item" href="{% url 'farmadmin:employees' %}">Сотрудники</a></li>
-                      <li><a class="dropdown-item" href="{% url 'farmadmin:markets' %}">Рынки</a></li>
-                  {% endif %}
+                  {% endif %}{% endif %}
+
+                  {% if user.is_superuser or user.is_staff or user.user_profile.is_orgadmin %}{% if org %}
+                      {% if perms.db.view_employee %}
+                        <li><a class="dropdown-item" href="{% url 'farmadmin:employees' %}">Сотрудники</a></li>
+                      {% endif %}
+                      {% if perms.db.view_market %}
+                        <li><a class="dropdown-item" href="{% url 'farmadmin:markets' %}">Рынки</a></li>
+                      {% endif %}
+                  {% endif %}{% endif %}
                   {% if user.is_superuser or user.is_staff %}
                       <li class="dropdown-divider"></li>
-                      <li><a class="dropdown-item" href="{% url 'farmadmin:orgs' %}">Организации</a></li>
+                      {% if perms.db.view_org %}
+                            <li><a class="dropdown-item" href="{% url 'farmadmin:orgs' %}">Организации</a></li>
+                      {% endif %}
                       <li><a class="dropdown-item" href="{% url 'admin:index' %}"><i class="fa fa-wrench"></i> Администратор</a></li>
                   {% endif %}
                 </ul>
