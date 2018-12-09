@@ -70,16 +70,22 @@ class OrgBaseMixin(View):
         self.init_dynamic_org()
         return super().dispatch(request, *args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['org'] = self.org
+        return context
+
 class OrgAdminMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgSESSION | bOrgUSER
 
 class BreadCrumbMixin(View):
     breadcrumbs = []
+    supressorg = False
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['org'] = self.org
         context['breadcrumbs'] = self.breadcrumbs
+        context['supressorg'] = self.supressorg
         return context
 
 #
@@ -87,7 +93,7 @@ class BreadCrumbMixin(View):
 #
 
 class SetupOrgView(OrgAdminMixin, RedirectView):
-    pattern_name = 'farmadmin:org'
+    pattern_name = 'farmadmin:orgselect'
 
     def get_redirect_url(self, *args, **kwargs):
         org_id = '0'
@@ -104,7 +110,7 @@ class SetupOrgView(OrgAdminMixin, RedirectView):
 class OrgView(OrgAdminMixin, BreadCrumbMixin, ListView):
     template_name = 'fa_org_select.html'
     model = Org
-    success_url = reverse_lazy('farmadmin:porg')
+    success_url = reverse_lazy('farmadmin:orgselect')
 
 #
 # Администрирование СОТРУДНИКОВ
@@ -128,6 +134,7 @@ class EmployeeUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
         object = self.get_object()
         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=object.id).exclude(parent_id=object.id)
         context['users'] = User.objects.filter(org=self.org).filter(employee_user__isnull=True).order_by('username')
+        print(context)
         return context
 
     def get_success_url(self):
@@ -191,7 +198,6 @@ class MarketUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # ИСключаем все INN и ТМ уже привязанные к рынкам текущей организации
-        print('ORG >', self.org)
         context['innrs'] = InNR.objects.exclude(market__org=self.org).exclude(id=54656).order_by('name')
         context['tmnrs'] = TradeNR.objects.exclude(market__org=self.org).order_by('name')
         return context
@@ -220,6 +226,59 @@ class MarketCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
 class MarketDeleteAdminView(OrgAdminMixin, BreadCrumbMixin, DeleteView):
     template_name = 'fa_market.html'
     model = Market
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
+
+#
+# Администрирование ОРГАНИЗАЦИЙ
+#
+class OrgsAdminView(OrgAdminMixin, BreadCrumbMixin, ListView):
+    template_name = 'fa_orgs.html'
+    breadcrumbs = [{'name': 'Организации', 'url': ''}]
+    supressorg = True
+
+    def get_queryset(self):
+        return Org.objects.all()
+
+class OrgUpdateAdminView(OrgAdminMixin, BreadCrumbMixin, UpdateView):
+    """ TODO: Нужно добавить проверку, того, что при отвязке какого-либо пользователя от организации проверять не привязан ли он к сотруднику этой организации, если так, то сначала предлагать выполнить отвязку от сотрудника
+    """
+    template_name = 'fa_org.html'
+    breadcrumbs = [{'name': 'Организации', 'url': reverse_lazy('farmadmin:orgs')}]
+    supressorg = True
+    model = Org
+    fields = ['id', 'name', 'sync_time', 'sync_flag', 'users']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.filter(org__isnull=True).order_by('username')
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
+
+class OrgCreateAdminView(OrgAdminMixin, BreadCrumbMixin, CreateView):
+    template_name = 'fa_org.html'
+    breadcrumbs = [{'name': 'Организации', 'url': reverse_lazy('farmadmin:orgs')},
+                   {'name': 'Новая организация', 'url': ''}]
+    supressorg = True
+    model = Org
+    fields = ['name', 'sync_time', 'sync_flag', 'users']
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.filter(org__isnull=True).order_by('username')
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
+class OrgDeleteAdminView(OrgAdminMixin, BreadCrumbMixin, DeleteView):
+    template_name = 'fa_org.html'
+    model = Org
 
     def get_success_url(self):
         return reverse('farmadmin:success')

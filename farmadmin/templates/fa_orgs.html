@@ -1,0 +1,82 @@
+{% extends "fa_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+<div class="container-fluid mx-3">
+<div class="row">
+    <div style="width:900px;">
+        <div class="row">
+        <div class="col-6">
+            <a role="button" class="btn btn-primary btn-sm" href="{% url 'farmadmin:org' %}"><i class="fa fa-plus" id="addOrg"></i> Добавить организацию</a>
+        </div>
+        <div class="col-6">
+             <div class="input-group input-group-sm mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="basic-addon1">Поиск</span>
+              </div>
+              <input type="text" class="form-control" id="searchOrg" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+            </div>
+        </div>
+        </div>
+
+        <div class="row">
+        <div class="col-12">
+           <table id="tblOrg" class="table table-hover table-sm table-striped display w-100"></table>
+        </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script>
+var dsOrg = [
+    {% for row in object_list %}
+        [{{ row.id }}, '{{ row.name }}','{% if row.sync_time|lower == 'none' %}{% else %}{{ row.sync_time }}{% endif %}',{{ row.sync_flag|lower }},'{% for u in row.users.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
+    {% endfor %}
+];
+
+$(document).ready(function() {
+    var tblOrg = $('#tblOrg').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        paging : false,
+        ordering:  true,
+        "order": [[ 1, "asc" ]],
+        data: dsOrg,
+        columns: [
+            { title: "org_id", visible: false, searchable: false},
+            { title: "Организация", searchable: true },
+            { title: "Время синхр.", searchable: false },
+            { title: "Флаг.синхр", searchable: false,
+                 render:function(data, type, row, meta) {
+                     if (data == true) {
+                         icon = "fa-check";
+                         style = "color:green;"
+                     }
+                     else {
+                         icon = "fa-times";
+                         style = "color:red;"
+                     }
+                     return "<i style='"+ style +"' class='fa "+ icon +"'></i>"
+                 }
+            },
+            { title: "Пользователи", searchable: true },
+        ],
+        language: lang_russian
+    } );
+
+    $("#searchOrg").keyup(function(){
+        tblOrg.search( this.value ).draw();
+    });
+
+    $('#tblOrg').on('click', 'tr', function (event) {
+        var id = tblOrg.row(this).data()[0];
+        location.href='{% url 'farmadmin:org' 90000000000000009 %}'.replace('90000000000000009',id);
+    } );
+
+} );
+
+
+</script>
+
+{% endblock %}

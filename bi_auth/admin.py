@@ -26,7 +26,7 @@ class UserAdmin(UserAdmin):
         return result
 
     def org_names(self, obj):
-        return ','.join([o.name for o in obj.orgs.all()])
+        return ','.join([o.name for o in obj.org_set.all()])
 
 # Перерегистрируем модель User
 admin.site.unregister(User)

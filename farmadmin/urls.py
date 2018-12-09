@@ -6,7 +6,7 @@ from farmadmin import views
 
 
 urlpatterns = [
-    path('org/', bi_login(views.OrgView.as_view()), name='org'),
+    path('orgselect/', bi_login(views.OrgView.as_view()), name='orgselect'),
     path('setuporg/', bi_login(views.SetupOrgView.as_view()), name='setuporg'),
 
     path('employees/', bi_login(views.EmployeesAdminView.as_view()), name='employees'),
@@ -18,6 +18,11 @@ urlpatterns = [
     path('market/<int:pk>/', bi_login(views.MarketUpdateAdminView.as_view()), name='market'),
     path('market/rm/<int:pk>/', bi_login(views.MarketDeleteAdminView.as_view()), name='market_rm'),
     path('market/', bi_login(views.MarketCreateAdminView.as_view()), name='market'),
+
+    path('orgs/', bi_login(views.OrgsAdminView.as_view()), name='orgs'),
+    path('org/<int:pk>/', bi_login(views.OrgUpdateAdminView.as_view()), name='org'),
+    path('org/rm/<int:pk>/', bi_login(views.OrgDeleteAdminView.as_view()), name='org_rm'),
+    path('org/', bi_login(views.OrgCreateAdminView.as_view()), name='org'),
 
     path('jlpuall/datatable/', bi_login(views.AjaxLpuAllDatatableView.as_view()), name='jlpuall'),
     path('success/', views.SuccessView.as_view(), name='success'),

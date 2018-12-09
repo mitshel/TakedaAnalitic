@@ -1,0 +1,138 @@
+{% extends "fa_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+<style>
+table.datatable tr {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 0.9rem;
+}
+
+table.datatable tbody {
+    background-color: #FFFFFF;
+}
+
+.rowGrayed {
+    background-color: #a9a9a9; !important;
+    font-style: italic;
+}
+
+</style>
+
+<div class="container-fluid px-4">
+<div class="row">
+<div class="col-12">
+
+<!-- Modal Confirm-->
+<div class="modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalTitle">Подтверждение запроса на удаление.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="confirmText">
+           Подтвердите удаление выбранной организации.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
+        <button type="button" class="btn btn-danger" id="confirmBtn">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <label for="nameInput">Организация</label>
+        <input type="text" class="form-control" id="nameInput" placeholder="" value="{{ object.name }}">
+      </div>
+</div>
+<div class="row">
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <label for="nameInput">Время синхронизации</label>
+        <input type="text" class="form-control" id="synctimeInput" placeholder="" value="{% if object.sync_time|lower == 'none' %}{% else %}{{ object.sync_time }}{% endif %}">
+      </div>
+</div>
+<div class="row">
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="sync_flag" {% if object.sync_flag|lower == 'true' %}checked{% endif %}>
+          <label class="form-check-label" for="sync_flag">
+            Запланирована синхронизация данных
+          </label>
+        </div>
+      </div>
+</div>
+<br>
+<b>Присоединенные пользователи:</b><br>
+{% include "fa_usre.html" %}
+<br>
+<hr>
+<div class="row">
+    <div class="col-12">
+            <a href="{% url 'farmadmin:orgs' %}" role="button" class="btn btn-secondary">Выйти без сохранения</a>
+            <a href="#" role="button" class="btn btn-primary" id="orgSubmit">Сохранить</a>
+            {% if object %}<a href="#" role="button" class="btn btn-danger float-right" id="orgRemove" data-toggle="modal" data-target="#confirmModal">Удалить</a>{% endif %}
+     </div>
+</div>
+
+<br>
+<br>
+
+<script>
+
+$(document).ready(function() {
+    $("#orgSubmit").on('click', function(){
+        var users_array = tblUsrEmp.column(0).data().toArray();
+        var name = $("#nameInput").val();
+        var sync_time = $("#synctimeInput").val();
+        var sync_flag = $("#sync_flag").prop("checked");
+
+        $.ajax({
+            type: 'POST',
+            url: "{% if object %}{%  url 'farmadmin:org' object.id %}{% else %}{%  url 'farmadmin:org' %}{% endif %}",
+            traditional: true,
+            async: false,
+            data: {
+                {% if object %}"id": {{ object.id }},{% endif %}
+                "name": name,
+                "sync_time": sync_time,
+                "sync_flag": sync_flag,
+                "users": users_array,
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            },
+            success: function (data) {
+            },
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+            }
+        })
+        window.location = "{%  url 'farmadmin:orgs' %}";
+    });
+
+   $("#confirmBtn").on('click', function(){
+        $.ajax({
+            type: 'POST',
+            url: "{% if object %}{%  url 'farmadmin:org_rm' object.id %}{% else %}{%  url 'farmadmin:orgs' %}{% endif %}",
+            async: false,
+            data: {
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            }
+        })
+        window.location = "{%  url 'farmadmin:orgs' %}";
+   });
+
+});
+
+</script>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
