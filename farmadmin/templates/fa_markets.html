@@ -3,9 +3,17 @@
 {% load i18n %}
 
 {% block page %}
+    <style>
+        tbody tr td.text-mini {
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 0.9rem;
+        }
+    </style>
+
 <div class="container-fluid mx-3">
 <div class="row">
-    <div style="width:900px;">
+    <div>
         <div class="row">
         <div class="col-6">
             <a role="button" class="btn btn-primary btn-sm" href="{% url 'farmadmin:market' %}"><i class="fa fa-plus" id="addMarket"></i> Добавить рынок</a>
@@ -30,9 +38,11 @@
 </div>
 
 <script>
-var dsEmployee = [
+var dsMarkets = [
     {% for row in object_list %}
-        [{{ row.id }}, '{{ row.name }}','{{ row.innrs.count }}','{{ row.tmnrs.count }}']{% if not forloop.last %},{% endif %}
+        [{{ row.id }}, '{{ row.name }}',
+            '{% for i in row.innrs.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}',
+            '{% for i in row.tmnrs.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
     {% endfor %}
 ];
 
@@ -43,12 +53,12 @@ $(document).ready(function() {
         paging : false,
         ordering:  true,
         "order": [[ 1, "asc" ]],
-        data: dsEmployee,
+        data: dsMarkets,
         columns: [
             { title: "market_id", visible: false, searchable: false},
-            { title: "Рынок", searchable: true },
-            { title: "Кол-во МНН", searchable: false },
-            { title: "Кол-во ТМ", searchable: false }
+            { title: "Рынок", searchable: true, className: 'text-bold' },
+            { title: "Международные Непатентованные наименования (МНН)", searchable: false, className:'text-mini' },
+            { title: "Торговые наименования (TrandeMark)", searchable: false, className:'text-mini' }
         ],
         language: lang_russian
     } );

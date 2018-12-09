@@ -57,8 +57,6 @@ class FilterListJson(OrgMixin, AjaxRawDatatableView):
         initial_data ={}
         org_id = self.init_dynamic_org()
 
-        print(org_id)
-
         if self.kwargs['flt_id'] == finnr:
             initial_data = self.addfilters(self.initial_innr(org_id), flt_active)
         if self.kwargs['flt_id'] == ftrnr:
@@ -76,3 +74,8 @@ class FilterListJson(OrgMixin, AjaxRawDatatableView):
             qs = qs.filter(name__icontains=search)
 
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['org'] = ''
+        return context

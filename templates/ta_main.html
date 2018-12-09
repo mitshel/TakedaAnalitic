@@ -85,14 +85,14 @@
                       <li><a class="dropdown-item" href="{% url 'farmadmin:org' org_id %}">Общие настройки</a></li>
                   {% endif %}{% endif %}
 
-                  {% if user.is_superuser or user.is_staff or user.user_profile.is_orgadmin %}{% if org %}
+                  {% if user.is_superuser or user.is_staff or user.user_profile.is_orgadmin %}
                       {% if perms.db.view_employee %}
                         <li><a class="dropdown-item" href="{% url 'farmadmin:employees' %}">Сотрудники</a></li>
                       {% endif %}
                       {% if perms.db.view_market %}
                         <li><a class="dropdown-item" href="{% url 'farmadmin:markets' %}">Рынки</a></li>
                       {% endif %}
-                  {% endif %}{% endif %}
+                  {% endif %}
                   {% if user.is_superuser or user.is_staff %}
                       <li class="dropdown-divider"></li>
                       {% if perms.db.view_org %}
