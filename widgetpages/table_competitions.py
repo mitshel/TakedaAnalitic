@@ -49,9 +49,12 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
                            trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active[ftrnr] if flt_active else ''),
                            market_type_prefix = market_type_prefix,
                            org_id = org_id,
-                           ).order_by('l.Org_CustNm' if view_id == 'competitions_lpu' else 'pvt.market_id', 'pvt.{}tradeNx'.format(market_type_prefix))
+                           ).order_by('l.Org_CustNm' if view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
+                #order_by('l.Org_CustNm' if view_id == 'competitions_lpu' else 'pvt.market_id', 'pvt.{}tradeNx'.format(market_type_prefix))
         else:
             rawmodel = RawModel('select null as Org_CustINN, null as Org_CustNm, null as name')
+
+        print(rawmodel.query)
 
         return rawmodel
 

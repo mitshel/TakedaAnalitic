@@ -113,25 +113,27 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                         return $('<tr class="group" style="background-color:yellow;"/>')
                         .append( '<td colspan="'+rows.columns().header().length+'">'+group+'</td>' )
                     },
-                    endRender: function (rows, group) {
-                        var container = $('<tr class="group"/>');
-                        container.append('<td>ИТОГО:</td>');
-                        var i = 3;
-                        while (i<rows.columns().header().length) {
-                            if (rows.column(i).visible()) {
-                                var subtotalSum = rows
-                                    .data()
-                                    .pluck(i)
-                                    .reduce(function (a, b) {
-                                        return a + b * 1;
-                                    }, 0) / 1000;
-                                if ( subtotalSum != 0 ) out = intWithSpaces( subtotalSum.toFixed(0) ); else out = '';
-                                container.append('<td class="dt-right">' + out + '</td>');
-                            };
-                            i++;
-                        }
-                        return $(container)
-                    },
+                //    НЕ УДАЛЯТЬ endRender!!! МОЖЕТ ПОНАДОБИТСЯ ПОЗЖЕ
+                //
+                //    endRender: function (rows, group) {
+                //        var container = $('<tr class="group"/>');
+                //        container.append('<td>ИТОГО:</td>');
+                //        var i = 3;
+                //        while (i<rows.columns().header().length) {
+                //            if (rows.column(i).visible()) {
+                //                var subtotalSum = rows
+                //                    .data()
+                //                    .pluck(i)
+                //                    .reduce(function (a, b) {
+                //                        return a + b * 1;
+                //                    }, 0) / 1000;
+                //                if ( subtotalSum != 0 ) out = intWithSpaces( subtotalSum.toFixed(0) ); else out = '';
+                //                container.append('<td class="dt-right">' + out + '</td>');
+                //            };
+                //            i++;
+                //        }
+                //        return $(container)
+                //    },
                     dataSrc: 1
                 },
                 "language": lang_russian

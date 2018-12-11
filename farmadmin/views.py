@@ -52,7 +52,7 @@ class OrgBaseMixin(View):
                         org = None
                         org_id = None
 
-        # Если текущая организация еще неизвестна, то получаем его по привязке к пользователю
+        # Если текущая организация еще неизвестна, то получаем ее по привязке к пользователю
         if (self.SETUP_METHODS & bOrgUSER)>0:
             if not org:
                 try:
@@ -74,7 +74,7 @@ class OrgBaseMixin(View):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['org'] = self.org
-        context['org_id'] = self.org.id
+        context['org_id'] = self.org.id if self.org else 0
         return context
 
 class OrgAdminMixin(OrgBaseMixin):

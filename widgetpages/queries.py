@@ -2,11 +2,12 @@
 #
 q_competitions_lpu = """
 {% autoescape off %}
-select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.{{ market_type_prefix }}tradeNx as tradeNx, t.name 
-    {% for y in years %},[{{y}}]{% endfor %}
+select l.Org_CustINN as ext, l.Org_CustNm as Nm, CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
+select pvt.cust_id as id, pvt.{{ market_type_prefix }}tradeNx as tradeNx, grouping(pvt.{{ market_type_prefix }}tradeNx) as gr
+    {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select s.cust_id, {{ market_type_prefix }}tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
+        select s.cust_id, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
@@ -28,18 +29,24 @@ select pvt.cust_id as id, l.Org_CustINN as ext, l.Org_CustNm as Nm, pvt.{{ marke
     sum(Summa)
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
-    left join db_lpu l on pvt.cust_id = l.cust_id
-    left join db_TradeNR t on pvt.{{ market_type_prefix }}TradeNx = t.id
+group by
+rollup (pvt.cust_id, pvt.{{ market_type_prefix }}tradeNx)
+) nn    
+left join db_lpu l on nn.id = l.cust_id
+left join db_TradeNR t on nn.TradeNx = t.id
+where nn.id is not null
+--order by sum([2018]) over (PARTITION BY nn.id, nn.gr) desc, l.Org_CustNm, gr, t.name
 {% endautoescape %}  
 """
 
 q_competitions_market = """
 {% autoescape off %}
-select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}tradeNx as tradeNx, t.name 
-    {% for y in years %},[{{y}}]{% endfor %}
+select CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
+select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}tradeNx as tradeNx, grouping(pvt.{{ market_type_prefix }}tradeNx) as gr 
+    {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select s.market_id, s.market_name, {{ market_type_prefix }}tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
+        select s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
@@ -61,7 +68,12 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
     sum(Summa)
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
-    left join db_TradeNR t on pvt.{{ market_type_prefix }}TradeNx = t.id
+group by
+rollup (pvt.market_id, pvt.market_name, pvt.{{ market_type_prefix }}tradeNx)
+) nn    
+left join db_TradeNR t on nn.TradeNx = t.id
+where nn.id is not null and nn.Nm is not Null
+--order by sum([2018]) over (PARTITION BY nn.id, nn.gr) desc, l.Org_CustNm, gr, t.name
 {% endautoescape %}  
 """
 
