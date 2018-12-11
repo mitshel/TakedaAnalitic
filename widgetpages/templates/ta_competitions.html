@@ -19,6 +19,7 @@
         th.dt-right, td.dt-right { text-align: right; padding-right:5px; !important;}
         table.dataTable.table-sm > thead > tr > th.dt-right { padding-right:5px; !important; }
         table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
+        table.datatable tr.total td  { font-weight:bold; !important;}
 
     </style>
 	<div class="col-12">
@@ -107,6 +108,11 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                         d.csrfmiddlewaretoken = '{{ csrf_token }}';
                     }
                 },
+                "createdRow": function( row, data, dataIndex ) {
+                    if ( data[2] == "ИТОГО" ) {
+                        $(row).addClass('total');
+                    }
+                 },
                 order: [[1, 'asc']],
                 rowGroup: {
                     startRender: function (rows, group) {
