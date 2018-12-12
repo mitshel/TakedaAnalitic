@@ -16,7 +16,8 @@
 
         .sticky-top {top:3.5rem; }
         #ta_competitions_table thead {background-color: rgb(108, 117, 125); color: #ffffff; }
-        th.dt-right, td.dt-right { text-align: right; padding-right:5px; !important;}
+        th.dt-right { text-align: center; padding-right:0; !important;}
+        td.dt-right { text-align: right; padding-right:5px; !important;}
         table.dataTable.table-sm > thead > tr > th.dt-right { padding-right:5px; !important; }
         table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
         table.datatable tr.total td  { font-weight:bold; !important;}
@@ -79,7 +80,7 @@ function intWithSpaces(x) {
 
 var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-                ordering:  false,
+                ordering:  true,
                 buttons: ['excel'],
                 select: true,
                 //fixedHeader: true,

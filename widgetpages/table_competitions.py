@@ -14,7 +14,7 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
 
     def get_initial_queryset(self):
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
-        view_id = self.request.POST.get('view_id', 'competitions_lpu')
+        self.view_id = self.request.POST.get('view_id', 'competitions_lpu')
         market_type = '1'
         flt = json.loads(filters_ajax_request)
         flt_active = {}
@@ -37,7 +37,7 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
         market_type_prefix = '' if market_type == '1' else 'Order_'
 
         if years_active:
-            q_competitions = queries.q_competitions_lpu if view_id == 'competitions_lpu' else queries.q_competitions_market
+            q_competitions = queries.q_competitions_lpu if self.view_id == 'competitions_lpu' else queries.q_competitions_market
             rawmodel = RawModel(q_competitions)
             rawmodel = rawmodel.filter(years=years_active,
                            markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
@@ -49,12 +49,10 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
                            trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active[ftrnr] if flt_active else ''),
                            market_type_prefix = market_type_prefix,
                            org_id = org_id,
-                           ).order_by('l.Org_CustNm' if view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
+                           ).order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
                 #order_by('l.Org_CustNm' if view_id == 'competitions_lpu' else 'pvt.market_id', 'pvt.{}tradeNx'.format(market_type_prefix))
         else:
             rawmodel = RawModel('select null as Org_CustINN, null as Org_CustNm, null as name')
-
-        print(rawmodel.query)
 
         return rawmodel
 
@@ -62,6 +60,15 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
         search = self.request.POST.get('search[value]', None)
         if search:
             qs = qs.filter(icontains=search)
+        return qs
+
+    def ordering(self, qs):
+        sort_col = int(self._querydict.get('order[0][column]'))
+        sort_dir = self._querydict.get('order[0][dir]')
+        if sort_col<=3:
+            qs = qs.order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
+        else:
+            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
 
         return qs
 

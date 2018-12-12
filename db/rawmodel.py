@@ -65,6 +65,7 @@ class RawModel(object):
         return self
 
     def order_by(self, *args):
+        self._order_data.clear()
         for o in args:
             if not o in self._order_data:
                 self._order_data.append(o)
