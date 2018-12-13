@@ -40,5 +40,5 @@ admin.site.register(Org, Org_admin)
 admin.site.register(Employee, Employee_admin)
 admin.site.register(Market, Market_admin)
 
-admin.site.site_header = 'Администрирование FarmAnalitic'
-admin.site.site_title = 'Раздел администратора FarmAnalitic'
+admin.site.site_header = 'Администрирование BI Monitor'
+admin.site.site_title = 'Раздел администратора BI Monitor'
