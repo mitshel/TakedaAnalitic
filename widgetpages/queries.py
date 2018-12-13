@@ -7,7 +7,8 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}tradeNx as tradeNx, groupi
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select s.cust_id, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
+        select distinct isnull(s.Lotspec_ID,0) as Lotspec_ID, s.cust_id, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, {{ market_type_prefix }}Summa 
+        from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
@@ -26,7 +27,7 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}tradeNx as tradeNx, groupi
     ) m
     PIVOT
     (
-    sum(Summa)
+    sum({{ market_type_prefix }}Summa)
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
 group by
@@ -46,7 +47,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, Summa from [dbo].[org_CACHE_{{org_id}}] s
+        select distinct isnull(s.Lotspec_ID,0) as Lotspec_ID, s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, {{ market_type_prefix }}Summa from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
@@ -65,7 +66,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
     ) m
     PIVOT
     (
-    sum(Summa)
+    sum({{ market_type_prefix }}Summa)
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
 group by

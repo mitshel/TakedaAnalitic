@@ -34,7 +34,7 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
         else:
             years_active = flt_active[fyear]['list']
 
-        market_type_prefix = '' if market_type == '1' else 'Order_'
+        market_type_prefix = '' if market_type == '1' else 'Contract_'
 
         if years_active:
             q_competitions = queries.q_competitions_lpu if self.view_id == 'competitions_lpu' else queries.q_competitions_market
