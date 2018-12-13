@@ -244,6 +244,8 @@ class SalessheduleView(FiltersView):
             pivot_data['pivot1'] = list (hsy_active.open().fetchall())
             pivot_data['pivot2'] = list (hsm_active.open().fetchall())
             pivot_data['year'] = list( unique([e['iid'] for e in pivot_data['pivot1']]) )
+            pivot_data['year'].sort()
+
             hsy_active.close()
             hsm_active.close()
         return pivot_data
