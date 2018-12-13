@@ -184,7 +184,6 @@ ALTER TABLE [dbo].[db_WinnerOrg] ADD PRIMARY KEY CLUSTERED
 ([id] ASC) WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, IGNORE_DUP_KEY = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 GO
 
-
 -- Перенос ранее вручную созданной таблицы db_marketmnn в db_market_innrs, для возможнсти отображения виджета многие ко многим в админке
 insert into db_market_innrs(market_id, innr_id) select market_id, mnn_id_id from db_marketmnn
 go
