@@ -20,11 +20,11 @@ t.InnNx,
 t.Order_InnNx,
 t.TradeNx,
 t.Order_TradeNmNx as Order_TradeNx,
-t.Order_Price,
-t.Order_Count,
-t.Order_Sum as Order_Summa,
-t.Summa,
-t.Ship_FinalPrice,
+t.Order_Price as Price,
+t.Order_Count as Count,
+t.Order_Sum as Summa,
+--t.Summa,
+--t.Ship_FinalPrice,
 t.Winner_Id,
 isnull(m1.name, m2.name) as market_name,
 isnull(m1.id, m2.id) as market_id,
@@ -39,7 +39,9 @@ c1.ItemName as ContractItemNm,
 c1.ItemUnit as ContractItemUnit,
 c1.ItemPrice as ContractItemPrice,
 c1.ItemCount as ContractItemCount,
-c1.ItemSum as Contract_Summa --ContractItemSum
+
+isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
+isnull(CAST(c1.[Ship_Count] as bigint),c1.[ItemCount]) as Contract_Count
 
 into org_CACHE_{{org_id}} from ComplexRpt_CACHE t
 
