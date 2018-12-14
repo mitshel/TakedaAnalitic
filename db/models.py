@@ -28,8 +28,12 @@ class Org_log(models.Model):
 
 class Lpu(models.Model):
     cust_id = models.IntegerField(db_column='Cust_ID', primary_key=True, db_index=True, null=False, blank=False)
-    inn = models.CharField(db_column='Org_CustINN', max_length=12, db_index=True, null=False, blank=False, verbose_name='ИНН')
+    inn = models.CharField(db_column='Org_CustINN', max_length=16, db_index=True, null=False, blank=False, verbose_name='ИНН')
     name = models.CharField(db_column='Org_CustNm', max_length=2000, db_index=True, null=False, blank=False, verbose_name='Грузополучатель')
+    shortname = models.CharField(db_column='shortname', max_length=512, null=True, blank=True, verbose_name='Грузополучатель полное имя')
+    addr1 = models.CharField(db_column='addr1', max_length=512, null=True, blank=True, verbose_name='Адрес1')
+    addr2 = models.CharField(db_column='addr2', max_length=512, null=True, blank=True, verbose_name='Адрес2')
+    regcode = models.IntegerField(db_column='regcode', null=True, blank=True, verbose_name='Код региона')
     employee = models.ManyToManyField('Employee', related_name='employees', verbose_name='Сотрудник')
 
     class Meta:

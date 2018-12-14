@@ -229,11 +229,31 @@ go
 insert into db_market_tmnrs(market_id, tradenr_id) select market_id, tm_id_id from db_markettm
 go
 
--- Пополнение db_lpu
+-- Обновление таблицы с ЛПУ
+--
+--
+-- Обновляем Таблицу Организаций
+update t1 
+	set t1.Org_CustINN = t2.INN,
+	    t1.Org_CustNm = t2.OrgNm,
+		t1.shortname = t2.OrgNmS,
+		t1.addr1 = t2.addr1,
+		t1.addr2 = t2.addr2,
+		t1.regcode = t2.regcode
+	from db_lpu t1
+	inner join org as t2 on t1.cust_id=t2.Org_ID
+go
+
+-- Добавляем новые ЛПУ, но только те, которые есть в кэше
 --
 insert into db_lpu
-select distinct cust_id, cust_inn, cust_name from ComplexRpt_CACHE_Contract
-where cust_id not in (select cust_id from db_lpu)
+select DISTINCT Org_ID as cust_id, INN as Org_CustINN, OrgNm as Org_CustNm, OrgNmS as shortname, Addr1, Addr2, regcode
+from org
+where (Org_ID in (select cust_id from ComplexRpt_CACHE)
+or Org_ID in (select cust_id from ComplexRpt_CACHE_Contract))
+and Org_ID not in (select cust_id from  db_lpu)
+go
+
 
 -- Создание полной таблици test_CACHE_1f
 --
