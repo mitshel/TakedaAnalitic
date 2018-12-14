@@ -58,7 +58,7 @@ left join db_market_innrs b1 on isNull(c1.IntlName_ID,t.InnNx)=b1.innr_id
 left join db_market m1 on ((m1.id=b1.market_id) and m1.org_id={{org_id}})
 
 left join db_market_tmnrs b2 on isNull(c1.TradeName_ID,t.TradeNx)=b2.tradenr_id
-left join db_market m2 on ((m2.id=b2.market_id) and m1.org_id={{org_id}})
+left join db_market m2 on ((m2.id=b2.market_id) and m2.org_id={{org_id}})
 
 where (t.Reg_ID < 100) AND (t.ProdType_ID = 'L') and (m1.id is not null or m2.id is not null)
 
