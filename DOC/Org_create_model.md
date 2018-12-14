@@ -120,6 +120,25 @@ REPLACE(name,'\f',''),
 '\u001f',''))
 go
 
+
+-- Обновление таблицы с Международными непатентованными наименованиями (International Nopatent Name)
+--
+--
+-- Обновляем наименования по ID
+update t1 
+	set t1.name = t2.InnR
+	from db_innR t1
+	inner join regMNN as t2 on t1.id=t2.innNx
+go
+-- Добавляем новые МНН, но только те, которые есть в кэше
+insert into db_innR
+select DISTINCT innNx as id, InnR as name
+from regMNN
+where (innNx in (select Order_InnNx from ComplexRpt_CACHE)
+or innNx in (select IntlName_ID from ComplexRpt_CACHE_Contract))
+and innNX not in (select id from  db_innR)
+go
+
 -- Создание таблицы с Торговыми наименованиями (TradeName)
 --
 --
@@ -157,6 +176,25 @@ REPLACE(name,'\f',''),
 '\u001f',''))
 go
 
+-- Обновление таблицы с Торговыми наименованиями (TradeName)
+--
+--
+-- Обновляем наименования по ID
+update t1 
+	set t1.name = t2.TradeNmR
+	from db_tradeNR t1
+	inner join regTradenm as t2 on t1.id=t2.TradeNmNx
+go
+
+-- Добавляем новые ТМ, но только те, которые есть в кэше
+insert into db_tradeNR
+select DISTINCT TradeNmNx as id, TradeNmR as name
+from regTradenm
+where (TradeNmNx in (select Order_TradeNmNx from ComplexRpt_CACHE)
+or TradeNmNx in (select TradeName_ID from ComplexRpt_CACHE_Contract))
+and TradeNmNx not in (select id from  db_tradeNR)
+go
+
 -- Создание таблицы с Победителями Торгов (WinnerOrg)
 --
 --
@@ -191,6 +229,11 @@ go
 insert into db_market_tmnrs(market_id, tradenr_id) select market_id, tm_id_id from db_markettm
 go
 
+-- Пополнение db_lpu
+--
+insert into db_lpu
+select distinct cust_id, cust_inn, cust_name from ComplexRpt_CACHE_Contract
+where cust_id not in (select cust_id from db_lpu)
 
 -- Создание полной таблици test_CACHE_1f
 --
