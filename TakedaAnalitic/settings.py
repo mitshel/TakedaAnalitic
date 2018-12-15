@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 
 import os
 import socket
+from .settings_db import DBHOST, DBNAME, DBPASSWORD, DBUSER
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -93,10 +94,10 @@ if socket.gethostname() == 'dsgate' or socket.gethostname() == 'DESKTOP-1NT18VI'
     DATABASES = {
         'default': {
             'ENGINE': 'sql_server.pyodbc',
-            'NAME': 'CursorTest',
-            'USER': 'cursor',
-            'PASSWORD': 'cursor2018',
-            'HOST': '192.168.7.130',
+            'NAME': DBNAME,
+            'USER': DBUSER,
+            'PASSWORD': DBPASSWORD,
+            'HOST': DBHOST,
             'PORT': '',
 
             'OPTIONS': {

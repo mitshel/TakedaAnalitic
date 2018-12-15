@@ -2,3 +2,4 @@ venv
 .idea
 .idea\*
 *.pyc
+TakedaAnalitic\settings_db.py
