@@ -4,8 +4,10 @@ from django.urls import reverse_lazy, reverse
 from django.db.models import Q
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from django.forms.models import model_to_dict
 
 from db.models import Org, Employee, Market, Lpu, InNR, TradeNR
+
 
 bOrgPOST = 4
 bOrgSESSION = 2
@@ -208,8 +210,10 @@ class MarketUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMi
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         # ИСключаем все INN и ТМ уже привязанные к рынкам текущей организации
-        context['innrs'] = InNR.objects.exclude(market__org=self.org).exclude(id=54656).order_by('name')
+        context['innrs'] = InNR.objects.exclude(market__org=self.org).exclude(id=54656).order_by('name')   #
         context['tmnrs'] = TradeNR.objects.exclude(market__org=self.org).order_by('name')
+        #print(self.object)
+        #print(list([dict(e) for e in self.object.innrs.all().values('own=F('market_innrs__own'))]))
         return context
 
     def get_success_url(self):

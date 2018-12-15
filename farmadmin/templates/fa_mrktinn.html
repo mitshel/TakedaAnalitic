@@ -96,7 +96,7 @@
 
     var dsMnnMrkt = [
         {%  for l in object.innrs.all %}
-            [ '{{ l.id }}', '{{ l.name }}', 0 ]{% if not forloop.last %}, {% endif %}{% endfor %}
+            [ '{{ l.id }}', '{{ l.name }}', {{ l.own }} ]{% if not forloop.last %}, {% endif %}{% endfor %}
     ];
 
     var tblMnnMrkt = $('#tblMnnMrkt').DataTable( {
