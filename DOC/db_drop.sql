@@ -8,13 +8,21 @@ drop table [dbo].[bi_auth_userprofile]
 go
 drop table [dbo].[auth_user_groups]
 go
-drop table [dbo].[db_marketmnn]
+drop table [dbo].[db_market_innrs]
 go
-drop table [dbo].[db_markettm]
+drop table [dbo].[db_market_tmnrs]
 go
 drop table [dbo].[db_market]
 go
+drop table [dbo].[db_employee_users]
+go
+drop table [dbo].[db_employee_lpu]
+go
 drop table [dbo].[db_employee]
+go
+drop table [dbo].[db_org_users]
+go
+drop table [dbo].[db_org_log]
 go
 drop table [dbo].[db_org]
 go
@@ -25,6 +33,8 @@ go
 drop table [dbo].[django_content_type]
 go
 drop table [dbo].[django_migrations]
+go
+drop table django_session
 go
 drop table [dbo].[auth_user]
 go
