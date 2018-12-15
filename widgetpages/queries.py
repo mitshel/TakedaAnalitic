@@ -137,7 +137,7 @@ inner join org_CACHE_{{ org_id }} b on a.id=b.statusT_ID and b.cust_id<>0
 q_innr_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_innr a
-inner join org_CACHE_{{ org_id }} b on a.id=b.innNx and b.cust_id<>0
+inner join org_CACHE_{{ org_id }} b on a.id=b.Order_innNx and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 {% if market_in %}inner join db_market_innrs m on a.id=m.innr_id and {{ market_in }} {% endif %}
 {% if name__icontains %} where name like '%{{ name__icontains }}%'{% endif %}
@@ -147,7 +147,7 @@ inner join org_CACHE_{{ org_id }} b on a.id=b.innNx and b.cust_id<>0
 q_tradenr_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_tradenr a
-inner join org_CACHE_{{ org_id }} b on a.id=b.tradeNx and b.cust_id<>0
+inner join org_CACHE_{{ org_id }} b on a.id=b.Order_tradeNx and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 {% if market_in %}inner join db_market_tmnrs m on a.id=m.tradenr_id and {{ market_in }} {% endif %}
 {% if name__icontains %} where name like '%{{ name__icontains }}%'{% endif %}
