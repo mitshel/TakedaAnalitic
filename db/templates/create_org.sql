@@ -43,13 +43,13 @@ c1.ItemCount as ContractItemCount,
 isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
 isnull(CAST(c1.[Ship_Count] as bigint),c1.[ItemCount]) as Contract_Count
 
-into org_CACHE_{{org_id}} from ComplexRpt_CACHE t
+into org_CACHE_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
 
-LEFT JOIN dbo.ComplexRpt_CACHE_Contract c (nolock)
+LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c (nolock)
 	ON c.Lot_ID = t.Lot_ID
 	   and c.Contract_ID > 0
 	   and c.Lotspec_ID IS NULL
-LEFT JOIN dbo.ComplexRpt_CACHE_Contract c1 (nolock)
+LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	ON c1.LotSpec_ID = t.LotSpec_ID
 	   and c1.Contract_ID > 0
 	   and isnull(c1.LotSpec_ID,0) > 0
