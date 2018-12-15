@@ -140,7 +140,7 @@
     <!-- Footer -->
     <hr class="my-3">
     <footer class="container">
-     <p>&copy; BI Monitor 2018</p>
+     <p>&copy; BI Monitor 2018 {% if user.is_superuser or user.is_staff %} [DataSource: {{ datasource }}] {% endif %}</p>
     </footer>
 
     {% block js-block0 %}    {% endblock %}

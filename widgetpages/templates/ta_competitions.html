@@ -80,7 +80,6 @@ function intWithSpaces(x) {
 
 var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-                ordering:  true,
                 buttons: ['excel'],
                 select: true,
                 //fixedHeader: true,
@@ -100,6 +99,8 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 "processing": true,
                 "serverSide": true,
                 //"stateSave" : true,
+                "ordering":  true,
+                "order": [[ {{ data.sort_col }}, "{{ data.sort_dir }}" ]],
                 "ajax": {
                     "url": "{% url 'widgetpages:jcompetitions' %}",
                     "type": "POST",

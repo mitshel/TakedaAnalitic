@@ -1,3 +1,5 @@
+import datetime
+
 from django.shortcuts import render
 from django.http import JsonResponse
 
@@ -260,12 +262,23 @@ class CompetitionsView(FiltersView):
 
     def data(self, flt=None, flt_active=None, org_id=0):
         data = {}
+
         if not flt_active:
             years_active = [y['iid'] for y in self.get_filter(flt, fyear)['data']]
         else:
             years_active = flt_active[fyear]['list']
 
+        current_year = datetime.datetime.now().year
+        try:
+            sort_col = years_active.index(current_year)+3
+            sort_dir = 'desc'
+        except:
+            sort_col = 1
+            sort_dir = 'asc'
+
         data['year'] = years_active
+        data['sort_col'] = sort_col
+        data['sort_dir'] = sort_dir
         return data
 
 class CompetitionsLpuView(CompetitionsView):

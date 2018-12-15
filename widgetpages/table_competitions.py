@@ -65,6 +65,7 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
         sort_dir = self._querydict.get('order[0][dir]')
+        print('SortCol=',sort_col)
         if sort_col<=3:
             qs = qs.order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
         else:
