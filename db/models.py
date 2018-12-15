@@ -85,8 +85,8 @@ class TradeNR(models.Model):
 class Market(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
     name = models.CharField(max_length=32, null=True, blank=True, verbose_name='Рынок')
-    innrs = models.ManyToManyField(InNR, blank=True, verbose_name='МНН')
-    tmnrs = models.ManyToManyField(TradeNR, blank=True, verbose_name='Торговые наименования')
+    innrs = models.ManyToManyField(InNR, blank=True, through='Market_Innrs', verbose_name='МНН')
+    tmnrs = models.ManyToManyField(TradeNR, blank=True, through='Market_Tmnrs', verbose_name='Торговые наименования')
 
     class Meta:
         verbose_name = 'Рынок'
@@ -94,6 +94,16 @@ class Market(models.Model):
 
     def __str__(self):
          return  self.name
+
+class Market_Innrs(models.Model):
+    market = models.ForeignKey(Market, on_delete=models.CASCADE)
+    innr = models.ForeignKey(InNR, on_delete=models.CASCADE)
+    own = models.IntegerField(default=0, null=False, blank=False)
+
+class Market_Tmnrs(models.Model):
+    market = models.ForeignKey(Market, on_delete=models.CASCADE)
+    tradenr = models.ForeignKey(TradeNR, on_delete=models.CASCADE)
+    own = models.IntegerField(default=0, null=False, blank=False)
 
 class StatusT(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)

@@ -32,8 +32,8 @@ class Employee_admin(admin.ModelAdmin):
 class Market_admin(admin.ModelAdmin):
     list_filter = ['org__name']
     list_display = ('name','org')
-    fields = ('name', 'org', 'innrs','tmnrs')
-    filter_horizontal = ('innrs','tmnrs',)
+    #fields = ('name', 'org', 'innrs','tmnrs')
+    #filter_horizontal = ('innrs','tmnrs',)
 
 
 admin.site.register(Org, Org_admin)

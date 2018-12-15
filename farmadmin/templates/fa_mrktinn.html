@@ -67,6 +67,7 @@
                         <tr>
                             <th>id</th>
                             <th>МНН</th>
+                            <th width="30px">Свой</th>
                         </tr>
                     </thead>
                     <!-- <tbody>
@@ -95,7 +96,7 @@
 
     var dsMnnMrkt = [
         {%  for l in object.innrs.all %}
-            [ '{{ l.id }}', '{{ l.name }}']{% if not forloop.last %}, {% endif %}{% endfor %}
+            [ '{{ l.id }}', '{{ l.name }}', 0 ]{% if not forloop.last %}, {% endif %}{% endfor %}
     ];
 
     var tblMnnMrkt = $('#tblMnnMrkt').DataTable( {
@@ -111,7 +112,12 @@
         paging: false,
         "columnDefs": [
                     { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
-                    { title: "МНН", name: "name", "targets": 1 , "visible": true, "searchable": true }
+                    { title: "МНН", name: "name", "targets": 1 , "visible": true, "searchable": true },
+                    { title: "Свой",  name: "self", "targets": 2, orderable: false, "className": "dt-center",
+                    render: function (data, type, full, meta) {
+                        if (data){ return '<input type="checkbox" checked>'; }
+                        else { return '<input type="checkbox">'; }},
+                    },
         ],
         data : dsMnnMrkt,
         language: lang_russian
