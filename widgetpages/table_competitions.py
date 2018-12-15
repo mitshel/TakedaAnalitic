@@ -48,8 +48,8 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
                            innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active[finnr] if flt_active else ''),
                            trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active[ftrnr] if flt_active else ''),
                            market_type_prefix = market_type_prefix,
-                           org_id = org_id,
-                           ).order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
+                           org_id = org_id)
+                #.order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
                 #order_by('l.Org_CustNm' if view_id == 'competitions_lpu' else 'pvt.market_id', 'pvt.{}tradeNx'.format(market_type_prefix))
         else:
             rawmodel = RawModel('select null as Org_CustINN, null as Org_CustNm, null as name')
@@ -65,7 +65,6 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
         sort_dir = self._querydict.get('order[0][dir]')
-        print('SortCol=',sort_col)
         if sort_col<=3:
             qs = qs.order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
         else:

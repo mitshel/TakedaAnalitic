@@ -145,6 +145,22 @@ and Org_ID not in (select cust_id from  db_lpu)
 go
 -- (затронуто строк: 19172)
 
+-- Добавляем новые ЛПУ, которые есть в кэше, но нет даже в спрвочнике ORG
+--
+insert into db_lpu(cust_id,Org_CustNm)
+select DISTINCT cust_id, cast(cust_id as varchar)+' #expected in Org from Contract' as Org_CustNm
+from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE]
+where cust_id not in (select cust_id from  db_lpu)
+go
+
+-- Добавляем новые ЛПУ, которые есть в контрактах, но нет даже в спрвочнике ORG
+--
+insert into db_lpu(cust_id,Org_CustNm)
+select DISTINCT cust_id, cast(cust_id as varchar)+' #expected in Org from Contract' as Org_CustNm
+from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract]
+where cust_id not in (select cust_id from  db_lpu)
+go
+
 
 --
 -- Создание и наполнение таблицы Победителей торгов db_WinnerOrg
