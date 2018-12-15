@@ -74,7 +74,7 @@ function floatWithSpaces(x) {
 }
 
 function intWithSpaces(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
 }
 
 var ta_competitions_table = $('#ta_competitions_table').DataTable({
