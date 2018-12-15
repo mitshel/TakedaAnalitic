@@ -92,7 +92,7 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                     { "name": "name", "targets": 2, "visible": true, "searchable": false },
                     {% for y in data.year %}
                     { "name": "{{ y }}", "targets": {{ forloop.counter0|add:3 }}, "visible": true, "searchable": false,
-                      "className": "dt-right",
+                      "className": "dt-right", "orderSequence": ["desc","asc"],
                       render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } }{% if not forloop.last %},{% endif %}{% endfor %}
                 ],
                 "processing": true,
