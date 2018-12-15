@@ -174,7 +174,7 @@ inner join org_CACHE_{{ org_id }} b on a.cust_id=b.cust_id and b.cust_id<>0
 
 q_sales_year = """
 {% autoescape off %}
-select b.name as market_name, PlanTYear as iid, Sum(Summa)/1000000 as product_cost_sum
+select b.name as market_name, PlanTYear as iid, Sum(Order_Summa)/1000000 as product_cost_sum
 from org_CACHE_{{ org_id }} a
 left join db_market b on a.market_id=b.id and org_id={{ org_id }}
 {% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
@@ -188,7 +188,7 @@ group by b.name, PlanTYear
 
 q_sales_month = """
 {% autoescape off %}
-select b.name as market_name, month(ProcDt) as mon, Sum(Summa)/1000000 as product_cost_sum, count(*) as product_count
+select b.name as market_name, month(ProcDt) as mon, Sum(Order_Summa)/1000000 as product_cost_sum, count(*) as product_count
 from org_CACHE_{{ org_id }} a
 left join db_market b on a.market_id=b.id and org_id={{ org_id }}
 {% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
