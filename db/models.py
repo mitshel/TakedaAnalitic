@@ -29,7 +29,7 @@ class Org_log(models.Model):
 class Lpu(models.Model):
     cust_id = models.IntegerField(db_column='Cust_ID', primary_key=True, db_index=True, null=False, blank=False)
     inn = models.CharField(db_column='Org_CustINN', max_length=16, db_index=True, null=False, blank=False, verbose_name='ИНН')
-    name = models.CharField(db_column='Org_CustNm', max_length=2000, db_index=True, null=False, blank=False, verbose_name='Грузополучатель')
+    name = models.CharField(db_column='Org_CustNm', max_length=512, db_index=True, null=False, blank=False, verbose_name='Грузополучатель')
     shortname = models.CharField(db_column='shortname', max_length=512, null=True, blank=True, verbose_name='Грузополучатель полное имя')
     addr1 = models.CharField(db_column='addr1', max_length=512, null=True, blank=True, verbose_name='Адрес1')
     addr2 = models.CharField(db_column='addr2', max_length=512, null=True, blank=True, verbose_name='Адрес2')
@@ -66,18 +66,18 @@ class InNR(models.Model):
 
     class Meta:
         managed = False
-        db_table = 'db_inNR'
+        db_table = 'db_innr'
 
     def __str__(self):
          return  self.name
 
 class TradeNR(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
-    name = models.CharField(db_column='name', max_length=256, null=False, blank=False)
+    name = models.CharField(db_column='name', max_length=254, null=False, blank=False)
 
     class Meta:
         managed = False
-        db_table = 'db_tradeNR'
+        db_table = 'db_tradenr'
 
     def __str__(self):
          return  self.name
@@ -105,8 +105,8 @@ class StatusT(models.Model):
 
 class WinnerOrg(models.Model):
     id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
-    name = models.CharField(db_column='name', max_length=200, null=False, blank=False)
-    inn = models.CharField(db_column='inn', max_length=12, null=True, blank=True)
+    name = models.CharField(db_column='name', max_length=512, null=False, blank=False)
+    inn = models.CharField(db_column='inn', max_length=16, null=True, blank=True)
 
     class Meta:
         managed = False
