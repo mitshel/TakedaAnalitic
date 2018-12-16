@@ -76,8 +76,35 @@ td.dt-center { text-align: center; !important;}
 
 $(document).ready(function() {
     $("#marketSubmit").on('click', function(){
-        var mnn_array = tblMnnMrkt.column(0).data().toArray();
-        var tm_array = tblTmMrkt.column(0).data().toArray();
+        $("input.inncheckbox:not(:checked)").each(function() { tblMnnMrkt.cell(this.closest('td')).data(0); });
+        $("input.inncheckbox:checked").each(function() { tblMnnMrkt.cell(this.closest('td')).data(1);  });
+        $("input.tmcheckbox:not(:checked)").each(function() { tblTmMrkt.cell(this.closest('td')).data(0); });
+        $("input.tmcheckbox:checked").each(function() { tblTmMrkt.cell(this.closest('td')).data(1); });
+
+        //tblMnnMrkt.rows().every(function (rowIdx, tableLoop, rowLoop) {
+        //      var row = this.node();
+        //      if ( $(row).find('input').prop('checked') ) this.data()[2]=1; else  this.data()[2]=0;
+        //});
+        //tblTmMrkt.rows().every(function (rowIdx, tableLoop, rowLoop) {
+        //      var row = this.node();
+        //      if ( $(row).find('input').prop('checked') ) this.data()[2]=1; else this.data()[2]=0;
+        //});
+
+        //var mnn_array = tblMnnMrkt.columns(0).data().toArray();
+        //var tm_array = tblTmMrkt.columns(0).data().toArray();
+
+        var mnn_array = []
+        tblMnnMrkt.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+            var v = this.data();
+            mnn_array.push({'id':v[0], 'own':v[2]})
+        });
+
+        var tm_array = []
+        tblTmMrkt.rows().every( function ( rowIdx, tableLoop, rowLoop ) {
+            var v = this.data();
+            tm_array.push({'id':v[0], 'own':v[2]})
+        });
+
         var name = $("#nameInput").val();
 
         $.ajax({
@@ -89,8 +116,10 @@ $(document).ready(function() {
                 {% if object %}"id": {{ object.id }},{% endif %}
                 "org": {{ org.id }},
                 "name": name,
-                "innrs": mnn_array,
-                "tmnrs": tm_array,
+                "innrs": JSON.stringify(mnn_array),
+                "tmnrs": JSON.stringify(tm_array),
+                //"innrs": mnn_array,
+                //"tmnrs": tm_array,
                 "csrfmiddlewaretoken": '{{ csrf_token }}'
             },
             success: function (data) {

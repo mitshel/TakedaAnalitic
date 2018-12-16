@@ -95,8 +95,8 @@
     ];
 
     var dsTmMrkt = [
-        {%  for l in object.tmnrs.all %}
-            [ '{{ l.id }}', '{{ l.name }}', 0 ]{% if not forloop.last %}, {% endif %}{% endfor %}
+        {%  for l in object.market_tmnrs_set.all %}
+            [ '{{ l.tradenr.id }}', '{{ l.tradenr.name }}', {{ l.own }} ]{% if not forloop.last %}, {% endif %}{% endfor %}
     ];
 
     var tblTmMrkt = $('#tblTmMrkt').DataTable( {
@@ -113,10 +113,10 @@
         "columnDefs": [
                     { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
                     { title: "Торговое наименование", name: "name", "targets": 1 , "visible": true, "searchable": true },
-                    { title: "Свой",  name: "self", "targets": 2, orderable: false, "className": "dt-center",
+                    { title: "Свой",  name: "own", "targets": 2, orderable: false, "className": "dt-center",
                     render: function (data, type, full, meta) {
-                        if (data){ return '<input type="checkbox" checked>'; }
-                        else { return '<input type="checkbox">'; }},
+                        if (data){ return '<input class="tmcheckbox" type="checkbox" checked>'; }
+                        else { return '<input class="tmcheckbox" type="checkbox">'; }},
                     },
         ],
         data : dsTmMrkt,

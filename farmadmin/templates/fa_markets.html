@@ -11,7 +11,7 @@
         }
     </style>
 
-<div class="container-fluid mx-3">
+<div class="container-fluid mx-3 col-lg-8">
 <div class="row">
     <div>
         <div class="row">
@@ -30,7 +30,24 @@
 
         <div class="row">
         <div class="col-12">
-           <table id="tblMarket" class="table table-hover table-sm table-striped display w-100"></table>
+           <table id="tblMarket" class="table table-hover table-sm table-striped display w-100">
+               <thead>
+               <th>market_id</th>
+               <th width="10%">Рынок</th>
+               <th width="50%">Международные Непатентованные наименования (МНН)</th>
+               <th width="40%">Торговые наименования (TrandeMark)</th>
+               </thead>
+               <tbody>
+                 {% for row in object_list %}
+                     <tr>
+                     <td>{{ row.id }}</td><td>{{ row.name }}</td>
+                     <td>{% for i in row.market_innrs_set.all %}{% if i.own %}<b>{{ i.innr.name }}</b>{% else %}{{ i.innr.name }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                     <td>{% for i in row.market_tmnrs_set.all %}{% if i.own %}<b>{{ i.tradenr.name }}</b>{% else %}{{ i.tradenr.name }}{% endif %}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+                     </tr>
+                 {% endfor %}
+
+               </tbody>
+           </table>
         </div>
         </div>
     </div>
@@ -38,14 +55,6 @@
 </div>
 
 <script>
-var dsMarkets = [
-    {% for row in object_list %}
-        [{{ row.id }}, '{{ row.name }}',
-            '{% for i in row.innrs.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}',
-            '{% for i in row.tmnrs.all %}{{ i.name }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
-    {% endfor %}
-];
-
 
 $(document).ready(function() {
     var tblMarket = $('#tblMarket').DataTable( {
@@ -53,7 +62,6 @@ $(document).ready(function() {
         paging : false,
         ordering:  true,
         "order": [[ 1, "asc" ]],
-        data: dsMarkets,
         columns: [
             { title: "market_id", visible: false, searchable: false},
             { title: "Рынок", searchable: true, className: 'text-bold' },

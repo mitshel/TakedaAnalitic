@@ -95,8 +95,8 @@
     ];
 
     var dsMnnMrkt = [
-        {%  for l in object.innrs.all %}
-            [ '{{ l.id }}', '{{ l.name }}', {{ l.own }} ]{% if not forloop.last %}, {% endif %}{% endfor %}
+        {%  for l in object.market_innrs_set.all %}
+            [ '{{ l.innr.id }}', '{{ l.innr.name }}', {{ l.own }} ]{% if not forloop.last %}, {% endif %}{% endfor %}
     ];
 
     var tblMnnMrkt = $('#tblMnnMrkt').DataTable( {
@@ -113,10 +113,10 @@
         "columnDefs": [
                     { title: "id", name: "id", "targets": 0 , "visible": false, "searchable": false },
                     { title: "МНН", name: "name", "targets": 1 , "visible": true, "searchable": true },
-                    { title: "Свой",  name: "self", "targets": 2, orderable: false, "className": "dt-center",
+                    { title: "Свой",  name: "own", "targets": 2, orderable: false, "className": "dt-center",
                     render: function (data, type, full, meta) {
-                        if (data){ return '<input type="checkbox" checked>'; }
-                        else { return '<input type="checkbox">'; }},
+                        if (data){ return '<input class="inncheckbox" type="checkbox" checked>'; }
+                        else { return '<input class="inncheckbox" type="checkbox">'; }},
                     },
         ],
         data : dsMnnMrkt,
