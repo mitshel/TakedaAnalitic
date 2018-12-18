@@ -273,7 +273,7 @@ class CompetitionsView(FiltersView):
             sort_col = years_active.index(current_year)+3
             sort_dir = 'desc'
         except:
-            sort_col = 1
+            sort_col = 2
             sort_dir = 'asc'
 
         data['year'] = years_active
@@ -290,5 +290,33 @@ class CompetitionsMarketView(CompetitionsView):
     ajax_url = reverse_lazy('widgetpages:competitions_market')
     view_id = 'competitions_market'
     view_name = 'Конкурентный анализ по рынкам (тыс.руб.)'
+
+class PartsView(CompetitionsView):
+    template_name = 'ta_parts.html'
+    ajax_url = reverse_lazy('widgetpages:parts')
+    view_id = 'parts'
+    view_name = 'Доля (тыс.руб.)'
+
+    def data(self, flt=None, flt_active=None, org_id=0):
+        data = {}
+
+        if not flt_active:
+            years_active = [y['iid'] for y in self.get_filter(flt, fyear)['data']]
+        else:
+            years_active = flt_active[fyear]['list']
+
+        current_year = datetime.datetime.now().year
+        try:
+            sort_col = years_active.index(current_year)*3+1
+            sort_dir = 'desc'
+        except:
+            sort_col = 1
+            sort_dir = 'asc'
+
+        data['year'] = years_active
+        data['sort_col'] = sort_col
+        data['sort_dir'] = sort_dir
+        return data
+
 
 

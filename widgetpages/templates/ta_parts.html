@@ -15,23 +15,30 @@
         }
 
         .sticky-top {top:3.5rem;}
-        #ta_competitions_table thead {background-color: rgb(108, 117, 125); color: #ffffff; }
+        #ta_parts_table thead {background-color: rgb(108, 117, 125); color: #ffffff; }
         td.dt-right { text-align: right; padding-right:5px; !important;}
+        td.dt-right0 { text-align: right; padding-right:0px; !important;}
+        th.dt-center { text-align: center; padding-right:5px; !important;}
         table.dataTable.table-sm > thead > tr > th.dt-right { padding-right:1.4rem; !important; text-align: right; !important;}
+        table.dataTable.table-sm > thead > tr > th.dt-right0 { padding-right:0; !important; text-align: right; !important;}
         table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
         table.datatable tr.total td  { font-weight:bold; !important;}
 
     </style>
 	<div class="col-12">
-        <h5>&nbsp;{{ view.name }} ({% if view.id == "competitions_lpu" %}<a href="{% url "widgetpages:competitions_market" %}">по Рынкам</a>{% else %}<a href="{% url "widgetpages:competitions_lpu" %}">по ЛПУ</a>{% endif %})</h5>
+        <h5>&nbsp;{{ view.name }} </h5>
         <br>
-		<table class="table table-sm table-hover display w-100 datatable" width="100%" id="ta_competitions_table">
-        <thead class="position-sticky sticky-top">
+		<table class="table table-sm table-hover table-striped display w-100 datatable table-bordered" width="100%" id="ta_parts_table">
+        <thead class="thead-light">
             <tr>
-                <th>ИНН</th>
-                <th>ЛПУ</th>
-                <th>Торговая марка</th>
-                {% for y in data.year %}<th class="dt-right">{{ y }}</th>{% endfor %}
+                <th rowspan="2">Рынок</th>
+                {% for y in data.year %}
+                    <th colspan="3" class="dt-center">{{ y }}</th>
+                {% endfor %}
+            </tr>
+            <tr>
+                <!--<th>Рынок</th>-->
+                {% for y in data.year %}<th class="dt-right">Весь</th><th class="dt-right">Свой</th><th class="dt-right0">%</th>{% endfor %}
             </tr>
         </thead>
         </table>
@@ -44,12 +51,21 @@
         var h = [];
         $('button[id^=year_]').each(function() {
             show_status = $(this).hasClass('active') & !$(this).hasClass('disabled');
-            column = ta_competitions_table.columns( $(this).attr('data-id').toString()+':name' )
-            if (column.visible()[0]!=show_status) {
-                column.visible(show_status, false);
+            column1 = ta_parts_table.columns( $(this).attr('data-id').toString()+'-1:name' )
+            column2 = ta_parts_table.columns( $(this).attr('data-id').toString()+'-2:name' )
+            column3 = ta_parts_table.columns( $(this).attr('data-id').toString()+'-3:name' )
+            curr_order = ta_parts_table.order()[0]
+            if (column1.visible()[0]!=show_status) {
+                column1.visible(show_status, false);
+                column2.visible(show_status, false);
+                column3.visible(show_status, false);
+                 if (!show_status) {
+                    if ( curr_order.indexOf(column1[0][0])>=0 | curr_order.indexOf(column2[0][0])>=0 | curr_order.indexOf(column3[0][0])>=0 )
+                        ta_parts_table.order([0,'asc'])
+                }
             };
         });
-        ta_competitions_table.ajax.reload( null, true );
+        ta_parts_table.ajax.reload( null, true );
         //ta_competitions_table.columns.adjust().draw( true );
     }
     function ChartsUpdate2(data, src_id) {
@@ -77,23 +93,25 @@ function intWithSpaces(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
 }
 
-var ta_competitions_table = $('#ta_competitions_table').DataTable({
-                "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+var ta_parts_table = $('#ta_parts_table').DataTable({
+                //"dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+                "dom": '<"row"<r><"col-12"t>>',
                 buttons: ['excel'],
                 select: true,
-                //fixedHeader: true,
-                //"scrollX": true,
-                //responsive: true,
-                "lengthMenu": [[50, 100, 250, 500, 1000], [50, 100, 250, 500, 1000]],
-                "pageLength": 50,
+                scrollX: true,
                 "columnDefs": [
-                    { "name": "ext", "targets": 0 , "visible": false, "searchable": true },
-                    { "name": "Nm", "targets": 1, "visible": false, "searchable": true },
-                    { "name": "name", "targets": 2, "visible": true, "searchable": false },
+                    { "name": "name", "targets": 0 , "visible": true },
                     {% for y in data.year %}
-                    { "name": "{{ y }}", "targets": {{ forloop.counter0|add:3 }}, "visible": true, "searchable": false,
+                    {% widthratio forloop.counter0 1 3 as target %}
+                    { "name": "{{ y }}-1", "targets": {{ target|add:1 }}, "visible": true, "searchable": false,
                       "className": "dt-right", "orderSequence": ["desc","asc"],
-                      render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } }{% if not forloop.last %},{% endif %}{% endfor %}
+                      render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } },
+                    { "name": "{{ y }}-2", "targets": {{ target|add:2 }}, "visible": true, "searchable": false,
+                      "className": "dt-right", "orderSequence": ["desc","asc"],
+                      render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } },
+                    { "name": "{{ y }}-3", "targets": {{ target|add:3 }}, "visible": true, "searchable": false,
+                      "className": "dt-right0", orderable: false }
+                    {% if not forloop.last %},{% endif %}{% endfor %}
                 ],
                 "processing": true,
                 "serverSide": true,
@@ -101,7 +119,7 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 "ordering":  true,
                 "order": [[ {{ data.sort_col }}, "{{ data.sort_dir }}" ]],
                 "ajax": {
-                    "url": "{% url 'widgetpages:jcompetitions' %}",
+                    "url": "{% url 'widgetpages:jmparts' %}",
                     "type": "POST",
                     "data": function ( d ) {
                         d.filters_ajax_request = JSON.stringify(make_request());
@@ -111,38 +129,10 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                     }
                 },
                 "createdRow": function( row, data, dataIndex ) {
-                    if ( data[2] == "ИТОГО" ) {
+                    if ( data[0] == "ИТОГО" ) {
                         $(row).addClass('total');
                     }
                  },
-                rowGroup: {
-                    startRender: function (rows, group) {
-                        return $('<tr class="group" style="background-color:yellow;"/>')
-                        .append( '<td colspan="'+rows.columns().header().length+'">'+group+'</td>' )
-                    },
-                //    НЕ УДАЛЯТЬ endRender!!! МОЖЕТ ПОНАДОБИТСЯ ПОЗЖЕ
-                //
-                //    endRender: function (rows, group) {
-                //        var container = $('<tr class="group"/>');
-                //        container.append('<td>ИТОГО:</td>');
-                //        var i = 3;
-                //        while (i<rows.columns().header().length) {
-                //            if (rows.column(i).visible()) {
-                //                var subtotalSum = rows
-                //                    .data()
-                //                    .pluck(i)
-                //                    .reduce(function (a, b) {
-                //                        return a + b * 1;
-                //                    }, 0) / 1000;
-                //                if ( subtotalSum != 0 ) out = intWithSpaces( subtotalSum.toFixed(0) ); else out = '';
-                //                container.append('<td class="dt-right">' + out + '</td>');
-                //            };
-                //            i++;
-                //        }
-                //        return $(container)
-                //    },
-                    dataSrc: 1
-                },
                 "language": lang_russian
             });
 

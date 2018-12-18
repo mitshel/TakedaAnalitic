@@ -28,6 +28,7 @@ t.Order_Sum as Order_Summa,
 t.Winner_Id,
 isnull(m1.name, m2.name) as market_name,
 isnull(m1.id, m2.id) as market_id,
+IIF(m1.id is not null, b1.own, b2.own) as market_own,
 c1.IntlName_ID as Contract_InnNx,
 c1.TradeName_ID as Contract_TradeNx,
 --ISNULL(c1.RegNumber,c.RegNumber) as ContractNr,
@@ -54,6 +55,7 @@ LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	   and c1.Contract_ID > 0
 	   and isnull(c1.LotSpec_ID,0) > 0
 
+--Markets
 left join db_market_innrs b1 on isNull(c1.IntlName_ID,t.InnNx)=b1.innr_id
 left join db_market m1 on ((m1.id=b1.market_id) and m1.org_id={{org_id}})
 
@@ -73,6 +75,15 @@ alter table org_CACHE_{{org_id}} add id bigint identity not null primary key
 --(
 --	[TradeNx] ASC
 --)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_market_id] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[market_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_market_own] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[market_own] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 
 CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Order_InnNx] ON [dbo].[org_CACHE_{{org_id}}]
 (

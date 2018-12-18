@@ -69,7 +69,6 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
             qs = qs.order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
         else:
             qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
-
         return qs
 
     def get_context_data(self, **kwargs):

@@ -7,14 +7,14 @@ from widgetpages import queries
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 from widgetpages.views import OrgMixin
 
-class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
-    order_columns = ['Org_CustNm', 'name']
+class MPartsAjaxTable(OrgMixin, AjaxRawDatatableView):
+    order_columns = ['name', ]
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
     org_id = 1
 
     def get_initial_queryset(self):
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
-        self.view_id = self.request.POST.get('view_id', 'competitions_lpu')
+        self.view_id = self.request.POST.get('view_id', 'parts')
         market_type = '1'
         flt = json.loads(filters_ajax_request)
         flt_active = {}
@@ -37,8 +37,7 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
         market_type_prefix = 'Order_' if market_type == '1' else 'Contract_'
 
         if years_active:
-            q_competitions = queries.q_competitions_lpu if self.view_id == 'competitions_lpu' else queries.q_competitions_market
-            rawmodel = RawModel(q_competitions)
+            rawmodel = RawModel(queries.q_mparts)
             rawmodel = rawmodel.filter(years=years_active,
                            markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
                            status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active else ''),
@@ -49,10 +48,8 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
                            trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active[ftrnr] if flt_active else ''),
                            market_type_prefix = market_type_prefix,
                            org_id = org_id)
-                #.order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
-                #order_by('l.Org_CustNm' if view_id == 'competitions_lpu' else 'pvt.market_id', 'pvt.{}tradeNx'.format(market_type_prefix))
         else:
-            rawmodel = RawModel('select null as Org_CustINN, null as Org_CustNm, null as name')
+            rawmodel = RawModel('select null as name')
 
         return rawmodel
 
@@ -65,10 +62,10 @@ class CompetitionsAjaxTable(OrgMixin, AjaxRawDatatableView):
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
         sort_dir = self._querydict.get('order[0][dir]')
-        if sort_col<=3:
-            qs = qs.order_by('l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
+        if sort_col==0:
+            qs = qs.order_by('gr', 'mt.name')
         else:
-            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'l.Org_CustNm' if self.view_id == 'competitions_lpu' else 'nn.id', 'gr','t.name')
+            qs = qs.order_by('gr','[{0}] {1}'.format(self._columns[sort_col], sort_dir))
 
         return qs
 

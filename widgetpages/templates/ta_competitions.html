@@ -45,8 +45,13 @@
         $('button[id^=year_]').each(function() {
             show_status = $(this).hasClass('active') & !$(this).hasClass('disabled');
             column = ta_competitions_table.columns( $(this).attr('data-id').toString()+':name' )
+
             if (column.visible()[0]!=show_status) {
                 column.visible(show_status, false);
+                if (!show_status) {
+                    if (ta_competitions_table.order()[0].indexOf(column[0][0])>=0)
+                        ta_competitions_table.order([2,'asc'])
+                }
             };
         });
         ta_competitions_table.ajax.reload( null, true );
