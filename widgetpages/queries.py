@@ -55,6 +55,11 @@ left join db_market mt on mt.id=nn.market_id
 {% endautoescape %}  
 """
 
+q_mparts_count = """
+select count(*) from db_market s where s.org_id = {{org_id}}
+{% if markets %}and s.id in ({{markets}}) {% endif %}
+"""
+
 q_lparts = """
 {% autoescape off %}
 select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as name, nn.* from 
@@ -109,6 +114,25 @@ left join db_lpu l on l.cust_id=nn.cust_id
 {% if icontains %}where l.Org_CustNm like '%{{ icontains }}%' {% endif %}
 --order by [2018-1] desc, l.Org_CustNm
 {% endautoescape %} 
+"""
+
+q_lparts_count = """
+{% autoescape off %}
+select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_CACHE_{{org_id}}] s 
+            left join db_lpu l on s.cust_id = l.cust_id
+            left join db_WinnerOrg w on s.Winner_ID = w.id
+            left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+            left join db_lpu_employee e on s.cust_id=e.lpu_id
+            where PlanTYear is not null 
+            {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+            {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+            {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+            {% if employees %}and e.employee_id in ({{employees}}) {% endif %}
+            {% if lpus_in %}and {{lpus_in}} {% endif %}    
+            {% if winrs_in %}and {{winrs_in}} {% endif %} 
+            {% if innrs_in %}and {{innrs_in}} {% endif %}
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %} 
+{% endautoescape %}
 """
 
 # Конкурентный анализ

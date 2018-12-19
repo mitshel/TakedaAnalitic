@@ -37,7 +37,7 @@ class MPartsAjaxTable(OrgMixin, AjaxRawDatatableView):
         market_type_prefix = 'Order_' if market_type == '1' else 'Contract_'
 
         if years_active:
-            rawmodel = RawModel(queries.q_mparts)
+            rawmodel = RawModel(queries.q_mparts, queries.q_mparts_count)
             rawmodel = rawmodel.filter(years=years_active,
                            markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
                            status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active else ''),
@@ -105,7 +105,7 @@ class LPartsAjaxTable(OrgMixin, AjaxRawDatatableView):
         market_type_prefix = 'Order_' if market_type == '1' else 'Contract_'
 
         if years_active:
-            rawmodel = RawModel(queries.q_lparts)
+            rawmodel = RawModel(queries.q_lparts, queries.q_lparts_count)
             rawmodel = rawmodel.filter(years=years_active,
                            markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
                            status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active else ''),

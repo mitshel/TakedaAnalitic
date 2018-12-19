@@ -10,13 +10,22 @@ class RawModel(object):
     _cursor = None
     _count = None
     _template_type = 0
+    _count_template_type = 0
+    _count_query = None
 
-    def __init__(self,query):
+    def __init__(self,query, count_query = None):
         try:
             self._query = loader.get_template(query)
         except:
             self._query = Template(query)
             self._template_type = 1
+
+        if count_query:
+            try:
+                self._count_query = loader.get_template(count_query)
+            except:
+                self._count_query = Template(count_query)
+                self._count_template_type = 1
 
         self._columns = []
         self._order_data = []
@@ -46,9 +55,15 @@ class RawModel(object):
 
     def count(self):
         if self._count == None:
-            count_query = "select COUNT_BIG(*) from ({}) subquery".format(self.render(forcount=True))
+            if self._count_query:
+                if self._count_template_type:
+                    sql = self._count_query.render(Context(self._filter_data))
+                else:
+                    sql = self._count_query.render(self._filter_data)
+            else:
+                sql = "select COUNT_BIG(*) from ({}) subquery".format(self.render(forcount=True))
             with connection.cursor() as cursor:
-                cursor.execute(count_query)
+                cursor.execute(sql)
                 row = cursor.fetchone()
             self._count = row[0]
         return self._count
