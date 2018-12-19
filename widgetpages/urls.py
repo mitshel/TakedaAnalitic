@@ -15,5 +15,7 @@ urlpatterns = [
     path('jcompetitions/datatable/', bi_login(table_competitions.CompetitionsAjaxTable.as_view()), name='jcompetitions'),
     path('parts/', bi_login(views.PartsView.as_view()), name='parts'),
     path('jparts/datatable1/', bi_login(table_parts.MPartsAjaxTable.as_view()), name='jmparts'),
+    path('jparts/datatable2/', bi_login(table_parts.LPartsAjaxTable.as_view()), name='jlparts'),
+
 
 ]

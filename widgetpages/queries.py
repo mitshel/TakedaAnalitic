@@ -55,6 +55,62 @@ left join db_market mt on mt.id=nn.market_id
 {% endautoescape %}  
 """
 
+q_lparts = """
+{% autoescape off %}
+select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as name, nn.* from 
+(
+	select cust_id
+	{% for y in years %},isnull([{{y}}-1],0) as [{{y}}-1], isnull([{{y}}-2],0) as [{{y}}-2], IIF(isnull([{{y}}-1],0)=0,'-',cast(isnull(cast([{{y}}-2]/[{{y}}-1]*100 as int),0) as varchar)+'%') as [{{y}}-3]
+	{% endfor %}
+	from
+		(
+            select s.cust_id, cast(PlanTYear as varchar)+'-1' as PlanTYear, sum({{ market_type_prefix }}summa) as Summa
+            from [dbo].[org_CACHE_{{org_id}}] s
+            left join db_lpu l on s.cust_id = l.cust_id
+            left join db_WinnerOrg w on s.Winner_ID = w.id
+            left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+            left join db_lpu_employee e on s.cust_id=e.lpu_id
+            where PlanTYear is not null 
+            {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+            {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+            {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+            {% if employees %}and e.employee_id in ({{employees}}) {% endif %}
+            {% if lpus_in %}and {{lpus_in}} {% endif %}    
+            {% if winrs_in %}and {{winrs_in}} {% endif %} 
+            {% if innrs_in %}and {{innrs_in}} {% endif %}
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}                    
+            group by s.cust_id, PlanTYear
+            
+            union all
+            select s.cust_id, cast(PlanTYear as varchar)+'-2' as PlanTYear, sum({{ market_type_prefix }}summa) as Summa
+            from [dbo].[org_CACHE_{{org_id}}] s
+            left join db_lpu l on s.cust_id = l.cust_id
+            left join db_WinnerOrg w on s.Winner_ID = w.id
+            left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+            left join db_lpu_employee e on s.cust_id=e.lpu_id
+            where PlanTYear is not null and market_own=1
+            {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+            {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+            {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+            {% if employees %}and e.employee_id in ({{employees}}) {% endif %}
+            {% if lpus_in %}and {{lpus_in}} {% endif %}    
+            {% if winrs_in %}and {{winrs_in}} {% endif %} 
+            {% if innrs_in %}and {{innrs_in}} {% endif %}
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}             
+            group by s.cust_id, PlanTYear          
+		) m
+		PIVOT
+		(
+			sum(Summa) for PlanTYear in (
+			{% for y in years %}[{{y}}-1], [{{y}}-2]{% if not forloop.last %},{% endif %}{% endfor %})
+		) as pvt
+) nn
+left join db_lpu l on l.cust_id=nn.cust_id
+{% if icontains %}where l.Org_CustNm like '%{{ icontains }}%' {% endif %}
+--order by [2018-1] desc, l.Org_CustNm
+{% endautoescape %} 
+"""
+
 # Конкурентный анализ
 #
 q_competitions_lpu = """
