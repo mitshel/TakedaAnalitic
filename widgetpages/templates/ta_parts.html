@@ -16,8 +16,7 @@
 
         .sticky-top {top:3.5rem; !important;}
 
-        #ta_mparts_table thead {background-color: rgb(108, 117, 125); color: #ffffff; }
-        #ta_lparts_table thead {background-color: rgb(108, 117, 125); color: #ffffff; }
+        table.dataTable thead.thead-light {background-color: rgb(108, 117, 125); color: #ffffff; }
         td.dt-right { text-align: right; padding-right:5px; !important;}
         td.dt-right0 { text-align: right; padding-right:0px; !important;}
         th.dt-center { text-align: center; padding-right:5px; !important;}
@@ -25,6 +24,10 @@
         table.dataTable.table-sm > thead > tr > th.dt-right0 { padding-right:0; !important; text-align: right; !important;}
         table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
         table.datatable tr.total td  { font-weight:bold; !important;}
+        .th-year-all, th-year-own { width:75px;!important;}
+        .th-year-prc { width:50px;!important;}
+        .th-name { width:300px;!important;}
+        .th-year { width:200px;!important;}
 
     </style>
 	<div class="col-12">
@@ -33,14 +36,14 @@
 		<table class="table table-sm table-hover table-striped display w-100 datatable table-bordered" width="100%" id="ta_mparts_table">
         <thead class="thead-light">
             <tr>
-                <th rowspan="2">Рынок</th>
+                <th rowspan="2" class="th-name">Рынок</th>
                 {% for y in data.year %}
-                    <th colspan="3" class="dt-center">{{ y }}</th>
+                    <th colspan="3" class="dt-center th-year">{{ y }}</th>
                 {% endfor %}
             </tr>
             <tr>
-                <!--<th>Рынок</th>-->
-                {% for y in data.year %}<th class="dt-right">Весь</th><th class="dt-right">Свой</th><th class="dt-right0">%</th>{% endfor %}
+                <!--<th class="th-name">Рынок</th>-->
+                {% for y in data.year %}<th class="dt-right th-year-all">Весь</th><th class="dt-right th-year-own">Свой</th><th class="dt-right0 th-year-prc">%</th>{% endfor %}
             </tr>
         </thead>
         </table>
@@ -48,14 +51,14 @@
 		<table class="table table-sm table-hover table-striped display w-100 datatable table-bordered" width="100%" id="ta_lparts_table">
         <thead class="thead-light position-sticky sticky-top">
             <tr>
-                <th rowspan="2">ЛПУ</th>
+                <th rowspan="2" class="th-name">ЛПУ</th>
                 {% for y in data.year %}
-                    <th colspan="3" class="dt-center">{{ y }}</th>
+                    <th colspan="3" class="dt-center th-year">{{ y }}</th>
                 {% endfor %}
             </tr>
             <tr>
                 <!--<th>ЛПУ</th>-->
-                {% for y in data.year %}<th class="dt-right">Весь</th><th class="dt-right">Свой</th><th class="dt-right0">%</th>{% endfor %}
+                {% for y in data.year %}<th class="dt-right th-year-all">Весь</th><th class="dt-right th-year-own">Свой</th><th class="dt-right0 th-year-prc">%</th>{% endfor %}
             </tr>
         </thead>
         </table>
@@ -132,19 +135,20 @@ var ta_mparts_table = $('#ta_mparts_table').DataTable({
                 "dom": '<"row"<r><"col-12"t>>',
                 buttons: ['excel'],
                 select: true,
-                scrollX: true,
+                //scrollX: true,
+                autoWidth: false,
                 "columnDefs": [
-                    { "name": "name", "targets": 0 , "visible": true },
+                    { "name": "name", "targets": 0 , "visible": true, "className": "th-name" },
                     {% for y in data.year %}
                     {% widthratio forloop.counter0 1 3 as target %}
                     { "name": "{{ y }}-1", "targets": {{ target|add:1 }}, "visible": true, "searchable": false,
-                      "className": "dt-right", "orderSequence": ["desc","asc"],
+                      "className": "dt-right th-year-all", "orderSequence": ["desc","asc"],
                       render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } },
                     { "name": "{{ y }}-2", "targets": {{ target|add:2 }}, "visible": true, "searchable": false,
-                      "className": "dt-right", "orderSequence": ["desc","asc"],
+                      "className": "dt-right th-year-own", "orderSequence": ["desc","asc"],
                       render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } },
                     { "name": "{{ y }}-3", "targets": {{ target|add:3 }}, "visible": true, "searchable": false,
-                      "className": "dt-right0", orderable: false }
+                      "className": "dt-right0 th-year-prc", orderable: false }
                     {% if not forloop.last %},{% endif %}{% endfor %}
                 ],
                 "processing": true,
@@ -177,19 +181,20 @@ var ta_lparts_table = $('#ta_lparts_table').DataTable({
                 select: true,
                 "lengthMenu": [[25, 50, 100, 250, 500, 1000], [25, 50, 100, 250, 500, 1000]],
                 "pageLength": 25,
-                scrollX: true,
+                //scrollX: true,
+                autoWidth: false,
                 "columnDefs": [
-                    { "name": "name", "targets": 0 , "visible": true },
+                    { "name": "name", "targets": 0 , "visible": true, "className": "th-name" },
                     {% for y in data.year %}
                     {% widthratio forloop.counter0 1 3 as target %}
                     { "name": "{{ y }}-1", "targets": {{ target|add:1 }}, "visible": true, "searchable": false,
-                      "className": "dt-right", "orderSequence": ["desc","asc"],
+                      "className": "dt-right th-year-all", "orderSequence": ["desc","asc"],
                       render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } },
                     { "name": "{{ y }}-2", "targets": {{ target|add:2 }}, "visible": true, "searchable": false,
-                      "className": "dt-right", "orderSequence": ["desc","asc"],
+                      "className": "dt-right th-year-own", "orderSequence": ["desc","asc"],
                       render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } },
                     { "name": "{{ y }}-3", "targets": {{ target|add:3 }}, "visible": true, "searchable": false,
-                      "className": "dt-right0", orderable: false }
+                      "className": "dt-right0 th-year-prc", orderable: false }
                     {% if not forloop.last %},{% endif %}{% endfor %}
                 ],
                 "processing": true,
