@@ -257,7 +257,9 @@ class FiltersView(OrgMixin, TemplateView):
                     flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select)}
                 flt_active[fempa] = {'list':[], 'select': int(request.POST.get('empl_all', '0'))}
 
-                filters = self.filters(flt_active, org_id)
+                targets = self.get_initial_targets()
+                filters = self.filters(None, org_id, targets)
+                # filters = self.filters(flt_active, org_id)
                 data = self.data(filters, flt_active, org_id)
                 response = {'filters': self.get_filters_dict(filters),
                             'data': data,
