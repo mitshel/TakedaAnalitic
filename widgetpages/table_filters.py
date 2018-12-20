@@ -1,23 +1,16 @@
 import json
 
 from widgetpages.views import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust, fempa
-from widgetpages.views import extra_in_filter, OrgMixin
+from widgetpages.views import extra_in_filter, OrgMixin, TargetsMixin
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 from widgetpages import queries
 
 from db.rawmodel import RawModel
 
-class FilterListJson(OrgMixin, AjaxRawDatatableView):
+class FilterListJson(OrgMixin, TargetsMixin, AjaxRawDatatableView):
     columns = ['name', 'ext', 'iid']
     order_columns = ['name']
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
-
-    # def zero_in(self, flt_active, fname):
-    #     return ((flt_active[fname]['select'] == 1) and not (0 in flt_active[fname]['list'])) or \
-    #            ((flt_active[fname]['select'] == 0) and (0 in flt_active[fname]['list']))
-
-    def zero_in(self, flt_active, fname):
-        return flt_active[fname]['select'] if flt_active else 0
 
     def initial_innr(self, org_id=0):
         innr_enabled = RawModel(queries.q_innr_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
@@ -39,7 +32,7 @@ class FilterListJson(OrgMixin, AjaxRawDatatableView):
         if not flt_active:
             return qs
 
-        if not self.zero_in(flt_active, fempa):
+        if not self.fempa_selected(flt_active, fempa):
             qs = qs.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
 
         #if self.kwargs['flt_id'] in (finnr, ftrnr):
@@ -56,7 +49,11 @@ class FilterListJson(OrgMixin, AjaxRawDatatableView):
                 flt_str = flt.get('{}_active'.format(f), '')
                 flt_select = flt.get('{}_select'.format(f), '')
                 flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
-            flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
+                flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
+        else:
+            targets = self.get_initial_targets()
+            flt_active[fempl] = self.targets_in_filter(targets)
+            flt_active[fempa] = {'list': [], 'select': 0}
 
         initial_data ={}
         org_id = self.init_dynamic_org()
@@ -69,8 +66,6 @@ class FilterListJson(OrgMixin, AjaxRawDatatableView):
             initial_data = self.addfilters(self.initial_winr(org_id), flt_active)
         if self.kwargs['flt_id'] == fcust:
             initial_data = self.addfilters(self.initial_cust(org_id), flt_active)
-
-        print(initial_data.query)
 
         return initial_data
 

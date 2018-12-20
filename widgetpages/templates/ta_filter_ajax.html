@@ -110,6 +110,11 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
         {% endif %}
     {% endfor %}
 
+    // Если нажата обычная кнопка empl_ (не empl-all) сбрасываем empl-all
+    if ($(this).attr('id').substr(0,5) == 'empl_') {
+       $('#empl-all').removeClass('active');
+    };
+
     query_data();
 
     return true;

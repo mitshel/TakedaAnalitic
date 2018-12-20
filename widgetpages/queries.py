@@ -276,7 +276,7 @@ where a.PlanTYear is not Null and a.cust_id is Not Null
 
 q_status = """
 {% autoescape off %}
-select distinct {{fields}} from db_statusT a 
+select distinct {{fields}} from db_statusT a where a.id>0
 {% endautoescape %} 
 """
 

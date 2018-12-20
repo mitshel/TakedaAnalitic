@@ -37,18 +37,6 @@ def extra_in_filter(field, flt):
 
     return ef
 
-def target_in_filter(field, target):
-    if target:
-        if (len(target) > 0):
-            ef = '{} in ({})'.format(field,','.join([str(e['iid']) for e in target]))
-        else:
-            ef = ''
-    else:
-        ef = ''
-
-    return ef
-
-
 # Удаление неуникальных элементов из списка
 def unique(obj: iter):
     args = []
@@ -60,24 +48,13 @@ def unique(obj: iter):
 class OrgMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgPOST | bOrgUSER
 
-class HomeView(OrgMixin, TemplateView):
-    template_name = 'ta_hello.html'
+class TargetsMixin(View):
 
-class FiltersView(OrgMixin, TemplateView):
-    template_name = 'ta_competitions.html'
-    filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
-    ajax_url = '#'
-    view_id = 'blank'
-    view_name = 'Пустая страница'
-    select_market_type = 0
-
-    # def zero_in(self, flt_active, fname):
-    #     return ((flt_active[fname]['select'] == 1) and not (0 in flt_active[fname]['list'])) or \
-    #            ((flt_active[fname]['select'] == 0) and (0 in flt_active[fname]['list']))
-
-    def zero_in(self, flt_active, fname):
+    def fempa_selected(self, flt_active, fname):
         return flt_active[fname]['select'] if flt_active else 0
-        # return (flt_active[fname]['select'] == 1)
+
+    def targets_in_filter(self, targets):
+        return {'list':[e['iid'] for e in targets], 'select': 0}
 
     def get_initial_targets(self):
         initial_employee = RawModel(queries.q_employees).filter(fields = 'id as iid, name', username=self.request.user.username).order_by('name')
@@ -85,24 +62,29 @@ class FiltersView(OrgMixin, TemplateView):
         initial_employee.close()
         return initial_targets
 
+class HomeView(OrgMixin, TemplateView):
+    template_name = 'ta_hello.html'
+
+class FiltersView(OrgMixin, TargetsMixin, TemplateView):
+    template_name = 'ta_competitions.html'
+    filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
+    ajax_url = '#'
+    view_id = 'blank'
+    view_name = 'Пустая страница'
+    select_market_type = 0
+
     def filter_empl(self, flt_active=None, org_id=0, targets = []):
-        # employee_raw = RawModel(queries.q_employees).filter(username=self.request.user.username)
         if not flt_active:
-            # employee_enabled = employee_raw.filter(fields='id as iid, name').order_by('name')
             employee_list = targets
         else:
-            # employee_enabled = employee_raw.filter(fields='id as iid')
             employee_list = [{'iid':t['iid']} for t in targets]
 
-        # employee_list=list(employee_enabled.open().fetchall())
-        # employee_enabled.close()
         return {'id': fempl,
                 'type': 'btn',
                 'name': 'Таргет',
                 'icon':'user',
                 'expanded': 'false',
                 'data': employee_list}
-                # 'data': [{'name':'Без учета Таргет','iid':0}]+employee_list}
 
     def filter_mrkt(self, flt_active=None, org_id=0, targets = []):
         market_list_active = []
@@ -110,14 +92,15 @@ class FiltersView(OrgMixin, TemplateView):
             # Показываем все доступные рынки для сотрудника организации
             market_enabled = RawModel(queries.q_markets).filter(fields="id as iid, name",org_id=org_id).order_by('name')
             # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
-            market_active = RawModel(queries.q_markets_hs_empl).filter(fields="a.id as iid",org_id=org_id, employee_in=target_in_filter('e.employee_id', targets))
+            market_active = RawModel(queries.q_markets_hs_empl).filter(fields="a.id as iid",org_id=org_id, \
+                                                                       employee_in=extra_in_filter('e.employee_id', self.targets_in_filter(targets)))
             market_list_active = [e['iid'] for e in market_active.open().fetchall()]
             market_active.close()
         else:
             # Показываем все доступные рынки
             market_enabled = RawModel(queries.q_markets_hs).filter(fields="a.id as iid",org_id=org_id)
             #  Если отключена кнопка "Без учета Target" то фильтруем по выбранным сотрудникам
-            if not self.zero_in(flt_active, fempa):
+            if not self.fempa_selected(flt_active, fempa):
                 market_enabled = market_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
 
         market_list = list(market_enabled.open().fetchall())
@@ -135,14 +118,15 @@ class FiltersView(OrgMixin, TemplateView):
             # Показываем все доступные Годы для сотрудника организации
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name",org_id=org_id).order_by('PlanTYear')
             # Но активными будут выглядеть только Годы, доступные сотруднику (через ЛПУ)
-            year_active = RawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid",org_id=org_id, employee_in=target_in_filter('e.employee_id', targets))
+            year_active = RawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid",org_id=org_id, \
+                                                                   employee_in=extra_in_filter('e.employee_id', self.targets_in_filter(targets)))
             year_list_active = [e['iid'] for e in year_active.open().fetchall()]
             year_active.close()
         else:
             # Показываем все доступные Годы
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid",org_id=org_id)
             #  Если отключена кнопка "Без учета Target" то фильтруем по выбранным сотрудникам
-            if not self.zero_in(flt_active, fempa):
+            if not self.fempa_selected(flt_active, fempa):
                 year_enabled = year_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
 
         year_list = list(year_enabled.open().fetchall())
@@ -159,7 +143,7 @@ class FiltersView(OrgMixin, TemplateView):
             status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name").order_by('name')
         else:
             status_enabled = RawModel(queries.q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
-            if not self.zero_in(flt_active, fempa):
+            if not self.fempa_selected(flt_active, fempa):
                 status_enabled = status_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
         status_list = list(status_enabled.open().fetchall())
         status_enabled.close()
@@ -258,9 +242,9 @@ class FiltersView(OrgMixin, TemplateView):
                 flt_active[fempa] = {'list':[], 'select': int(request.POST.get('empl_all', '0'))}
 
                 targets = self.get_initial_targets()
-                filters = self.filters(None, org_id, targets)
-                # filters = self.filters(flt_active, org_id)
-                data = self.data(filters, flt_active, org_id)
+                # filters = self.filters(None, org_id, targets)
+                filters = self.filters(flt_active, org_id, targets)
+                data = self.data(filters, flt_active, org_id, targets)
                 response = {'filters': self.get_filters_dict(filters),
                             'data': data,
                             'org_id': org_id,
@@ -284,9 +268,9 @@ class SalessheduleView(FiltersView):
             hsy_active = RawModel(queries.q_sales_year).filter(org_id=org_id).order_by('1', '2')
             hsm_active = RawModel(queries.q_sales_month).filter(org_id=org_id).order_by('1', '2')
             if flt_active:
-                if not self.zero_in(flt_active, fempa):
+                if not self.fempa_selected(flt_active, fempa):
                     # Если не выбрано 'Без учета Таргет' то фильтруем по сотрудникам
-                    hsy_active = hsy_active.filter( employee_in=extra_in_filter('e.employee_id', flt_active[fempl]) )
+                    hsy_active = hsy_active.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]) )
                     hsm_active = hsm_active.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
 
                 hsy_active = hsy_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
@@ -295,6 +279,10 @@ class SalessheduleView(FiltersView):
                 hsm_active = hsm_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
                                                markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
                                                lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
+            else:
+                filter_emp = self.targets_in_filter(targets)
+                hsy_active = hsy_active.filter(employee_in=extra_in_filter('e.employee_id', filter_emp))
+                hsm_active = hsm_active.filter(employee_in=extra_in_filter('e.employee_id', filter_emp))
 
             pivot_data['pivot1'] = list (hsy_active.open().fetchall())
             pivot_data['pivot2'] = list (hsm_active.open().fetchall())

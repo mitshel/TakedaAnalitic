@@ -45,7 +45,6 @@ class OrgBaseMixin(View):
                 except:
                     org_id = None
                     org = None
-                print('POST >',org_id)
 
         # Если пользователь администратор пытаемся получить текущую организацию из сессии
         if (self.SETUP_METHODS & bOrgSESSION)>0:
@@ -146,7 +145,6 @@ class EmployeeUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumb
         object = self.get_object()
         context['parents'] = Employee.objects.filter(org=self.org).exclude(id=object.id).exclude(parent_id=object.id)
         context['users'] = User.objects.filter(org=self.org).filter(employee_user__isnull=True).order_by('username')
-        print(context)
         return context
 
     def get_success_url(self):
@@ -222,7 +220,6 @@ class MarketUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMi
         # ИСключаем все INN и ТМ уже привязанные к рынкам текущей организации
         context['innrs'] = InNR.objects.exclude(market__org=self.org).exclude(id=54656).order_by('name')   #
         context['tmnrs'] = TradeNR.objects.exclude(market__org=self.org).order_by('name')
-        #print(list( [model_to_dict(e) for e in self.object.market_innrs_set.all()] ))
         return context
 
     def get_success_url(self):
