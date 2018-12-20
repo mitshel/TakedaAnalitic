@@ -11,7 +11,7 @@
           </div>
           <div class="col-6 text-right" style="padding-top:0.3rem;">
               {% if flt.id == 'empl' %}
-                <button style="padding-right:1px;padding-bottom:3px;" type="button" id="empl-all" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Без учета Target"><i class="fa fa-check-circle"></i></button>
+                <button style="padding-right:1px;padding-bottom:1px;" type="button" id="empl-all" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Без учета Target"><i class="fa fa-check-circle"></i></button>
               {% endif %}
               <button type="button" id="{{ flt.id }}-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
               <button type="button" id="{{ flt.id }}-check" class="btn btn-sm btn-outline-primary inline active btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
