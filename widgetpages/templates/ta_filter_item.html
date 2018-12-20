@@ -10,6 +10,9 @@
               </h5>
           </div>
           <div class="col-6 text-right" style="padding-top:0.3rem;">
+              {% if flt.id == 'empl' %}
+                <button style="padding-right:1px;padding-bottom:3px;" type="button" id="empl-all" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Без учета Target"><i class="fa fa-check-circle"></i></button>
+              {% endif %}
               <button type="button" id="{{ flt.id }}-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
               <button type="button" id="{{ flt.id }}-check" class="btn btn-sm btn-outline-primary inline active btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
           </div>
@@ -20,7 +23,7 @@
       <div class="card-body">
         {% if flt.type == 'btn' %}
               {% for e in flt.data %}
-                <button type="button" id='{{ flt.id }}_{{ e.iid }}' data-id="{{ e.iid }}" class="btn btn-secondary btn-sm active inline btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
+                <button type="button" id='{{ flt.id }}_{{ e.iid }}' data-id="{{ e.iid }}" class="btn btn-secondary btn-sm active inline btn-filter {% if flt.data0 and e.iid not in flt.data0 %}disabled{% endif %}" data-toggle="button" aria-pressed="false" autocomplete="off" style="margin-top:2px">{{ e.name }}</button>
               {% endfor %}
         {% endif %}
         {% if flt.type == 'ajx' or flt.type == 'tbl' %}

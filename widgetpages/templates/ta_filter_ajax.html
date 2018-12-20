@@ -42,7 +42,7 @@ function processAjaxData(data, src_id) {
 function make_request() {
     {% for flt in filters %}
         {% if flt.type == 'btn' %}
-            // Создаем список активных кнопок сотрудников
+            // Создаем список активных кнопок
             var arr = [];
             $('button[id^={{ flt.id }}_].active').each(function() {
                 arr.push($(this).attr('data-id'))
@@ -56,12 +56,14 @@ function make_request() {
     {% endfor %}
 
     market_type = $('#marketType').val();
+    if ($('#empl-all').hasClass('active')) empl_all = 1; else empl_all = 0;
 
     filters_ajax_request = {{% for flt in filters %}
                             '{{ flt.id }}_active': {{ flt.id }}_active,
                             '{{ flt.id }}_select': {{ flt.id }}_selectAll,
                             {% endfor %}
                             'market_type': market_type,
+                            'empl_all': empl_all,
                             'csrfmiddlewaretoken': '{{ csrf_token }}' }
 
     return filters_ajax_request;

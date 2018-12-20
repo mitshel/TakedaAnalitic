@@ -220,14 +220,14 @@ q_employees = """
 {% autoescape off %}
 with tree as 
 (
-select a1.id, a1.name, a1.parent_id, a1.org_id, a1.istarget 
-from db_employee a1
-left join db_employee_users a2 on a1.id=a2.employee_id
+select a.id, a.name, a.parent_id, a.org_id, a.istarget 
+from db_employee a
+left join db_employee_users a2 on a.id=a2.employee_id
 left join auth_user a3 on a2.user_id=a3.id
 where a3.username = '{{username}}'
---where a1.org_id = '{{org_id}}' 
 union all
-select a.id, a.name, a.parent_id, a.org_id, a.istarget from db_employee a 
+select a.id, a.name, a.parent_id, a.org_id, a.istarget
+from db_employee a 
 inner join tree t on t.id = a.parent_id and a.org_id=t.org_id
 )
 select distinct {{ fields }} from tree 
@@ -246,11 +246,27 @@ q_markets_hs = """
 select distinct {{ fields }} from db_market a
 inner join org_CACHE_{{ org_id }} b on a.id=b.market_id and b.cust_id<>0
 {% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
-{% if org_id %}where a.org_id = {{ org_id }} {% endif %}
+where a.org_id = {{ org_id }}
+{% endautoescape %} 
+"""
+
+q_markets_hs_empl = """
+{% autoescape off %}
+select distinct {{ fields }} from db_market a
+inner join org_CACHE_{{ org_id }} b on a.id=b.market_id and b.cust_id<>0
+{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 {% endautoescape %} 
 """
 
 q_years_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from org_CACHE_{{ org_id }} a
+{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+where a.PlanTYear is not Null and a.cust_id is Not Null
+{% endautoescape %} 
+"""
+
+q_years_hs_empl = """
 {% autoescape off %}
 select distinct {{ fields }} from org_CACHE_{{ org_id }} a
 {% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
