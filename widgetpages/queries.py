@@ -132,6 +132,7 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_CACHE_{{org_id}}] s
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
             {% if trnrs_in %}and {{trnrs_in}} {% endif %} 
+            {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}            
 {% endautoescape %}
 """
 

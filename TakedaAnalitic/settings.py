@@ -108,11 +108,16 @@ if socket.gethostname() == 'dsgate' or socket.gethostname() == 'DESKTOP-1NT18VI'
 else:
     DATABASES = {
         'default': {
+            # 'ENGINE': 'sql_server.pyodbc',
+            # 'NAME': 'BIMonitor',
+            # 'USER': 'cursor',
+            # 'PASSWORD': 'cursor2018',
+            # 'HOST': 'DESKTOP-VUDOG20\SQLEXPRESS',
             'ENGINE': 'sql_server.pyodbc',
-            'NAME': 'BIMonitor',
-            'USER': 'cursor',
-            'PASSWORD': 'cursor2018',
-            'HOST': 'DESKTOP-VUDOG20\SQLEXPRESS',
+            'NAME': DBNAME,
+            'USER': DBUSER,
+            'PASSWORD': DBPASSWORD,
+            'HOST': DBHOST,
             'PORT': '',
 
             'OPTIONS': {
