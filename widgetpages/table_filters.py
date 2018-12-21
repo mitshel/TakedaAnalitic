@@ -1,7 +1,7 @@
 import json
 
-from widgetpages.views import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust, fempa
-from widgetpages.views import extra_in_filter, OrgMixin, TargetsMixin
+from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust, fempa
+from widgetpages.BIMonBaseViews import extra_in_filter, OrgMixin, TargetsMixin
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 from widgetpages import queries
 

@@ -106,7 +106,8 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                 "ordering":  true,
                 "order": [[ {{ data.sort_col }}, "{{ data.sort_dir }}" ]],
                 "ajax": {
-                    "url": "{% url 'widgetpages:jcompetitions' %}",
+                    //"url": "{ % url 'widgetpages:jcompetitions' %}",
+                    "url": "{{ ajax_datatable_url }}",
                     "type": "POST",
                     "data": function ( d ) {
                         d.filters_ajax_request = JSON.stringify(make_request());
