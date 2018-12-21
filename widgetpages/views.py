@@ -125,6 +125,7 @@ class PartsView(FiltersView):
     ajax_url = reverse_lazy('widgetpages:parts')
     view_id = 'parts'
     view_name = 'Доля (тыс.руб.)'
+    select_market_type = 1
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
