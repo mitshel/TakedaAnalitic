@@ -91,34 +91,6 @@ class CompetitionsMarketView(CompetitionsView):
     view_id = 'competitions_market'
     view_name = 'Конкурентный анализ по рынкам (тыс.руб.)'
 
-class PartsView(CompetitionsView):
-    template_name = 'ta_parts.html'
-    ajax_url = reverse_lazy('widgetpages:parts')
-    view_id = 'parts'
-    view_name = 'Доля (тыс.руб.)'
-
-    def data(self, flt=None, flt_active=None, org_id=0, targets = []):
-        data = {}
-
-        if not flt_active:
-            years_active = [y['iid'] for y in self.get_filter(flt, fyear)['data']]
-        else:
-            years_active = flt_active[fyear]['list']
-
-        current_year = datetime.datetime.now().year
-        try:
-            sort_col = years_active.index(current_year)*3+1
-            sort_dir = 'desc'
-        except:
-            sort_col = 1
-            sort_dir = 'asc'
-
-        data['year'] = years_active
-        data['sort_col'] = sort_col
-        data['sort_dir'] = sort_dir
-        return data
-
-
 class Lpu_CompetitionsAjaxTable(BaseDatatableYearView):
     order_columns = ['Org_CustNm', 'name']
     datatable_query = queries.q_competitions_lpu
@@ -148,6 +120,33 @@ class Market_CompetitionsAjaxTable(BaseDatatableYearView):
         return qs
 
 
+class PartsView(FiltersView):
+    template_name = 'ta_parts.html'
+    ajax_url = reverse_lazy('widgetpages:parts')
+    view_id = 'parts'
+    view_name = 'Доля (тыс.руб.)'
+
+    def data(self, flt=None, flt_active=None, org_id=0, targets = []):
+        data = {}
+
+        if not flt_active:
+            years_active = [y['iid'] for y in self.get_filter(flt, fyear)['data']]
+        else:
+            years_active = flt_active[fyear]['list']
+
+        current_year = datetime.datetime.now().year
+        try:
+            sort_col = years_active.index(current_year)*3+1
+            sort_dir = 'desc'
+        except:
+            sort_col = 1
+            sort_dir = 'asc'
+
+        data['year'] = years_active
+        data['sort_col'] = sort_col
+        data['sort_dir'] = sort_dir
+        return data
+
 class MPartsAjaxTable(BaseDatatableYearView):
     datatable_query = queries.q_mparts
     datatable_count_query =  queries.q_mparts_count
@@ -173,4 +172,28 @@ class LPartsAjaxTable(BaseDatatableYearView):
             qs = qs.order_by('l.Org_CustNm')
         else:
             qs = qs.order_by('[{0}] {1}'.format(self._columns[sort_col], sort_dir))
+        return qs
+
+
+class SalesAnlysisView(FiltersView):
+    template_name = 'ta_sales_analysis.html'
+    ajax_url = reverse_lazy('widgetpages:sales_analysis')
+    ajax_datatable_url = reverse_lazy('widgetpages:jsales_analysis')
+    view_id = 'sales_analysis'
+    view_name = 'Анализ продаж'
+
+    def data(self, flt=None, flt_active=None, org_id=0, targets = []):
+        data = {}
+
+        data['sort_col'] = 0
+        data['sort_dir'] = 'desc'
+        return data
+
+class SalesAnlysisAjaxTable(BaseDatatableYearView):
+    datatable_query = queries.q_sales_analysis
+
+    def ordering(self, qs):
+        sort_col = int(self._querydict.get('order[0][column]'))
+        sort_dir = self._querydict.get('order[0][dir]')
+        qs = qs.order_by('[{0}] {1}'.format(self._columns[sort_col], sort_dir))
         return qs

@@ -15,4 +15,6 @@ urlpatterns = [
     path('parts/', bi_login(views.PartsView.as_view()), name='parts'),
     path('jparts/datatable1/', bi_login(views.MPartsAjaxTable.as_view()), name='jmparts'),
     path('jparts/datatable2/', bi_login(views.LPartsAjaxTable.as_view()), name='jlparts'),
+    path('sales_analysis/', bi_login(views.SalesAnlysisView.as_view()), name='sales_analysis'),
+    path('jsales_analysis/datatable/', bi_login(views.SalesAnlysisAjaxTable.as_view()), name='jsales_analysis'),
 ]

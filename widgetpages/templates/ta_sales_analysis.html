@@ -1,0 +1,142 @@
+{% extends "ta_layout.html" %}
+{% load widgettags %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+    <style>
+        table.datatable tr {
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 0.9rem;
+        }
+        .buttons-select-all, .buttons-select-none, .buttons-html5 {
+            line-height: 1; !important;
+        }
+
+        .sticky-top {top:7rem; !important;}
+
+        table.dataTable thead.thead-light {background-color: rgb(108, 117, 125); color: #ffffff; }
+        td.dt-right { text-align: right; padding-right:5px; !important;}
+        td.dt-right0 { text-align: right; padding-right:5px; !important;}
+        th.dt-center { text-align: center; padding-right:5px; !important;}
+        table.dataTable.table-sm > thead > tr > th.dt-right { padding-right:1.4rem; !important; text-align: right; !important;}
+        table.dataTable.table-sm > thead > tr > th.dt-right0 { padding-right:5px; !important; text-align: right; !important;}
+        table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
+        table.datatable tr.total td  { font-weight:bold; !important;}
+
+    </style>
+    <br>
+	<div class="col-12">
+		<table class="table table-sm table-hover table-striped display w-100 datatable table-bordered" width="100%" id="ta_sales_analysis_table">
+            <thead сдфыы="thead-light">
+               <tr>
+                   <th rowspan="2" class="dt-center">Дата тендера</th>
+                   <th rowspan="2" class="dt-center">ИНН</th>
+                   <th rowspan="2" class="dt-center">Заказчик</th>
+                   <th colspan="5" class="dt-center">Аукцион</th>
+                   <th colspan="5" class="dt-center">Контракт</th>
+                   <th rowspan="2" class="dt-center">Этап размещения</th>
+                   <th rowspan="2" class="dt-center">Ссылка на аукцион</th>
+               </tr>
+                <tr>
+                     <th class="dt-center">ТН</th>
+                    <th class="dt-center">Дозировка</th>
+                    <th class="dt-center">Кол-во</th>
+                    <th class="dt-center">Цена</th>
+                    <th class="dt-center">Сумма</th>
+                    <th class="dt-center">ТН</th>
+                    <th class="dt-center">Дозировка</th>
+                    <th class="dt-center">Кол-во</th>
+                    <th class="dt-center">Цена</th>
+                    <th class="dt-center">Сумма</th>
+                </tr>
+            </thead>
+        </table>
+	</div>
+
+<script>
+    function ChartsUpdate1(data, src_id) {
+        ta_sales_analysis_table.ajax.reload( null, true );
+    }
+    function ChartsUpdate2(data, src_id) {
+    }
+    function ChartsUpdate3(data, src_id) {
+    }
+</script>
+{% endblock %}
+
+{% block afterpage %}
+<script type="text/javascript">
+
+function fixval ( data ) {
+    if (data != '') val=( data / 1000 ).toFixed(0); else val='';
+    return val;
+}
+
+function floatWithSpaces(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
+    return parts.join(".");
+}
+
+function intWithSpaces(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
+}
+
+var ta_sales_analysis_table = $('#ta_sales_analysis_table').DataTable({
+                "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+                //"dom": '<"row"<r><"col-12"t>>',
+                buttons: ['excel'],
+                select: true,
+                "lengthMenu": [[25, 50, 100, 250, 500, 1000], [25, 50, 100, 250, 500, 1000]],
+                "pageLength": 25,
+                //scrollX: true,
+                autoWidth: false,
+                "columnDefs": [
+                    { "title": "Дата тендера",        "name": "TendDt",             "targets": 0 , "visible": true, "className": "" },
+                    { "title": "ИНН",                 "name": "Org_CustINN",        "targets": 1 , "visible": true, "className": "" },
+                    { "title": "Заказчик",            "name": "Org_CustNm",         "targets": 2 , "visible": true, "className": "" },
+
+                    { "title": "TM",                  "name": "Order_TradeName",    "targets": 3 , "visible": true, "className": "" },
+                    { "title": "Дозировка + Фасовка", "name": "Order_Dosage",       "targets": 4 , "visible": true, "className": "" },
+                    { "title": "Кол-во",              "name": "Order_Count",        "targets": 5 , "visible": true, "className": "dt-right" ,
+                    render: function ( data, type, row ) { return intWithSpaces ( data ); } },
+                    { "title": "Цена",                "name": "Order_Price",        "targets": 6 , "visible": true, "className": "dt-right" ,
+                    render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
+                    { "title": "Сумма",               "name": "Order_Summa",        "targets": 7 , "visible": true, "className": "dt-right" ,
+                    render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
+
+                    { "title": "TM",                  "name": "Contract_TradeName", "targets": 8 , "visible": true, "className": "" },
+                    { "title": "Дозировка + Фасовка", "name": "Contract_Dosage",    "targets": 9 , "visible": true, "className": "" },
+                    { "title": "Кол-во",              "name": "Contract_Count",     "targets": 10 , "visible": true, "className": "dt-right" ,
+                    render: function ( data, type, row ) { return intWithSpaces ( data ); } },
+                    { "title": "Цена",                "name": "Contract_Price",     "targets": 11 , "visible": true, "className": "dt-right" ,
+                    render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
+                    { "title": "Сумма",               "name": "Contract_Summa",     "targets": 12 , "visible": true, "className": "dt-right" ,
+                    render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
+
+                    { "title": "Этап размещения",     "name": "status_name",        "targets": 13 , "visible": true, "className": "" },
+                    { "title": "Ссылка",              "name": "SrcInf",             "targets": 14 , "visible": true, "className": "",
+                    render: function ( data, type, row ) { return "<a href='"+data+"' target='_blank'>Перейти</a>" }}
+                ],
+                "processing": true,
+                "serverSide": true,
+                //"stateSave" : true,
+                "ordering":  true,
+                "order": [[ {{ data.sort_col }}, "{{ data.sort_dir }}" ]],
+                "ajax": {
+                    "url": "{{ ajax_datatable_url }}",
+                    "type": "POST",
+                    "data": function ( d ) {
+                        d.filters_ajax_request = JSON.stringify(make_request());
+                        d.view_id = '{{ view.id }}';
+                        d.org_id = '{{ org_id }}';
+                        d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                    }
+                },
+                "language": lang_russian
+            });
+
+</script>
+{%  endblock %}
