@@ -26,7 +26,7 @@ t.Order_Price as Order_Price,
 t.Order_Count as Order_Count,
 t.Order_Sum as Order_Summa,
 t.Order_Dosage,
-
+t.Order_AVG_Price,
 t.Winner_Id,
 isnull(m1.name, m2.name) as market_name,
 isnull(m1.id, m2.id) as market_id,

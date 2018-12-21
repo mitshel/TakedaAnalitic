@@ -1,13 +1,16 @@
 q_sales_analysis = """
 {% autoescape off %}
 select CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as Order_TradeName, t2.name as Contract_TradeName, 
-       Order_Dosage, Contract_Dosage, Order_Count, Contract_Count, Order_Price, Contract_Price, Order_Summa, Contract_Summa, 
-       u.name as status_name, SrcInf
+       i1.name as Order_InnName, i2.name as Contract_InnName,
+       Order_Dosage, Contract_Dosage, Order_Count, Contract_Count, Order_Price, Contract_Price, Order_Summa, 
+       Order_AVG_Price*Order_Count as Order_AVG_Summa, Contract_Summa,  u.name as status_name, SrcInf, Contract_URL
 from [dbo].[org_CACHE_{{org_id}}] s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_WinnerOrg w on s.Winner_ID = w.id
 left join db_TradeNR t1 on s.Order_TradeNx = t1.id
 left join db_TradeNR t2 on s.Contract_TradeNx = t2.id
+left join db_inNR i1 on s.Order_InnNx = i1.id
+left join db_inNR i2 on s.Contract_InnNx = i2.id
 left join db_lpu_employee e on s.cust_id=e.lpu_id
 left join db_statusT u on s.StatusT_ID=u.id
 where 1=1 

@@ -19,12 +19,13 @@
         table.dataTable thead.thead-light {background-color: rgb(108, 117, 125); color: #ffffff; }
         td.dt-right { text-align: right; padding-right:5px; !important;}
         td.dt-right0 { text-align: right; padding-right:5px; !important;}
-        th.dt-center { text-align: center; padding-right:5px; !important;}
+        th.dt-center { text-align: center; padding-right:0px; !important;}
         table.dataTable.table-sm > thead > tr > th.dt-right { padding-right:1.4rem; !important; text-align: right; !important;}
         table.dataTable.table-sm > thead > tr > th.dt-right0 { padding-right:5px; !important; text-align: right; !important;}
         table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
         table.datatable tr.total td  { font-weight:bold; !important;}
-
+        .td-inn { width:75px; word-wrap:break-word;}
+        .td-tm {  width:50px; word-wrap:break-word;}
     </style>
     <br>
 	<div class="col-12">
@@ -34,21 +35,24 @@
                    <th rowspan="2" class="dt-center">Дата тендера</th>
                    <th rowspan="2" class="dt-center">ИНН</th>
                    <th rowspan="2" class="dt-center">Заказчик</th>
-                   <th colspan="5" class="dt-center">Аукцион</th>
-                   <th colspan="5" class="dt-center">Контракт</th>
-                   <th rowspan="2" class="dt-center">Этап размещения</th>
-                   <th rowspan="2" class="dt-center">Ссылка на аукцион</th>
+                   <th colspan="7" class="dt-center">Аукцион</th>
+                   <th colspan="6" class="dt-center">Контракт</th>
+                   <th rowspan="2" class="dt-center dt-inn">Этап</th>
+                   <th rowspan="2" class="dt-center">Ссылки</th>
                </tr>
                 <tr>
-                     <th class="dt-center">ТН</th>
+                    <th class="dt-center td-inn">МНН</th>
+                    <th class="dt-center td-tm">ТН</th>
                     <th class="dt-center">Дозировка</th>
-                    <th class="dt-center">Кол-во</th>
-                    <th class="dt-center">Цена</th>
+                    <th class="dt-center">Кол-во, уп.</th>
+                    <th class="dt-center">Цена, SKU</th>
                     <th class="dt-center">Сумма</th>
-                    <th class="dt-center">ТН</th>
+                    <th class="dt-center">Сумма (сред.)</th>
+                    <th class="dt-center td-inn">МНН</th>
+                    <th class="dt-center td-tm">ТН</th>
                     <th class="dt-center">Дозировка</th>
-                    <th class="dt-center">Кол-во</th>
-                    <th class="dt-center">Цена</th>
+                    <th class="dt-center">Кол-во, уп.</th>
+                    <th class="dt-center">Цена SKU</th>
                     <th class="dt-center">Сумма</th>
                 </tr>
             </thead>
@@ -98,27 +102,40 @@ var ta_sales_analysis_table = $('#ta_sales_analysis_table').DataTable({
                     { "title": "ИНН",                 "name": "Org_CustINN",        "targets": 1 , "visible": true, "className": "" },
                     { "title": "Заказчик",            "name": "Org_CustNm",         "targets": 2 , "visible": true, "className": "" },
 
-                    { "title": "TM",                  "name": "Order_TradeName",    "targets": 3 , "visible": true, "className": "" },
-                    { "title": "Дозировка + Фасовка", "name": "Order_Dosage",       "targets": 4 , "visible": true, "className": "" },
-                    { "title": "Кол-во",              "name": "Order_Count",        "targets": 5 , "visible": true, "className": "dt-right" ,
+                    { "title": "МНН",                  "name": "Order_InnName",    "targets": 3 , "visible": true, "className": "",
+                    render: function ( data, type, row ) { return "<div class='td-inn'>"+data+"</div>" } },
+                    { "title": "TН",                  "name": "Order_TradeName",    "targets": 4 , "visible": true, "className": "" ,
+                    render: function ( data, type, row ) { return "<div class='td-tm'>"+data+"</div>" } },
+                    { "title": "Дозировка + Фасовка", "name": "Order_Dosage",       "targets": 5 , "visible": true, "className": "" },
+                    { "title": "Кол-во, уп",              "name": "Order_Count",        "targets": 6 , "visible": true, "className": "dt-right" ,
                     render: function ( data, type, row ) { return intWithSpaces ( data ); } },
-                    { "title": "Цена",                "name": "Order_Price",        "targets": 6 , "visible": true, "className": "dt-right" ,
+                    { "title": "Цена, SKU",                "name": "Order_Price",        "targets": 7 , "visible": true, "className": "dt-right" ,
                     render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
-                    { "title": "Сумма",               "name": "Order_Summa",        "targets": 7 , "visible": true, "className": "dt-right" ,
+                    { "title": "Сумма",               "name": "Order_Summa",        "targets": 8 , "visible": true, "className": "dt-right" ,
+                    render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
+                    { "title": "Сумма (сред.)",               "name": "Order_AVG_Summa",     "targets": 9 , "visible": true, "className": "dt-right" ,
                     render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
 
-                    { "title": "TM",                  "name": "Contract_TradeName", "targets": 8 , "visible": true, "className": "" },
-                    { "title": "Дозировка + Фасовка", "name": "Contract_Dosage",    "targets": 9 , "visible": true, "className": "" },
-                    { "title": "Кол-во",              "name": "Contract_Count",     "targets": 10 , "visible": true, "className": "dt-right" ,
+                    { "title": "МНН",                  "name": "Contract_InnName", "targets": 10 , "visible": true, "className": "" ,
+                    render: function ( data, type, row ) { return "<div class='td-inn'>"+data+"</div>" } },
+                    { "title": "TН",                  "name": "Contract_TradeName", "targets": 11 , "visible": true, "className": "" ,
+                    render: function ( data, type, row ) { return "<div class='td-tm'>"+data+"</div>" } },
+                    { "title": "Дозировка + Фасовка", "name": "Contract_Dosage",    "targets": 12 , "visible": true, "className": "" },
+                    { "title": "Кол-во, уп.",              "name": "Contract_Count",     "targets": 13 , "visible": true, "className": "dt-right" ,
                     render: function ( data, type, row ) { return intWithSpaces ( data ); } },
-                    { "title": "Цена",                "name": "Contract_Price",     "targets": 11 , "visible": true, "className": "dt-right" ,
+                    { "title": "Цена, SKU",                "name": "Contract_Price",     "targets": 14 , "visible": true, "className": "dt-right" ,
                     render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
-                    { "title": "Сумма",               "name": "Contract_Summa",     "targets": 12 , "visible": true, "className": "dt-right" ,
+                    { "title": "Сумма",               "name": "Contract_Summa",     "targets": 15 , "visible": true, "className": "dt-right" ,
                     render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
 
-                    { "title": "Этап размещения",     "name": "status_name",        "targets": 13 , "visible": true, "className": "" },
-                    { "title": "Ссылка",              "name": "SrcInf",             "targets": 14 , "visible": true, "className": "",
-                    render: function ( data, type, row ) { return "<a href='"+data+"' target='_blank'>Перейти</a>" }}
+                    { "title": "Этап",     "name": "status_name",        "targets": 16 , "visible": true, "className": "" ,
+                    render: function ( data, type, row ) { return "<div class='td-inn'>"+data+"</div>" } },
+                    { "title": "Ссылки",              "name": "SrcInf",             "targets": 17 , "visible": true, "className": "",
+                    render: function ( data, type, row ) {
+                        tender_html = "<a href='"+data+"' target='_blank'>Аукцион</a>";
+                        if (row[18]) contract_html="<br><a href='"+row[18]+"' target='_blank'>Контракт</a>"; else contract_html = "";
+                        return tender_html+contract_html }},
+                    { "title": "Ссылка контракт",              "name": "Contract_URL",             "targets": 18 , "visible": false, "className": "" }
                 ],
                 "processing": true,
                 "serverSide": true,
