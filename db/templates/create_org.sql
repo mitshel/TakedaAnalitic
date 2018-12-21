@@ -41,7 +41,7 @@ c1.TradeName_ID as Contract_TradeNx,
 --c1.ItemPrice as ContractItemPrice,
 --c1.ItemCount as ContractItemCount,
 ISNULL(c1.Url,c.Url) as Contract_URL,
-ISNULL(c1.Price,c.Price) as Contract_Price,
+isnull(c1.[Ship_Price],c1.[ItemPrice]) as Contract_Price,
 isnull(CAST(c1.[Ship_Count] as bigint),c1.[ItemCount]) as Contract_Count,
 isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
 c1.Ship_Dosage as Contract_Dosage
