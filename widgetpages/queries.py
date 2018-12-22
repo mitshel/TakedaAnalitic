@@ -22,6 +22,7 @@ where 1=1
 {% if winrs_in %}and {{winrs_in}} {% endif %} 
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+{% if own_select %}and {{own_select}} {% endif %}
 {% if icontains %}and (l.Org_CustNm like '%{{ icontains }}%' or l.Org_CustINN like '%{{ icontains }}%'){% endif %}
 {% endautoescape %}  
 """

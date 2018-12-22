@@ -68,6 +68,7 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
     view_id = 'blank'
     view_name = 'Пустая страница'
     select_market_type = 0
+    select_own = 0
 
     def filter_empl(self, flt_active=None, org_id=0, targets = []):
         if not flt_active:
@@ -222,7 +223,7 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
         context['filters'] = filters
         context['data'] = data
         context['org_id'] = org_id
-        context['view'] = {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type}
+        context['view'] = {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type, 'select_own': self.select_own}
         context['ajax_url'] = self.ajax_url
         context['ajax_datatable_url'] = self.ajax_datatable_url
         return context
@@ -245,7 +246,7 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
                 response = {'filters': self.get_filters_dict(filters),
                             'data': data,
                             'org_id': org_id,
-                            'view': {'id' : self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type},
+                            'view': {'id' : self.view_id, 'name': self.view_name },
                             'ajax_url': self.ajax_url,
                             'ajax_datatable_url': self.ajax_datatable_url}
                 return JsonResponse(response)
@@ -270,6 +271,7 @@ class BaseDatatableYearView(OrgMixin, TargetsMixin, AjaxRawDatatableView):
         flt_active = {}
         if flt:
             market_type = flt.get('market_type','1')
+            own_type = flt.get('own_type', '1')
             for f in self.filters_list:
                 flt_str = flt.get('{}_active'.format(f), '')
                 flt_select = flt.get('{}_select'.format(f), '')
@@ -277,6 +279,7 @@ class BaseDatatableYearView(OrgMixin, TargetsMixin, AjaxRawDatatableView):
                 flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
         else:
             market_type = '1'
+            own_type = '1'
             targets = self.get_initial_targets()
             flt_active[fempl] = self.targets_in_filter(targets)
             flt_active[fempa] = {'list': [], 'select': 0}
@@ -286,6 +289,7 @@ class BaseDatatableYearView(OrgMixin, TargetsMixin, AjaxRawDatatableView):
             years_active.close()
 
         market_type_prefix = 'Order_' if market_type == '1' else 'Contract_'
+        own_select = 'market_own=1' if own_type == '1' else ('market_own=0' if own_type == '2' else '')
 
         if flt_active[fyear]['list']:
             rawmodel = RawModel(self.datatable_query, self.datatable_count_query)
@@ -297,7 +301,7 @@ class BaseDatatableYearView(OrgMixin, TargetsMixin, AjaxRawDatatableView):
                            winrs_in=extra_in_filter('w.id', flt_active[fwinr] if flt_active else ''),
                            innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active[finnr] if flt_active else ''),
                            trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active[ftrnr] if flt_active else ''),
-                           market_type_prefix = market_type_prefix,
+                           market_type_prefix = market_type_prefix, own_select = own_select,
                            org_id = org_id)
         else:
             rawmodel = RawModel(self.empty_datatable_query)

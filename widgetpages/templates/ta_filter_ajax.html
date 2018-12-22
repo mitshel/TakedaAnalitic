@@ -55,7 +55,9 @@ function make_request() {
         {% endif %}
     {% endfor %}
 
-    market_type = $('#marketType').val();
+    market_type = $('#serv_market').val();
+    own_type = $('#serv_own').val();
+
     if ($('#empl-all').hasClass('active')) empl_all = 1; else empl_all = 0;
 
     filters_ajax_request = {{% for flt in filters %}
@@ -63,6 +65,7 @@ function make_request() {
                             '{{ flt.id }}_select': {{ flt.id }}_selectAll,
                             {% endfor %}
                             'market_type': market_type,
+                            'own_type': own_type,
                             'empl_all': empl_all,
                             'csrfmiddlewaretoken': '{{ csrf_token }}' }
 
@@ -138,7 +141,7 @@ $(document).on('click', '#serv-test', function(event) {
     test_timeout(parseInt( $('#test_time').val() )*1000 );
 });
 
-$('#marketType').on('change', function() {
+$('select[id^=serv_]').on('change', function() {
   src_id = 'empl_';
   query_data();
 
@@ -147,7 +150,8 @@ $('#marketType').on('change', function() {
     date.setDate(date.getDate() + 7);
 
     // записываем cookie
-    document.cookie = 'marketType=' + $('#marketType').val() +'; path=/; expires=' + date.toUTCString();
+    document.cookie = 'serv_market=' + $('#serv_market').val() +'; path=/; expires=' + date.toUTCString();
+    document.cookie = 'serv_own=' + $('#serv_own').val() +'; path=/; expires=' + date.toUTCString();
 });
 
 // возвращает cookie с именем name, если есть, если нет, то undefined
@@ -158,10 +162,8 @@ function getCookie(name) {
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-cookie = getCookie('marketType');
-if (cookie) {
-    $('#marketType').val(cookie);
-}
+cookie = getCookie('serv_market'); if (cookie) { $('#serv_market').val(cookie); }
+cookie = getCookie('serv_own'); if (cookie) { $('#serv_own').val(cookie); }
 //make_request();
 
 </script>

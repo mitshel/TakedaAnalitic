@@ -182,6 +182,8 @@ class SalesAnlysisView(FiltersView):
     ajax_datatable_url = reverse_lazy('widgetpages:jsales_analysis')
     view_id = 'sales_analysis'
     view_name = 'Анализ продаж'
+    select_own = 1
+    select_market_type = 1
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
