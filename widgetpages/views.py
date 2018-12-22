@@ -35,7 +35,6 @@ class SalessheduleView(FiltersView):
         return pivot_data
 
 
-
 class CompetitionsView(FiltersView):
     template_name = 'ta_competitions.html'
     ajax_filters_url = reverse_lazy('widgetpages:competitions')
