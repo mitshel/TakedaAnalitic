@@ -9,4 +9,5 @@ def bi_processor(request):
     args['BI_MAX_EMPLOYEE_LPU']=settings.BI_MAX_EMPLOYEE_LPU
     args['BI_MAX_EMPLOYEE_LOGIN']=settings.BI_MAX_EMPLOYEE_LOGIN
     args['datasource'] = DBHOST
+    #args.update(csrf(request))
     return args

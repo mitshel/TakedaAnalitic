@@ -87,7 +87,12 @@ class RawModel(object):
         return self
 
     def render(self, forcount = False):
-        # Filtering
+        # add Ordering to filters
+        # filter_and_order = self._filter_data
+        # if (not forcount) and self._order_data:
+        #     filter_and_order.update({'order_by': "order by {} \n".format(','.join([str(e) for e in self._order_data]))})
+
+        # Ordering and Filtering
         if self._template_type:
             sql = self._query.render(Context(self._filter_data))
         else:
@@ -105,6 +110,7 @@ class RawModel(object):
         return sql
 
     def open(self):
+        print(self.render())
         self._cursor = connection.cursor()
         self._cursor.execute(self.render())
         self._columns = [col[0] for col in self._cursor.description] if self._cursor.description else None

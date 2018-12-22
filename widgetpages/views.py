@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from widgetpages.BIMonBaseViews import unique, extra_in_filter, OrgMixin, FiltersView, BaseDatatableYearView
-from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa
+from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv
 from widgetpages import queries
 
 from db.rawmodel import RawModel
@@ -15,7 +15,7 @@ class HomeView(OrgMixin, TemplateView):
 class SalessheduleView(FiltersView):
     filters_list = [fempl, fmrkt, fyear, fcust]
     template_name = 'ta_salesshedule.html'
-    ajax_url = reverse_lazy('widgetpages:salesshedule')
+    ajax_filters_url = reverse_lazy('widgetpages:salesshedule')
     view_id = 'salesshedule'
     view_name = 'График продаж'
 
@@ -50,10 +50,54 @@ class SalessheduleView(FiltersView):
             hsm_active.close()
         return pivot_data
 
+class SalessheduleView2(FiltersView):
+    filters_list = [fempl, fmrkt, fyear, fcust]
+    template_name = 'ta_salesshedule.html'
+    ajax_filters_url = reverse_lazy('widgetpages:salesshedule')
+    view_id = 'salesshedule'
+    view_name = 'График продаж'
+
+    def data(self, flt=None, flt_active=None, org_id=0, targets = []):
+        pivot_data = {}
+
+        if flt:
+            market_type_prefix = 'Order_' if flt_active[fserv]['market'] == '1' else 'Contract_'
+            own_select = 'market_own=1' if flt_active[fserv]['own'] == '1' else ('market_own=0' if flt_active[fserv]['own'] == '2' else '')
+
+            if self.fempa_selected(flt_active, fempa):
+                disabled_targets = [e['iid'] for e in targets if e['iid'] not in flt_active[fempl]['list']]
+                flt_targets = 'not in ({})'.format(
+                    ','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
+            else:
+                enabled_targets = [str(e) for e in flt_active[fempl]['list']]
+                flt_targets = 'in ({})'.format(','.join(enabled_targets) if enabled_targets else '-1')
+
+            hsy_active = RawModel(queries.q_sales_year).filter(org_id=org_id, targets = flt_targets).order_by('1', '2')
+            hsm_active = RawModel(queries.q_sales_month).filter(org_id=org_id, targets = flt_targets).order_by('1', '2')
+
+            if flt_active.get(fyear):
+
+                hsy_active = hsy_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
+                                               markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
+                                               lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
+                hsm_active = hsm_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
+                                               markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
+                                               lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
+
+            pivot_data['pivot1'] = list (hsy_active.open().fetchall())
+            pivot_data['pivot2'] = list (hsm_active.open().fetchall())
+            pivot_data['year'] = list( unique([e['iid'] for e in pivot_data['pivot1']]) )
+            pivot_data['year'].sort()
+
+            hsy_active.close()
+            hsm_active.close()
+
+        return pivot_data
+
 
 class CompetitionsView(FiltersView):
     template_name = 'ta_competitions.html'
-    ajax_url = reverse_lazy('widgetpages:competitions')
+    ajax_filters_url = reverse_lazy('widgetpages:competitions')
     view_id = 'competitions'
     view_name = 'Конкурентный анализ(тыс.руб.)'
     select_market_type = 1
@@ -86,7 +130,7 @@ class CompetitionsLpuView(CompetitionsView):
     view_name = 'Конкурентный анализ по ЛПУ (тыс.руб.)'
 
 class CompetitionsMarketView(CompetitionsView):
-    ajax_url = reverse_lazy('widgetpages:competitions_market')
+    ajax_filters_url = reverse_lazy('widgetpages:competitions_market')
     ajax_datatable_url = reverse_lazy('widgetpages:jcompetitions_market')
     view_id = 'competitions_market'
     view_name = 'Конкурентный анализ по рынкам (тыс.руб.)'
@@ -94,7 +138,7 @@ class CompetitionsMarketView(CompetitionsView):
 class Lpu_CompetitionsAjaxTable(BaseDatatableYearView):
     order_columns = ['Org_CustNm', 'name']
     datatable_query = queries.q_competitions_lpu
-    #empty_datatable_query = 'select null as Org_CustINN, null as Org_CustNm, null as name'
+    empty_datatable_query = 'select null as Org_CustINN, null as Org_CustNm, null as name '
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -104,7 +148,6 @@ class Lpu_CompetitionsAjaxTable(BaseDatatableYearView):
         else:
             qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'l.Org_CustNm', 'gr','t.name')
         return qs
-
 
 class Market_CompetitionsAjaxTable(BaseDatatableYearView):
     order_columns = ['name']
@@ -122,7 +165,7 @@ class Market_CompetitionsAjaxTable(BaseDatatableYearView):
 
 class PartsView(FiltersView):
     template_name = 'ta_parts.html'
-    ajax_url = reverse_lazy('widgetpages:parts')
+    ajax_filters_url = reverse_lazy('widgetpages:parts')
     view_id = 'parts'
     view_name = 'Доля (тыс.руб.)'
     select_market_type = 1
@@ -130,7 +173,7 @@ class PartsView(FiltersView):
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
 
-        if not flt_active:
+        if not flt_active.get(fyear):
             years_active = [y['iid'] for y in self.get_filter(flt, fyear)['data']]
         else:
             years_active = flt_active[fyear]['list']
@@ -178,7 +221,7 @@ class LPartsAjaxTable(BaseDatatableYearView):
 
 class SalesAnlysisView(FiltersView):
     template_name = 'ta_sales_analysis.html'
-    ajax_url = reverse_lazy('widgetpages:sales_analysis')
+    ajax_filters_url = reverse_lazy('widgetpages:sales_analysis')
     ajax_datatable_url = reverse_lazy('widgetpages:jsales_analysis')
     view_id = 'sales_analysis'
     view_name = 'Анализ продаж'

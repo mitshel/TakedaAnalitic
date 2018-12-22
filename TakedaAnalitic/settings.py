@@ -180,6 +180,8 @@ MEDIA_ROOT = BASE_DIR + '/media/'
 MEDIA_URL = '/media/'
 ADMIN_MEDIA_PREFIX = '/media/'
 
+CSRF_USE_SESSIONS = True
+
 
 BI_AUTH = True
 BI_MAX_EMPLOYEE_LPU = 999

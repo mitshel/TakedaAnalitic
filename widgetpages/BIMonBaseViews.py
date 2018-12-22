@@ -11,7 +11,6 @@ from farmadmin.views import OrgBaseMixin, bOrgUSER, bOrgSESSION, bOrgPOST
 
 # Filters identification
 fempl = 'empl'
-fempa = 'empa'
 fmrkt = 'mrkt'
 fyear = 'year'
 fcust = 'cust'
@@ -20,6 +19,8 @@ finnr = 'innr'
 ftrnr = 'trnr'
 fwinr = 'winr'
 
+fempa = 'empa'
+fserv = 'serv'
 
 def extra_in_filter(field, flt):
     if flt:
@@ -46,8 +47,7 @@ def unique(obj: iter):
 class OrgMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgPOST | bOrgUSER
 
-class TargetsMixin(View):
-
+class FiltersMixin(View):
     def fempa_selected(self, flt_active, fname):
         return flt_active[fname]['select'] if flt_active else 0
 
@@ -60,10 +60,53 @@ class TargetsMixin(View):
         initial_employee.close()
         return initial_targets
 
-class FiltersView(OrgMixin, TargetsMixin, TemplateView):
+    # Получает информацию о состоянии фильтров через ajax, или конструирует фильтры по умолчанию
+    def filters_active(self, org_id, targets):
+        filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
+        flt = json.loads(filters_ajax_request) if filters_ajax_request else {}
+        flt_active = {}
+        if flt:
+            for f in self.filters_list:
+                flt_str = flt.get('{}_active'.format(f), '')
+                flt_select = flt.get('{}_select'.format(f), '')
+                flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
+                flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
+                flt_active[fserv] = {'market': int(flt.get('market_type','1')), 'own': int(flt.get('own_type', '1'))}
+        else:
+            flt_active[fempl] = self.targets_in_filter(targets)
+            flt_active[fempa] = {'list': [], 'select': 0}
+            flt_active[fserv] = {'market': 1, 'own': 1}
+
+        return flt_active
+
+    def apply_filters(self, qs, flt_active, org_id, targets):
+        market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
+        own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
+
+        if self.fempa_selected(flt_active, fempa):
+            disabled_targets = [e['iid'] for e in targets if e['iid'] not in flt_active[fempl]['list']]
+            flt_targets = 'not in ({})'.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
+        else:
+            enabled_targets = [str(e) for e in flt_active[fempl]['list']]
+            flt_targets = 'in ({})'.format(','.join(enabled_targets) if enabled_targets else '-1')
+
+        qs = qs.filter(years=flt_active[fyear]['list'] if flt_active.get(fyear) else '',
+                       markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active.get(fmrkt) else ''),
+                       status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active.get(fstat) else ''),
+                       targets = flt_targets,
+                       employees=','.join([str(e) for e in flt_active[fempl]['list']]) if not self.fempa_selected(flt_active, fempa) else '',
+                       lpus_in=extra_in_filter('l.Cust_ID',flt_active.get(fcust,'')),
+                       winrs_in=extra_in_filter('w.id', flt_active.get(fwinr,'')),
+                       innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')),
+                       trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')),
+                       market_type_prefix = market_type_prefix, own_select = own_select, org_id = org_id)
+        return qs
+
+
+class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     template_name = 'ta_competitions.html'
     filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
-    ajax_url = '#'
+    ajax_filters_url = '#'
     ajax_datatable_url = '#'
     view_id = 'blank'
     view_name = 'Пустая страница'
@@ -71,10 +114,7 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
     select_own = 0
 
     def filter_empl(self, flt_active=None, org_id=0, targets = []):
-        if not flt_active:
-            employee_list = targets
-        else:
-            employee_list = [{'iid':t['iid']} for t in targets]
+        employee_list = targets
 
         return {'id': fempl,
                 'type': 'btn',
@@ -85,7 +125,7 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
 
     def filter_mrkt(self, flt_active=None, org_id=0, targets = []):
         market_list_active = []
-        if not flt_active:
+        if not flt_active.get(fmrkt):
             # Показываем все доступные рынки для сотрудника организации
             market_enabled = RawModel(queries.q_markets).filter(fields="id as iid, name",org_id=org_id).order_by('name')
             # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
@@ -111,7 +151,7 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
 
     def filter_year(self, flt_active=None, org_id=0, targets = []):
         year_list_active = []
-        if not flt_active:
+        if not flt_active.get(fyear):
             # Показываем все доступные Годы для сотрудника организации
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name",org_id=org_id).order_by('PlanTYear')
             # Но активными будут выглядеть только Годы, доступные сотруднику (через ЛПУ)
@@ -136,7 +176,7 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
                 'data0': year_list_active}
 
     def filter_stat(self, flt_active=None, org_id=0, targets = []):
-        if not flt_active:
+        if not flt_active.get(fstat):
             status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name").order_by('name')
         else:
             status_enabled = RawModel(queries.q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
@@ -180,7 +220,6 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
 
     def filters(self, flt_active=None, org_id=0, targets=[]):
         filters = []
-        filter_empl = self.filter_empl(flt_active, org_id)
         for f in self.filters_list:
             if fempl == f:
                 filters.append(self.filter_empl(flt_active, org_id, targets))
@@ -217,14 +256,15 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         org_id = self.init_dynamic_org()
         targets = self.get_initial_targets()
-        filters = self.filters(None, org_id, targets)
-        data = self.data(filters, None, org_id, targets)
+        flt_active = self.filters_active(org_id, targets)
+        filters = self.filters(flt_active, org_id, targets)
+        data = self.data(filters, flt_active, org_id, targets)
 
         context['filters'] = filters
         context['data'] = data
         context['org_id'] = org_id
         context['view'] = {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type, 'select_own': self.select_own}
-        context['ajax_url'] = self.ajax_url
+        context['ajax_filters_url'] = self.ajax_filters_url
         context['ajax_datatable_url'] = self.ajax_datatable_url
         return context
 
@@ -232,80 +272,48 @@ class FiltersView(OrgMixin, TargetsMixin, TemplateView):
         if request.is_ajax():
             if request.POST:
                 org_id = self.init_dynamic_org()
-                flt_active = {}
-                for f in self.filters_list:
-                    flt_str = request.POST.get('{}_active'.format(f), '')
-                    flt_select = request.POST.get('{}_select'.format(f), '')
-                    flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select)}
-                flt_active[fempa] = {'list':[], 'select': int(request.POST.get('empl_all', '0'))}
-
                 targets = self.get_initial_targets()
-                # filters = self.filters(None, org_id, targets)
+                flt_active = self.filters_active(org_id, targets)
                 filters = self.filters(flt_active, org_id, targets)
                 data = self.data(filters, flt_active, org_id, targets)
                 response = {'filters': self.get_filters_dict(filters),
                             'data': data,
                             'org_id': org_id,
                             'view': {'id' : self.view_id, 'name': self.view_name },
-                            'ajax_url': self.ajax_url,
+                            'ajax_filters_url': self.ajax_filters_url,
                             'ajax_datatable_url': self.ajax_datatable_url}
                 return JsonResponse(response)
 
-        #return self.get(request)
         return super().post(request, *args, **kwargs)
 
 
-class BaseDatatableYearView(OrgMixin, TargetsMixin, AjaxRawDatatableView):
+class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     order_columns = ['name']
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
     org_id = 1
+    orderable = 1
     datatable_query = None
     datatable_count_query = None
-    empty_datatable_query = 'select null as name'
+    empty_datatable_query = 'select null as name '
 
     def get_initial_queryset(self):
-        filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
         self.view_id = self.request.POST.get('view_id', 'BaseDatatableYearView')
-        flt = json.loads(filters_ajax_request)
         org_id = self.init_dynamic_org()
-        flt_active = {}
-        if flt:
-            market_type = flt.get('market_type','1')
-            own_type = flt.get('own_type', '1')
-            for f in self.filters_list:
-                flt_str = flt.get('{}_active'.format(f), '')
-                flt_select = flt.get('{}_select'.format(f), '')
-                flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
-                flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
-        else:
-            market_type = '1'
-            own_type = '1'
-            targets = self.get_initial_targets()
-            flt_active[fempl] = self.targets_in_filter(targets)
-            flt_active[fempa] = {'list': [], 'select': 0}
+        targets = self.get_initial_targets()
+        flt_active = self.filters_active(org_id, targets)
+
+        if not flt_active.get(fyear):
             years_active = RawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid",org_id=org_id, \
                                                                    employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
             flt_active[fyear] = {'list':[e['iid'] for e in years_active.open().fetchall()], 'select':0}
             years_active.close()
 
-        market_type_prefix = 'Order_' if market_type == '1' else 'Contract_'
-        own_select = 'market_own=1' if own_type == '1' else ('market_own=0' if own_type == '2' else '')
-
         if flt_active[fyear]['list']:
             rawmodel = RawModel(self.datatable_query, self.datatable_count_query)
-            rawmodel = rawmodel.filter(years=flt_active[fyear]['list'],
-                           markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active else ''),
-                           status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active else ''),
-                           employees=','.join([str(e) for e in flt_active[fempl]['list']] if not self.fempa_selected(flt_active, fempa) else ''),
-                           lpus_in=extra_in_filter('l.Cust_ID',flt_active[fcust] if flt_active else ''),
-                           winrs_in=extra_in_filter('w.id', flt_active[fwinr] if flt_active else ''),
-                           innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active[finnr] if flt_active else ''),
-                           trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active[ftrnr] if flt_active else ''),
-                           market_type_prefix = market_type_prefix, own_select = own_select,
-                           org_id = org_id)
         else:
             rawmodel = RawModel(self.empty_datatable_query)
 
+        rawmodel = self.apply_filters(rawmodel, flt_active, org_id, targets)
         return rawmodel
 
     def filter_queryset(self, qs):

@@ -1,13 +1,13 @@
 import json
 
 from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust, fempa
-from widgetpages.BIMonBaseViews import extra_in_filter, OrgMixin, TargetsMixin
+from widgetpages.BIMonBaseViews import extra_in_filter, OrgMixin, FiltersMixin
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 from widgetpages import queries
 
 from db.rawmodel import RawModel
 
-class FilterListJson(OrgMixin, TargetsMixin, AjaxRawDatatableView):
+class FilterListJson(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     columns = ['name', 'ext', 'iid']
     order_columns = ['name']
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
@@ -28,44 +28,34 @@ class FilterListJson(OrgMixin, TargetsMixin, AjaxRawDatatableView):
         lpu_enabled = RawModel(queries.q_lpu_hs).filter(fields='a.cust_id as iid, a.Org_CustInn as ext, a.Org_CustNm as name', org_id=org_id)
         return lpu_enabled
 
-    def addfilters(self, qs, flt_active):
-        if not flt_active:
-            return qs
+    def addfilters(self, qs, flt_active, org_id, targets):
+        # if not flt_active:
+        #     return qs
 
-        if not self.fempa_selected(flt_active, fempa):
-            qs = qs.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
+        # if not self.fempa_selected(flt_active, fempa):
+        #     qs = qs.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
 
         #if self.kwargs['flt_id'] in (finnr, ftrnr):
         #        qs = qs.filter(market_in=extra_in_filter('m.market_id', flt_active[fmrkt]))
 
+        qs = self.apply_filters(qs, flt_active, org_id, targets)
+
         return qs
 
     def get_initial_queryset(self):
-        filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
-        flt = json.loads(filters_ajax_request)
-        flt_active = {}
-        if flt:
-            for f in self.filters_list:
-                flt_str = flt.get('{}_active'.format(f), '')
-                flt_select = flt.get('{}_select'.format(f), '')
-                flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
-                flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
-        else:
-            targets = self.get_initial_targets()
-            flt_active[fempl] = self.targets_in_filter(targets)
-            flt_active[fempa] = {'list': [], 'select': 0}
-
         initial_data ={}
         org_id = self.init_dynamic_org()
+        targets = self.get_initial_targets()
+        flt_active = self.filters_active(org_id, targets)
 
         if self.kwargs['flt_id'] == finnr:
-            initial_data = self.addfilters(self.initial_innr(org_id), flt_active)
+            initial_data = self.addfilters(self.initial_innr(org_id), flt_active, org_id, targets)
         if self.kwargs['flt_id'] == ftrnr:
-            initial_data = self.addfilters(self.initial_trnr(org_id), flt_active)
+            initial_data = self.addfilters(self.initial_trnr(org_id), flt_active, org_id, targets)
         if self.kwargs['flt_id'] == fwinr:
-            initial_data = self.addfilters(self.initial_winr(org_id), flt_active)
+            initial_data = self.addfilters(self.initial_winr(org_id), flt_active, org_id, targets)
         if self.kwargs['flt_id'] == fcust:
-            initial_data = self.addfilters(self.initial_cust(org_id), flt_active)
+            initial_data = self.addfilters(self.initial_cust(org_id), flt_active, org_id, targets)
 
         return initial_data
 

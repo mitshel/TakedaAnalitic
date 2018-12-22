@@ -66,14 +66,15 @@ function make_request() {
                             {% endfor %}
                             'market_type': market_type,
                             'own_type': own_type,
-                            'empl_all': empl_all,
-                            'csrfmiddlewaretoken': '{{ csrf_token }}' }
+                            'empl_all': empl_all
+                            //'csrfmiddlewaretoken': '{ { csrf_token }}'
+    }
 
     return filters_ajax_request;
 }
 
 function query_data() {
-    action_url = '{{ ajax_url }}';
+    action_url = '{{ ajax_filters_url }}';
     make_request();
 
     if (timerID) clearTimeout(timerID);
@@ -81,7 +82,12 @@ function query_data() {
         $.ajax({
             type: 'POST',
             url: action_url,
-            data: filters_ajax_request,
+            //traditional: true,
+            data: {
+                'filters_ajax_request' : JSON.stringify(make_request()),
+                'csrfmiddlewaretoken' : '{{ csrf_token }}'
+            },
+            //data: filters_ajax_request,
             success: function (data) {
                 processAjaxData(data, src_id);
             },
