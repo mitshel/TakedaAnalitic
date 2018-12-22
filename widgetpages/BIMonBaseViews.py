@@ -65,6 +65,7 @@ class FiltersMixin(View):
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
         flt = json.loads(filters_ajax_request) if filters_ajax_request else {}
         flt_active = {}
+        print(flt)
         if flt:
             for f in self.filters_list:
                 flt_str = flt.get('{}_active'.format(f), '')
@@ -85,10 +86,10 @@ class FiltersMixin(View):
 
         if self.fempa_selected(flt_active, fempa):
             disabled_targets = [e['iid'] for e in targets if e['iid'] not in flt_active[fempl]['list']]
-            flt_targets = 'not in ({})'.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
+            flt_targets = '(e.employee_id  not in ({}) or e.employee_id is null) '.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
         else:
             enabled_targets = [str(e) for e in flt_active[fempl]['list']]
-            flt_targets = 'in ({})'.format(','.join(enabled_targets) if enabled_targets else '-1')
+            flt_targets = 'e.employee_id in ({})'.format(','.join(enabled_targets) if enabled_targets else '-1')
 
         qs = qs.filter(years=flt_active[fyear]['list'] if flt_active.get(fyear) else '',
                        markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active.get(fmrkt) else ''),
@@ -129,16 +130,18 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
             # Показываем все доступные рынки для сотрудника организации
             market_enabled = RawModel(queries.q_markets).filter(fields="id as iid, name",org_id=org_id).order_by('name')
             # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
-            market_active = RawModel(queries.q_markets_hs_empl).filter(fields="a.id as iid",org_id=org_id, \
-                                                                       employee_in=extra_in_filter('e.employee_id', self.targets_in_filter(targets)))
+            # market_active = RawModel(queries.q_markets_hs_empl).filter(fields="a.id as iid",org_id=org_id, employee_in=extra_in_filter('e.employee_id', self.targets_in_filter(targets)))
+            market_active = self.apply_filters(RawModel(queries.q_markets_hs_empl).filter(fields="a.id as iid"), flt_active, org_id, targets)
             market_list_active = [e['iid'] for e in market_active.open().fetchall()]
             market_active.close()
         else:
             # Показываем все доступные рынки
-            market_enabled = RawModel(queries.q_markets_hs).filter(fields="a.id as iid",org_id=org_id)
+            # market_enabled = RawModel(queries.q_markets_hs).filter(fields="a.id as iid",org_id=org_id)
             #  Если отключена кнопка "Без учета Target" то фильтруем по выбранным сотрудникам
-            if not self.fempa_selected(flt_active, fempa):
-                market_enabled = market_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
+            # if not self.fempa_selected(flt_active, fempa):
+            #     market_enabled = market_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
+
+            market_enabled = self.apply_filters(RawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
         market_list = list(market_enabled.open().fetchall())
         market_enabled.close()
@@ -155,16 +158,18 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
             # Показываем все доступные Годы для сотрудника организации
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name",org_id=org_id).order_by('PlanTYear')
             # Но активными будут выглядеть только Годы, доступные сотруднику (через ЛПУ)
-            year_active = RawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid",org_id=org_id, \
-                                                                   employee_in=extra_in_filter('e.employee_id', self.targets_in_filter(targets)))
+            # year_active = RawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid",org_id=org_id, employee_in=extra_in_filter('e.employee_id', self.targets_in_filter(targets)))
+            year_active = self.apply_filters(RawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
             year_list_active = [e['iid'] for e in year_active.open().fetchall()]
             year_active.close()
         else:
             # Показываем все доступные Годы
-            year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid",org_id=org_id)
+            # year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid",org_id=org_id)
             #  Если отключена кнопка "Без учета Target" то фильтруем по выбранным сотрудникам
-            if not self.fempa_selected(flt_active, fempa):
-                year_enabled = year_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
+            # if not self.fempa_selected(flt_active, fempa):
+            #     year_enabled = year_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
+
+            year_enabled = self.apply_filters(RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
 
         year_list = list(year_enabled.open().fetchall())
         year_enabled.close()
@@ -179,9 +184,11 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         if not flt_active.get(fstat):
             status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name").order_by('name')
         else:
-            status_enabled = RawModel(queries.q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
-            if not self.fempa_selected(flt_active, fempa):
-                status_enabled = status_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
+            # status_enabled = RawModel(queries.q_status_hs).filter(fields="a.id as iid").filter(org_id=org_id)
+            # if not self.fempa_selected(flt_active, fempa):
+            #     status_enabled = status_enabled.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
+            status_enabled = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+
         status_list = list(status_enabled.open().fetchall())
         status_enabled.close()
         return {'id': fstat,

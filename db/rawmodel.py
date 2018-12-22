@@ -110,7 +110,6 @@ class RawModel(object):
         return sql
 
     def open(self):
-        print(self.render())
         self._cursor = connection.cursor()
         self._cursor.execute(self.render())
         self._columns = [col[0] for col in self._cursor.description] if self._cursor.description else None

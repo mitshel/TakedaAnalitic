@@ -7,7 +7,7 @@ from widgetpages import table_filters
 
 urlpatterns = [
     path('jdata/datatable/<str:flt_id>/', bi_login(table_filters.FilterListJson.as_view()), name='jdata'),
-    path('salesshedule/', bi_login(views.SalessheduleView2.as_view()), name='salesshedule'),
+    path('salesshedule/', bi_login(views.SalessheduleView.as_view()), name='salesshedule'),
     path('competitions/lpu/', bi_login(views.CompetitionsLpuView.as_view()), name='competitions_lpu'),
     path('competitions/market/', bi_login(views.CompetitionsMarketView.as_view()), name='competitions_market'),
     path('jcompetitions_lpu/datatable/', bi_login(views.Lpu_CompetitionsAjaxTable.as_view()), name='jcompetitions_lpu'),

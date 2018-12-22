@@ -21,78 +21,19 @@ class SalessheduleView(FiltersView):
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         pivot_data = {}
-        if flt:
-            hsy_active = RawModel(queries.q_sales_year).filter(org_id=org_id).order_by('1', '2')
-            hsm_active = RawModel(queries.q_sales_month).filter(org_id=org_id).order_by('1', '2')
-            if flt_active:
-                if not self.fempa_selected(flt_active, fempa):
-                    # Если не выбрано 'Без учета Таргет' то фильтруем по сотрудникам
-                    hsy_active = hsy_active.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]) )
-                    hsm_active = hsm_active.filter(employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
+        hsy_active = self.apply_filters(RawModel(queries.q_sales_year).order_by('1', '2'),flt_active, org_id, targets)
+        hsm_active = self.apply_filters(RawModel(queries.q_sales_month).order_by('1', '2'),flt_active, org_id, targets)
 
-                hsy_active = hsy_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
-                                               markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
-                                               lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
-                hsm_active = hsm_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
-                                               markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
-                                               lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
-            else:
-                filter_emp = self.targets_in_filter(targets)
-                hsy_active = hsy_active.filter(employee_in=extra_in_filter('e.employee_id', filter_emp))
-                hsm_active = hsm_active.filter(employee_in=extra_in_filter('e.employee_id', filter_emp))
+        pivot_data['pivot1'] = list (hsy_active.open().fetchall())
+        pivot_data['pivot2'] = list (hsm_active.open().fetchall())
+        pivot_data['year'] = list( unique([e['iid'] for e in pivot_data['pivot1']]) )
+        pivot_data['year'].sort()
 
-            pivot_data['pivot1'] = list (hsy_active.open().fetchall())
-            pivot_data['pivot2'] = list (hsm_active.open().fetchall())
-            pivot_data['year'] = list( unique([e['iid'] for e in pivot_data['pivot1']]) )
-            pivot_data['year'].sort()
-
-            hsy_active.close()
-            hsm_active.close()
-        return pivot_data
-
-class SalessheduleView2(FiltersView):
-    filters_list = [fempl, fmrkt, fyear, fcust]
-    template_name = 'ta_salesshedule.html'
-    ajax_filters_url = reverse_lazy('widgetpages:salesshedule')
-    view_id = 'salesshedule'
-    view_name = 'График продаж'
-
-    def data(self, flt=None, flt_active=None, org_id=0, targets = []):
-        pivot_data = {}
-
-        if flt:
-            market_type_prefix = 'Order_' if flt_active[fserv]['market'] == '1' else 'Contract_'
-            own_select = 'market_own=1' if flt_active[fserv]['own'] == '1' else ('market_own=0' if flt_active[fserv]['own'] == '2' else '')
-
-            if self.fempa_selected(flt_active, fempa):
-                disabled_targets = [e['iid'] for e in targets if e['iid'] not in flt_active[fempl]['list']]
-                flt_targets = 'not in ({})'.format(
-                    ','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
-            else:
-                enabled_targets = [str(e) for e in flt_active[fempl]['list']]
-                flt_targets = 'in ({})'.format(','.join(enabled_targets) if enabled_targets else '-1')
-
-            hsy_active = RawModel(queries.q_sales_year).filter(org_id=org_id, targets = flt_targets).order_by('1', '2')
-            hsm_active = RawModel(queries.q_sales_month).filter(org_id=org_id, targets = flt_targets).order_by('1', '2')
-
-            if flt_active.get(fyear):
-
-                hsy_active = hsy_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
-                                               markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
-                                               lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
-                hsm_active = hsm_active.filter(years_in=extra_in_filter('PlanTYear',flt_active[fyear]), \
-                                               markets_in=extra_in_filter('market_id',flt_active[fmrkt]), \
-                                               lpus_in = extra_in_filter('Cust_ID',flt_active[fcust]))
-
-            pivot_data['pivot1'] = list (hsy_active.open().fetchall())
-            pivot_data['pivot2'] = list (hsm_active.open().fetchall())
-            pivot_data['year'] = list( unique([e['iid'] for e in pivot_data['pivot1']]) )
-            pivot_data['year'].sort()
-
-            hsy_active.close()
-            hsm_active.close()
+        hsy_active.close()
+        hsm_active.close()
 
         return pivot_data
+
 
 
 class CompetitionsView(FiltersView):
@@ -105,7 +46,7 @@ class CompetitionsView(FiltersView):
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
 
-        if not flt_active:
+        if not flt_active.get(fyear):
             years_active = [y['iid'] for y in self.get_filter(flt, fyear)['data']]
         else:
             years_active = flt_active[fyear]['list']
@@ -124,7 +65,7 @@ class CompetitionsView(FiltersView):
         return data
 
 class CompetitionsLpuView(CompetitionsView):
-    ajax_url = reverse_lazy('widgetpages:competitions_lpu')
+    ajax_filters_url = reverse_lazy('widgetpages:competitions_lpu')
     ajax_datatable_url = reverse_lazy('widgetpages:jcompetitions_lpu')
     view_id = 'competitions_lpu'
     view_name = 'Конкурентный анализ по ЛПУ (тыс.руб.)'
