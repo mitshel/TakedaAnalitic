@@ -1,4 +1,5 @@
 import datetime
+from operator import attrgetter
 
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
@@ -50,13 +51,29 @@ class BudgetsView(FiltersView):
         budgets.close()
 
         pivot_data['budgets'] = list(unique([e['budget_name'] for e in budgets_list]))
+        pivot_data['budgets'].sort()
+        years = list(unique([e['iid'] for e in budgets_list]))
+        years.sort()
+
+        # budgets_dict = {}
+        # for e in budgets_list:
+        #     if e['iid'] not in budgets_dict.keys():
+        #         budgets_dict[e['iid']] = []
+        #     budgets_dict[e['iid']].append({'budget_name':e['budget_name'], 'summa':e['summa']})
+
         budgets_dict = {}
-        for e in budgets_list:
-            if e['iid'] not in budgets_dict.keys():
-                budgets_dict[e['iid']] = []
-            budgets_dict[e['iid']].append({'budget_name':e['budget_name'], 'summa':e['summa']})
+        for y in years:
+            budgets_dict[y] = []
+            for b in pivot_data['budgets']:
+                b1 = [{'budget_name': e['budget_name'], 'summa': e['summa']} for e in budgets_list if (e['budget_name']==b and e['iid']==y)]
+                budgets_dict[y].append(b1[0] if b1 else {'budget_name': b, 'summa': 0})
+
+        # for key in budgets_dict.keys():
+        #     budgets_dict[key] = sorted(budgets_dict[key], key=lambda e: e['budget_name'])
 
         pivot_data['pivot1'] = budgets_dict
+        # print(pivot_data['budgets'])
+        # print(pivot_data['pivot1'])
         return pivot_data
 
 
