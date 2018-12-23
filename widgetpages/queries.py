@@ -459,33 +459,39 @@ where 1=1
 
 q_sales_year = """
 {% autoescape off %}
-select b.name as market_name, PlanTYear as iid, Sum(Order_Summa)/1000000 as product_cost_sum
-from org_CACHE_{{ org_id }} a
-left join db_market b on a.market_id=b.id and org_id={{ org_id }}
-{% if targets %}left join db_lpu_employee e on a.cust_id=e.lpu_id{% endif %}
+select b.name as market_name, PlanTYear as iid, Sum(isnull(Order_Summa,0))/1000000 as product_cost_sum
+from org_CACHE_{{ org_id }} s
+left join db_lpu l on s.cust_id = l.cust_id
+left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
+{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 --{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
-where PlanTYear is not NULL and a.cust_id<>0
+where s.PlanTYear is not NULL --and s.cust_id<>0
+{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+{% if markets %}and s.market_id in ({{markets}}) {% endif %}
+{% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
 {% if targets %} and {{targets}} {% endif %}
-{% if years_in %}and {{ years_in }} {% endif %}
-{% if markets_in %}and {{ markets_in }} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}  
+{% if lpus_in %}and {{lpus_in}} {% endif %}      
 group by b.name, PlanTYear
 {{ order_by }}
 {% endautoescape %} 
 """
 
+
+
 q_sales_month = """
 {% autoescape off %}
-select b.name as market_name, month(ProcDt) as mon, Sum(Order_Summa)/1000000 as product_cost_sum, count(*) as product_count
-from org_CACHE_{{ org_id }} a
-left join db_market b on a.market_id=b.id and org_id={{ org_id }}
-{% if targets %}left join db_lpu_employee e on a.cust_id=e.lpu_id{% endif %}
+select b.name as market_name, month(ProcDt) as mon, Sum(isnull(Order_Summa,0))/1000000 as product_cost_sum, count(*) as product_count
+from org_CACHE_{{ org_id }} s
+left join db_lpu l on s.cust_id = l.cust_id
+left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
+{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 --{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
-where PlanTYear is not NULL and a.cust_id<>0
+where s.PlanTYear is not NULL --and s.cust_id<>0
+{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+{% if markets %}and s.market_id in ({{markets}}) {% endif %}
+{% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
 {% if targets %} and {{targets}} {% endif %}
-{% if years_in %}and {{ years_in }} {% endif %}
-{% if markets_in %}and {{ markets_in }} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}    
+{% if lpus_in %}and {{lpus_in}} {% endif %}       
 group by b.name, month(ProcDt)
 {{ order_by }}
 {% endautoescape %} 

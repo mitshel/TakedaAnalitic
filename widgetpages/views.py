@@ -25,6 +25,7 @@ class SalessheduleView(FiltersView):
         hsy_active = self.apply_filters(RawModel(queries.q_sales_year).order_by('1', '2'),flt_active, org_id, targets)
         hsm_active = self.apply_filters(RawModel(queries.q_sales_month).order_by('1', '2'),flt_active, org_id, targets)
 
+        print(hsm_active.query)
         pivot_data['pivot1'] = list (hsy_active.open().fetchall())
         pivot_data['pivot2'] = list (hsm_active.open().fetchall())
         pivot_data['year'] = list( unique([e['iid'] for e in pivot_data['pivot1']]) )
