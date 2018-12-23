@@ -12,12 +12,48 @@ CREATE TABLE [dbo].[db_statusT](
 	[id] [int] NOT NULL,
 	[name] [varchar](200) NULL,
 	[nameENG] [varchar](200) NULL
+  PRIMARY KEY CLUSTERED
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
 
 insert into db_statusT
 select id, name, nameEng
 from [VM1-12\CURSORMAIN].[Cursor].[dbo].[StatusT]
+go
+
+--
+-- Создание и наполнение таблицы статусов db_Budgets
+--
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('dbo.db_Budgets')
+            and   type = 'U')
+   drop table dbo.db_Budgets
+go
+
+CREATE TABLE [dbo].[db_Budgets](
+	[id] char(1) NOT NULL,
+	[version] int NOT NULL,
+	[name] [varchar](200) NULL,
+	[nameENG] [varchar](200) NULL
+  PRIMARY KEY CLUSTERED
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+
+insert into db_Budgets
+select a.id, a.version, b.name, b.nameEng from
+(select id, max(version) as version
+from [VM1-12\CURSORMAIN].[Cursor].[dbo].[Budgets]
+group by id) a
+left join [VM1-12\CURSORMAIN].[Cursor].[dbo].[Budgets] b on a.id=b.id and a.version=b.version
+
 go
 
 --

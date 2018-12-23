@@ -34,6 +34,31 @@ class SalessheduleView(FiltersView):
 
         return pivot_data
 
+class BudgetsView(FiltersView):
+    template_name = 'ta_budgets.html'
+    ajax_filters_url = reverse_lazy('widgetpages:budgets')
+    #ajax_datatable_url = reverse_lazy('widgetpages:budgets_table')
+    view_id = 'budgets'
+    view_name = 'Каналы финансирования'
+    select_own = 1
+    select_market_type = 1
+
+    def data(self, flt=None, flt_active=None, org_id=0, targets = []):
+        pivot_data = {}
+        budgets = self.apply_filters(RawModel(queries.q_budgets_chart).order_by('3'),flt_active, org_id, targets)
+        budgets_list = list (budgets.open().fetchall())
+        budgets.close()
+
+        pivot_data['budgets'] = list(unique([e['budget_name'] for e in budgets_list]))
+        budgets_dict = {}
+        for e in budgets_list:
+            if e['iid'] not in budgets_dict.keys():
+                budgets_dict[e['iid']] = []
+            budgets_dict[e['iid']].append({'budget_name':e['budget_name'], 'summa':e['summa']})
+
+        pivot_data['pivot1'] = budgets_dict
+        return pivot_data
+
 
 class CompetitionsView(FiltersView):
     template_name = 'ta_competitions.html'

@@ -12,6 +12,7 @@ t.TenderPrice,
 t.SrcInf,
 t.StatusT_ID,
 t.FormT_ID,
+t.Budgets_ID,
 isnull(c1.cust_id, t.cust_id) as cust_id,
 t.TendSYSDATE,
 t.T_UPDDATE,
@@ -123,4 +124,9 @@ CREATE NONCLUSTERED INDEX [idx_{{org_id}}_PlanTYear] ON [dbo].[org_CACHE_{{org_i
 CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Winner_ID] ON [dbo].[org_CACHE_{{org_id}}]
 (
 	[Winner_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Budgets_ID] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[Budgets_ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
