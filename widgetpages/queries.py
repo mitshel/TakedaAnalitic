@@ -1,7 +1,7 @@
 q_budgets_chart = """
 {% autoescape off %}
-select a.budgets_id, b.name as budget_name, PlanTYear as iid, a.summa/1000 as summa from
-(select Budgets_ID, PlanTYear, sum({{ market_type_prefix }}Summa) as summa 
+select a.budgets_id, b.name as budget_name, PlanTYear as iid, cast(a.summa/1000 as int) as summa from
+(select Budgets_ID, PlanTYear, sum( isnull( {{market_type_prefix }}Summa ,0 )) as summa 
 from [dbo].[org_CACHE_{{org_id}}] s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_WinnerOrg w on s.Winner_ID = w.id
