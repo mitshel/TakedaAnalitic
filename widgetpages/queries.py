@@ -28,37 +28,6 @@ left join db_Budgets b on a.Budgets_ID=b.id
 {% endautoescape %}  
 """
 
-q_budgets_chart2 = """
-{% autoescape off %}
-select f.id, f.name as budget_name, a.PlanTYear as iid, cast(isnull(a.summa,0)/1000 as int) as summa 
-from db_budgets f
-left join 
-(select Budgets_ID, PlanTYear, sum( isnull( {{market_type_prefix }}Summa ,0 )) as summa 
-from [dbo].[org_CACHE_{{org_id}}] s
-left join db_lpu l on s.cust_id = l.cust_id
-left join db_WinnerOrg w on s.Winner_ID = w.id
-left join db_TradeNR t1 on s.Order_TradeNx = t1.id
-left join db_TradeNR t2 on s.Contract_TradeNx = t2.id
-left join db_inNR i1 on s.Order_InnNx = i1.id
-left join db_inNR i2 on s.Contract_InnNx = i2.id
-left join db_lpu_employee e on s.cust_id=e.lpu_id
-left join db_statusT u on s.StatusT_ID=u.id
-where PlanTYear is not null
-{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
-{% if markets %}and s.market_id in ({{markets}}) {% endif %}
-{% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-{% if targets %} and {{targets}} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}    
-{% if winrs_in %}and {{winrs_in}} {% endif %} 
-{% if innrs_in %}and {{innrs_in}} {% endif %}
-{% if trnrs_in %}and {{trnrs_in}} {% endif %}
-{% if own_select %}and {{own_select}} {% endif %}
-group by PlanTYear,  Budgets_ID) a on a.Budgets_ID=f.id
---order by budgets_id
-{{ order_by }}
-{% endautoescape %}  
-"""
-
 q_sales_analysis = """
 {% autoescape off %}
 select CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as Order_TradeName, t2.name as Contract_TradeName, 
