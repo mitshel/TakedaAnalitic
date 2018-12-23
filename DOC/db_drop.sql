@@ -16,7 +16,7 @@ drop table [dbo].[db_market]
 go
 drop table [dbo].[db_employee_users]
 go
-drop table [dbo].[db_employee_lpu]
+drop table [dbo].[db_lpu_employee]
 go
 drop table [dbo].[db_employee]
 go
