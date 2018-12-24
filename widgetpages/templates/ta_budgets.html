@@ -18,15 +18,8 @@
 		<canvas id="ta_budgets"></canvas>
 	</div>
 
-	<div class="col-12">
-		<canvas id="ta_sales_monthsum"></canvas>
-	</div>
-
-	<div class="col-12">
-		<canvas id="ta_sales_monthcount"></canvas>
-	</div>
-
     {% include 'ta_budgets_chart.html' %}
+    {% include 'ta_budgets_table.html' %}
 
     <script>
         window.onload = function() {

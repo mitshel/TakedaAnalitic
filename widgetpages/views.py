@@ -39,7 +39,7 @@ class SalessheduleView(FiltersView):
 class BudgetsView(FiltersView):
     template_name = 'ta_budgets.html'
     ajax_filters_url = reverse_lazy('widgetpages:budgets')
-    #ajax_datatable_url = reverse_lazy('widgetpages:budgets_table')
+    ajax_datatable_url = reverse_lazy('widgetpages:budgets_table')
     view_id = 'budgets'
     view_name = 'Каналы финансирования'
     select_own = 1
@@ -48,36 +48,60 @@ class BudgetsView(FiltersView):
     default_own = 3         # Все рынки
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
-        pivot_data = {}
+        data = {}
         budgets = self.apply_filters(RawModel(queries.q_budgets_chart).order_by('3'),flt_active, org_id, targets)
+        print(budgets.query)
         budgets_list = list (budgets.open().fetchall())
         budgets.close()
 
-        pivot_data['budgets'] = list(unique([e['budget_name'] for e in budgets_list]))
-        pivot_data['budgets'].sort()
-        years = list(unique([e['iid'] for e in budgets_list]))
-        years.sort()
-
-        # budgets_dict = {}
-        # for e in budgets_list:
-        #     if e['iid'] not in budgets_dict.keys():
-        #         budgets_dict[e['iid']] = []
-        #     budgets_dict[e['iid']].append({'budget_name':e['budget_name'], 'summa':e['summa']})
+        data['budgets'] = list(unique([e['budget_name'] for e in budgets_list]))
+        data['budgets'].sort()
+        years_chart = list(unique([e['iid'] for e in budgets_list]))
+        years_chart.sort()
 
         budgets_dict = {}
-        for y in years:
+        for y in years_chart:
             budgets_dict[y] = []
-            for b in pivot_data['budgets']:
+            for b in data['budgets']:
                 b1 = [{'budget_name': e['budget_name'], 'summa': e['summa']} for e in budgets_list if (e['budget_name']==b and e['iid']==y)]
                 budgets_dict[y].append(b1[0] if b1 else {'budget_name': b, 'summa': 0})
 
-        # for key in budgets_dict.keys():
-        #     budgets_dict[key] = sorted(budgets_dict[key], key=lambda e: e['budget_name'])
 
-        pivot_data['pivot1'] = budgets_dict
-        # print(pivot_data['budgets'])
-        # print(pivot_data['pivot1'])
-        return pivot_data
+        if not flt_active.get(fyear):
+            years_table = [y['iid'] for y in self.get_filter(flt, fyear)['data']]
+        else:
+            years_table = flt_active[fyear]['list']
+
+        current_year = datetime.datetime.now().year
+        try:
+            sort_col = years_table.index(current_year)+3
+            sort_dir = 'desc'
+        except:
+            sort_col = 2
+            sort_dir = 'asc'
+
+        data['sort_col'] = sort_col
+        data['sort_dir'] = sort_dir
+        data['pivot1'] = budgets_dict
+        data['year'] = years_chart
+        data['years_table'] = years_table
+        data['last_column'] = len(years_table)+3
+
+        return data
+
+class BudgetsAjaxTable(BaseDatatableYearView):
+    datatable_query = queries.q_budgets_table
+    datatable_count_query = queries.q_budgets_table_count
+
+    def ordering(self, qs):
+        sort_col = int(self._querydict.get('order[0][column]'))
+        sort_dir = self._querydict.get('order[0][dir]')
+        if sort_col<=3:
+            qs = qs.order_by('t.name', 'gr','l.Org_CustNm')
+        else:
+            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 't.name', 'gr desc', 'l.Org_CustNm')
+        print(qs.query)
+        return qs
 
 
 class CompetitionsView(FiltersView):

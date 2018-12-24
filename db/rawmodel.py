@@ -53,16 +53,21 @@ class RawModel(object):
             self._limit = None
         return self
 
+    @property
+    def count_query(self):
+        if self._count_query:
+            if self._count_template_type:
+                sql = self._count_query.render(Context(self._filter_data))
+            else:
+                sql = self._count_query.render(self._filter_data)
+        else:
+            sql = "select COUNT_BIG(*) from ({}) subquery".format(self.render(forcount=True))
+        return sql
+
     def count(self):
         if self._count == None:
-            if self._count_query:
-                if self._count_template_type:
-                    sql = self._count_query.render(Context(self._filter_data))
-                else:
-                    sql = self._count_query.render(self._filter_data)
-            else:
-                sql = "select COUNT_BIG(*) from ({}) subquery".format(self.render(forcount=True))
             with connection.cursor() as cursor:
+                sql = self.count_query
                 cursor.execute(sql)
                 row = cursor.fetchone()
             self._count = row[0]

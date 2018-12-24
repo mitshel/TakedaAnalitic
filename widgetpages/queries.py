@@ -1,26 +1,98 @@
+q_budgets_table = """
+{% autoescape off %}
+select t.name as name, CASE WHEN nn.cust_id is NULL THEN t.name ELSE l.Org_CustNm END as Nm, nn.*, 
+       (0{% for y in years %}+[{{y}}]{% endfor %}) as total
+from (
+select pvt.cust_id, pvt.budgets_id as id, grouping(pvt.cust_id) as gr
+    {% for y in years %},sum( isnull([{{y}}],0) ) as [{{y}}]{% endfor %}
+	--,isnull(sum([2015]),0) as [2015], isnull(sum([2016]),0) as [2016], isnull(sum([2017]),0) as [2017], isnull(sum([2018]),0) as [2018], isnull(sum([2019]),0) as [2019]
+    from
+    (
+        select distinct s.cust_id, s.budgets_id, PlanTYear, sum(isnull({{market_type_prefix }}Summa,0)) as Summa
+        from [dbo].[org_CACHE_1] s
+        left join db_lpu l on s.cust_id = l.cust_id
+        left join db_WinnerOrg w on s.Winner_ID = w.id
+        left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+        left join db_lpu_employee e on s.cust_id=e.lpu_id      
+        where 1=1 
+        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+        {% if targets %} and {{targets}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %}    
+        {% if winrs_in %}and {{winrs_in}} {% endif %} 
+        {% if innrs_in %}and {{innrs_in}} {% endif %}
+        {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if own_select %}and {{own_select}} {% endif %}
+        {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
+        group by s.cust_id, s.budgets_id, PlanTYear
+    ) m
+    PIVOT
+    (
+    sum(Summa)
+    for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
+    ) as pvt
+group by
+rollup (pvt.budgets_id, pvt.cust_id)
+) nn    
+left join db_lpu l on nn.cust_id = l.cust_id
+left join db_budgets t on nn.id = t.id
+where nn.id is not null
+--order by sum([2018]) over (PARTITION BY nn.id, nn.gr) desc, t.name, gr desc, l.Org_CustNm
+{% endautoescape %}  
+"""
+
+q_budgets_table_count = """
+{% autoescape off %}
+select COUNT_BIG(*) from
+(
+	select pvt.budgets_id as id, pvt.cust_id
+    from
+    ( 
+		select distinct s.cust_id, s.budgets_id, s.PlanTYear from [dbo].[org_CACHE_1] s
+        left join db_lpu l on s.cust_id = l.cust_id
+        left join db_WinnerOrg w on s.Winner_ID = w.id
+        left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+        left join db_lpu_employee e on s.cust_id=e.lpu_id      
+        where 1=1 
+        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+        {% if targets %} and {{targets}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %}    
+        {% if winrs_in %}and {{winrs_in}} {% endif %} 
+        {% if innrs_in %}and {{innrs_in}} {% endif %}
+        {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if own_select %}and {{own_select}} {% endif %}
+        {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}	
+        group by s.cust_id, s.budgets_id, PlanTYear
+	) pvt
+	group by
+	rollup (pvt.budgets_id, pvt.cust_id)
+) nn    
+where nn.id is not null
+{% endautoescape %}  
+"""
+
 q_budgets_chart = """
 {% autoescape off %}
-select a.budgets_id, b.name as budget_name, PlanTYear as iid, cast(a.summa/1000 as int) as summa from
+select a.budgets_id, b.name as budget_name, PlanTYear as iid, ROUND(a.summa/1000,0) as summa from
 (select Budgets_ID, PlanTYear, sum( isnull( {{market_type_prefix }}Summa ,0 )) as summa 
 from [dbo].[org_CACHE_{{org_id}}] s
-left join db_lpu l on s.cust_id = l.cust_id
-left join db_WinnerOrg w on s.Winner_ID = w.id
-left join db_TradeNR t1 on s.Order_TradeNx = t1.id
-left join db_TradeNR t2 on s.Contract_TradeNx = t2.id
-left join db_inNR i1 on s.Order_InnNx = i1.id
-left join db_inNR i2 on s.Contract_InnNx = i2.id
-left join db_lpu_employee e on s.cust_id=e.lpu_id
-left join db_statusT u on s.StatusT_ID=u.id
-where 1=1 
-{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
-{% if markets %}and s.market_id in ({{markets}}) {% endif %}
-{% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-{% if targets %} and {{targets}} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}    
-{% if winrs_in %}and {{winrs_in}} {% endif %} 
-{% if innrs_in %}and {{innrs_in}} {% endif %}
-{% if trnrs_in %}and {{trnrs_in}} {% endif %}
-{% if own_select %}and {{own_select}} {% endif %}
+        left join db_lpu l on s.cust_id = l.cust_id
+        left join db_WinnerOrg w on s.Winner_ID = w.id
+        left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+        left join db_lpu_employee e on s.cust_id=e.lpu_id      
+        where 1=1 
+        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+        {% if targets %} and {{targets}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %}    
+        {% if winrs_in %}and {{winrs_in}} {% endif %} 
+        {% if innrs_in %}and {{innrs_in}} {% endif %}
+        {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if own_select %}and {{own_select}} {% endif %}
 group by PlanTYear,  Budgets_ID) a
 left join db_Budgets b on a.Budgets_ID=b.id
 --order by budgets_id
