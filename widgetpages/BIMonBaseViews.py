@@ -2,7 +2,7 @@ import json
 
 from django.http import JsonResponse
 from django.views.generic import View, TemplateView
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, render_to_response
 
 from widgetpages import queries
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
@@ -45,15 +45,6 @@ def unique(obj: iter):
         if a not in args:
             args.append(a)
             yield a
-
-class DBStatusMixin(View):
-    def get(self, request, *args, **kwargs):
-        if self.org.sync_status <= 1:
-            return super(DBStatusMixin, self).get(request, *args, **kwargs)
-        else:
-            args = {'dbstatus':self.org.sync_status, 'dbinfo':dict(SYNC_STATUS_CHOICES).get(self.org.sync_status)}
-            render(request, 'ta_dbstatus.html', args)
-
 
 class OrgMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgPOST | bOrgUSER
@@ -115,7 +106,7 @@ class FiltersMixin(View):
         return qs
 
 
-class FiltersView(OrgMixin, FiltersMixin, DBStatusMixin, TemplateView):
+class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     template_name = 'ta_competitions.html'
     filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
     ajax_filters_url = '#'
@@ -275,6 +266,12 @@ class FiltersView(OrgMixin, FiltersMixin, DBStatusMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         org_id = self.init_dynamic_org()
+        if self.org.sync_status > 1:
+            self.template_name = 'ta_dbstatus.html'
+            context['dbstatus'] = self.org.sync_status
+            context['dbinfo'] = dict(SYNC_STATUS_CHOICES).get(self.org.sync_status)
+            return context
+
         targets = self.get_initial_targets()
         flt_active = self.filters_active(org_id, targets)
         filters = self.filters(flt_active, org_id, targets)

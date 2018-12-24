@@ -5,13 +5,13 @@
       <!-- Main jumbotron for a primary marketing message or call to action -->
       <div class="jumbotron" style="background-color:#f1b0b7">
         <div class="container">
-          <h2 class="display-6">{{ dbinfo }}</h2>
+          <h2 class="display-6"><b>{{ dbinfo }}.</b></b></h2>
           <span class="badge badge-primary">{{ user.employee_user.all.0.org.name }}</span>
           <br>
           <br>
           <p><b>Уважаемый(ая) {% if user.last_name %}{{ user.last_name }} {{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</b></p>
-          <p>К сожалению, в настоящий момент доступ к Базе Данных орагнизации  <span class="badge badge-primary">{{ user.employee_user.all.0.org.name }}</span> невозможен.
-              (Состояние БД: {{ bdinfo }}</p>
+          <p>К сожалению, в настоящий момент доступ к Базе Данных организации  <span class="badge badge-primary">{{ user.employee_user.all.0.org.name }}</span> невозможен
+              (Состояние системы: {{ dbinfo }}).</p>
         </div>
       </div>
 {% endblock %}  {# content #}
