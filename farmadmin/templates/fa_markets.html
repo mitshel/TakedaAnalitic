@@ -35,7 +35,7 @@
                <th>market_id</th>
                <th width="10%">Рынок</th>
                <th width="50%">Международные Непатентованные наименования (МНН)</th>
-               <th width="40%">Торговые наименования (TrandeMark)</th>
+               <th width="40%">Торговые наименования (TradeMark)</th>
                </thead>
                <tbody>
                  {% for row in object_list %}
@@ -66,7 +66,7 @@ $(document).ready(function() {
             { title: "market_id", visible: false, searchable: false},
             { title: "Рынок", searchable: true, className: 'text-bold' },
             { title: "Международные Непатентованные наименования (МНН)", searchable: false, className:'text-mini' },
-            { title: "Торговые наименования (TrandeMark)", searchable: false, className:'text-mini' }
+            { title: "Торговые наименования (TradeMark)", searchable: false, className:'text-mini' }
         ],
         language: lang_russian
     } );
