@@ -168,8 +168,10 @@ function getCookie(name) {
     return matches ? decodeURIComponent(matches[1]) : undefined;
 }
 
-cookie = getCookie('serv_market'); if (cookie) { $('#serv_market').val(cookie); }
-cookie = getCookie('serv_own'); if (cookie) { $('#serv_own').val(cookie); }
+cookie = getCookie('serv_market');
+if (cookie) { $('#serv_market').val(cookie); }
+//cookie = getCookie('serv_own');
+//if (cookie) { $('#serv_own').val(cookie); }
 //make_request();
 
 </script>

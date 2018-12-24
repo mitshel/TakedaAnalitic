@@ -113,6 +113,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     view_name = 'Пустая страница'
     select_market_type = 0
     select_own = 0
+    default_market_type = 1
+    default_own = 1
 
     def filter_empl(self, flt_active=None, org_id=0, targets = []):
         employee_list = targets
@@ -270,7 +272,9 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         context['filters'] = filters
         context['data'] = data
         context['org_id'] = org_id
-        context['view'] = {'id': self.view_id, 'name': self.view_name, 'select_market_type': self.select_market_type, 'select_own': self.select_own}
+        context['view'] = {'id': self.view_id, 'name': self.view_name,
+                           'select_market_type': self.select_market_type, 'select_own': self.select_own,
+                           'default_market_type' : self.default_market_type, 'default_own':  self.default_own }
         context['ajax_filters_url'] = self.ajax_filters_url
         context['ajax_datatable_url'] = self.ajax_datatable_url
         return context

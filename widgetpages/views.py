@@ -44,6 +44,8 @@ class BudgetsView(FiltersView):
     view_name = 'Каналы финансирования'
     select_own = 1
     select_market_type = 1
+    default_market_type = 2 # Контракты
+    default_own = 3         # Все рынки
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         pivot_data = {}
@@ -84,6 +86,7 @@ class CompetitionsView(FiltersView):
     view_id = 'competitions'
     view_name = 'Конкурентный анализ(тыс.руб.)'
     select_market_type = 1
+    default_market_type = 2 # Контракты
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
@@ -152,6 +155,7 @@ class PartsView(FiltersView):
     view_id = 'parts'
     view_name = 'Доля (тыс.руб.)'
     select_market_type = 1
+    default_market_type = 2 # Контракты
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
@@ -210,6 +214,8 @@ class SalesAnlysisView(FiltersView):
     view_name = 'Анализ продаж'
     select_own = 1
     select_market_type = 1
+    default_market_type = 2 # Контракты
+    default_own = 1         # Свой рынок
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
