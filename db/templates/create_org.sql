@@ -27,8 +27,12 @@ t.Order_Price as Order_Price,
 t.Order_Count as Order_Count,
 t.Order_Sum as Order_Summa,
 t.Order_Dosage,
+t.Order_BatchSize,
 t.Order_AVG_Price,
 t.Winner_Id,
+t.Unit_Id as Order_Unit_ID,
+t.Order_Unit,
+c1.Ship_Unit as Contract_Unit,
 isnull(m1.name, m2.name) as market_name,
 isnull(m1.id, m2.id) as market_id,
 IIF(isnull(b1.own,0)>0 or isnull(b2.own,0)>0,1,0) as market_own,
@@ -45,8 +49,10 @@ ISNULL(c1.Url,c.Url) as Contract_URL,
 isnull(c1.[Ship_Price],c1.[ItemPrice]) as Contract_Price,
 isnull(CAST(c1.[Ship_Count] as bigint),c1.[ItemCount]) as Contract_Count,
 isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
-c1.Ship_Dosage as Contract_Dosage
-
+c1.Ship_Dosage as Contract_Dosage,
+c1.Ship_Volume as Contract_Volume,
+c1.Ship_BatchSize as Contract_BatchSize,
+c1.Dod_id
 
 into org_CACHE_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
 
@@ -129,4 +135,14 @@ CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Winner_ID] ON [dbo].[org_CACHE_{{org_i
 CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Budgets_ID] ON [dbo].[org_CACHE_{{org_id}}]
 (
 	[Budgets_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Unit_ID] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[Budgets_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Dod_ID] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[Dod_ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
