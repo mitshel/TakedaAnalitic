@@ -2,11 +2,13 @@ import json
 
 from django.http import JsonResponse
 from django.views.generic import View, TemplateView
+from django.shortcuts import render, redirect
 
 from widgetpages import queries
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 
 from db.rawmodel import RawModel
+from db.models import SYNC_STATUS_CHOICES, DB_READY, DB_RECREATE, DB_ERROR, DB_OFFLINE, DB_UPDATE
 from farmadmin.views import OrgBaseMixin, bOrgUSER, bOrgSESSION, bOrgPOST
 
 # Filters identification
@@ -43,6 +45,15 @@ def unique(obj: iter):
         if a not in args:
             args.append(a)
             yield a
+
+class DBStatusMixin(View):
+    def get(self, request, *args, **kwargs):
+        if self.org.sync_status <= 1:
+            return super(DBStatusMixin, self).get(request, *args, **kwargs)
+        else:
+            args = {'dbstatus':self.org.sync_status, 'dbinfo':dict(SYNC_STATUS_CHOICES).get(self.org.sync_status)}
+            render(request, 'ta_dbstatus.html', args)
+
 
 class OrgMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgPOST | bOrgUSER
@@ -104,7 +115,7 @@ class FiltersMixin(View):
         return qs
 
 
-class FiltersView(OrgMixin, FiltersMixin, TemplateView):
+class FiltersView(OrgMixin, FiltersMixin, DBStatusMixin, TemplateView):
     template_name = 'ta_competitions.html'
     filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
     ajax_filters_url = '#'

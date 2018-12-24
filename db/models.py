@@ -1,10 +1,25 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+DB_READY = 0
+DB_UPDATE = 1
+DB_RECREATE = 2
+DB_OFFLINE = 3
+DB_ERROR = 4
+
+SYNC_STATUS_CHOICES = (
+    (DB_READY, 'БД в работе'),
+    (DB_UPDATE, 'БД обновляется'),
+    (DB_RECREATE, 'БД формируется'),
+    (DB_OFFLINE, 'БД на обслуживании'),
+    (DB_ERROR, 'Сбой БД'),
+)
+
 class Org(models.Model):
     name = models.CharField(max_length=32, null=True, blank=True, verbose_name='Организация')
     sync_time = models.CharField(verbose_name='Время синхронизации', max_length=5, null=True, blank=True, default='')
     sync_flag = models.BooleanField(default=False, verbose_name='Запустить формирование БД', null=False, blank=True)
+    sync_status = models.IntegerField(default=0, verbose_name='Состояние синхронизации', null=False, blank=True, choices = SYNC_STATUS_CHOICES)
     users = models.ManyToManyField(User, verbose_name='Логин входа', blank=True)
 
     class Meta:
