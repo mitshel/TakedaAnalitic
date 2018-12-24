@@ -1,0 +1,160 @@
+{% extends "ta_layout.html" %}
+{% load widgettags %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+    <style>
+        table.datatable tr {
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 0.9rem;
+        }
+        .buttons-select-all, .buttons-select-none, .buttons-html5 {
+            line-height: 1; !important;
+        }
+
+        .sticky-top {top:7rem;}
+        #ta_competitions_table thead {background-color: rgb(108, 117, 125); color: #ffffff; }
+        td.dt-right { text-align: right; padding-right:5px; !important;}
+        table.dataTable.table-sm > thead > tr > th.dt-right { padding-right:1.4rem; !important; text-align: right; !important;}
+        table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
+        table.datatable tr.total td  { font-weight:bold; !important;}
+
+    </style>
+	<div class="col-12">
+        <!--<h5>&nbsp;{ { view.name }} ({ % if view.id == "competitions_lpu" %}<a href="{ % url "widgetpages:competitions_market" %}">по Рынкам</a>{ % else %}<a href="{ % url "widgetpages:competitions_lpu" %}">по ЛПУ</a>{ % endif %})</h5>-->
+        <br>
+		<table class="table table-sm table-hover display w-100 datatable" width="100%" id="ta_competitions_table">
+        <thead class="position-sticky sticky-top">
+            <tr>
+                <th>ИНН</th>
+                <th>ЛПУ</th>
+                <th>Торговая марка</th>
+                {% for y in data.year %}<th class="dt-right">{{ y }}</th>{% endfor %}
+            </tr>
+        </thead>
+        </table>
+	</div>
+
+<script>
+    function ChartsUpdate1(data, src_id) {
+        // Скрываем/показываем столбцы в соответсвии с активностью кнопок по годам
+        var s = [];
+        var h = [];
+        $('button[id^=year_]').each(function() {
+            show_status = $(this).hasClass('active') & !$(this).hasClass('disabled');
+            column = ta_competitions_table.columns( $(this).attr('data-id').toString()+':name' )
+
+            if (column.visible()[0]!=show_status) {
+                column.visible(show_status, false);
+                if (!show_status) {
+                    if (ta_competitions_table.order()[0].indexOf(column[0][0])>=0)
+                        ta_competitions_table.order([2,'asc'])
+                }
+            };
+        });
+        ta_competitions_table.ajax.reload( null, true );
+        //ta_competitions_table.columns.adjust().draw( true );
+    }
+    function ChartsUpdate2(data, src_id) {
+    }
+    function ChartsUpdate3(data, src_id) {
+    }
+</script>
+{% endblock %}
+
+{% block afterpage %}
+<script type="text/javascript">
+
+function fixval ( data ) {
+    if (data != '') val=( data / 1000 ).toFixed(0); else val='';
+    return val;
+}
+
+function floatWithSpaces(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return parts.join(".");
+}
+
+function intWithSpaces(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
+}
+
+var ta_competitions_table = $('#ta_competitions_table').DataTable({
+                "dom": 'r<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
+                buttons: ['excel'],
+                select: true,
+                //fixedHeader: true,
+                //"scrollX": true,
+                //responsive: true,
+                "lengthMenu": [[50, 100, 250, 500, 1000], [50, 100, 250, 500, 1000]],
+                "pageLength": 50,
+                "columnDefs": [
+                    { "name": "ext", "targets": 0 , "visible": false, "searchable": true },
+                    { "name": "Nm", "targets": 1, "visible": false, "searchable": true },
+                    { "name": "name", "targets": 2, "visible": true, "searchable": false },
+                    {% for y in data.year %}
+                    { "name": "{{ y }}", "targets": {{ forloop.counter0|add:3 }}, "visible": true, "searchable": false,
+                      "className": "dt-right", "orderSequence": ["desc","asc"],
+                      render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } }{% if not forloop.last %},{% endif %}{% endfor %}
+                ],
+                "processing": true,
+                "serverSide": true,
+                //"stateSave" : true,
+                "ordering":  true,
+                "order": [[ {{ data.sort_col }}, "{{ data.sort_dir }}" ]],
+                "ajax": {
+                    //"url": "{ % url 'widgetpages:jcompetitions' %}",
+                    "url": "{{ ajax_datatable_url }}",
+                    "type": "POST",
+                    "data": function ( d ) {
+                        d.filters_ajax_request = JSON.stringify(make_request());
+                        d.view_id = '{{ view.id }}';
+                        d.org_id = '{{ org_id }}';
+                        d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                    }
+                },
+                "createdRow": function( row, data, dataIndex ) {
+                    if ( data[2] == "ИТОГО" ) {
+                        $(row).addClass('total');
+                    }
+                 },
+                rowGroup: {
+                    startRender: function (rows, group) {
+                        return $('<tr class="group" style="background-color:yellow;"/>')
+                        .append( '<td colspan="'+rows.columns().header().length+'">'+group+'</td>' )
+                    },
+                //    НЕ УДАЛЯТЬ endRender!!! МОЖЕТ ПОНАДОБИТСЯ ПОЗЖЕ
+                //
+                //    endRender: function (rows, group) {
+                //        var container = $('<tr class="group"/>');
+                //        container.append('<td>ИТОГО:</td>');
+                //        var i = 3;
+                //        while (i<rows.columns().header().length) {
+                //            if (rows.column(i).visible()) {
+                //                var subtotalSum = rows
+                //                    .data()
+                //                    .pluck(i)
+                //                    .reduce(function (a, b) {
+                //                        return a + b * 1;
+                //                    }, 0) / 1000;
+                //                if ( subtotalSum != 0 ) out = intWithSpaces( subtotalSum.toFixed(0) ); else out = '';
+                //                container.append('<td class="dt-right">' + out + '</td>');
+                //            };
+                //            i++;
+                //        }
+                //        return $(container)
+                //    },
+                    dataSrc: 1
+                },
+                "language": lang_russian
+            });
+
+    $(document).ready(function() {
+        ChartsUpdate1(null, null);
+    });
+
+</script>
+{%  endblock %}
