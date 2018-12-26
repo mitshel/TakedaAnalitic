@@ -91,6 +91,7 @@ class BudgetsView(FiltersView):
         return data
 
 class BudgetsAjaxTable(BaseDatatableYearView):
+    filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
     datatable_query = queries.q_budgets_table
     datatable_count_query = queries.q_budgets_table_count
 

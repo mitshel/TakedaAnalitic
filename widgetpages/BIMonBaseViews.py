@@ -31,13 +31,28 @@ def extra_in_filter(field, flt):
             ef = '{} {}in ({})'. \
                 format(field,
                        'not ' if flt['select'] else '',
-                       ','.join([str(e) for e in flt['list']]))
+                       ','.join([e for e in flt['list']]))
         else:
             ef = '' if flt['select'] else '1>1'  #1=1
     else:
         ef = '' #1=1
 
     return ef
+
+def extra_in_strfilter(field, flt):
+    if flt:
+        if (len(flt['list']) > 0):
+            ef = '{} {}in ({})'. \
+                format(field,
+                       'not ' if flt['select'] else '',
+                       ','.join(["'{}'".format(e) for e in flt['list']]))
+        else:
+            ef = '' if flt['select'] else '1>1'  #1=1
+    else:
+        ef = '' #1=1
+
+    return ef
+
 
 # Удаление неуникальных элементов из списка
 def unique(obj: iter):
@@ -73,7 +88,7 @@ class FiltersMixin(View):
             for f in self.filters_list:
                 flt_str = flt.get('{}_active'.format(f), '')
                 flt_select = flt.get('{}_select'.format(f), '')
-                flt_active[f] = {'list':[int(e) for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
+                flt_active[f] = {'list':[e for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
                 flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
                 flt_active[fserv] = {'market': int(flt.get('market_type','1')), 'own': int(flt.get('own_type', '1'))}
         else:
@@ -99,6 +114,7 @@ class FiltersMixin(View):
                        status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active.get(fstat) else ''),
                        targets = flt_targets,
                        employees=','.join([str(e) for e in flt_active[fempl]['list']]) if not self.fempa_selected(flt_active, fempa) else '',
+                       budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')),
                        lpus_in=extra_in_filter('l.Cust_ID',flt_active.get(fcust,'')),
                        winrs_in=extra_in_filter('w.id', flt_active.get(fwinr,'')),
                        innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')),

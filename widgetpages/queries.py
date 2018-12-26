@@ -19,6 +19,7 @@ select pvt.cust_id, pvt.budgets_id as id, grouping(pvt.cust_id) as gr
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
         {% if targets %} and {{targets}} {% endif %}
+        {% if budgets_in %}and {{budgets_in}} {% endif %}   
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -59,6 +60,7 @@ select COUNT_BIG(*) from
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
         {% if targets %} and {{targets}} {% endif %}
+        {% if budgets_in %}and {{budgets_in}} {% endif %}   
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -88,6 +90,7 @@ from [dbo].[org_CACHE_{{org_id}}] s
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
         {% if targets %} and {{targets}} {% endif %}
+        {% if budgets_in %}and {{budgets_in}} {% endif %}            
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
