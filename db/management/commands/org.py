@@ -32,21 +32,31 @@ class Command(BaseCommand):
             print('{:<30} {:>6}'.format(o.name, o.id))
 
     def create_tables(self, org_id):
-        if org_id:
-            org=Org.objects.get(id=org_id)
-            org.sync_flag = False
-            org.sync_status = DB_RECREATE
-            org.save()
-            self.stdout.write('Create database for "{}".'.format(org.name))
-            Org_log.objects.create(org_id=org_id, description='{}. Start DB Recreating'.format(org.name))
-            raw=RawModel('create_org.sql').filter(org_id=org.id)
-            startTime = time.time()
-            raw.open().close()
-            totalTime = int(time.time() - startTime)
-            self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime//60, totalTime%60))
-            Org_log.objects.create(org_id=org_id, description='{}. Finish DB Recreating. Elapsed time: {:0=2}:{:0=2}'.format(org.name, totalTime//60, totalTime%60))
-            org.sync_status = DB_READY
-            org.save()
+        if not org_id:
+            return
+        org=Org.objects.get(id=org_id)
+
+        if org.sync_flag:
+            self.stdout.write('Create database process already in running state for "{}".'.format(org.name))
+            return
+
+        if org.sync_status != DB_READY:
+            self.stdout.write('Recreate impossible becouse DB not in READY state for "{}".'.format(org.name))
+            return
+
+        org.sync_flag = False
+        org.sync_status = DB_RECREATE
+        org.save()
+        self.stdout.write('Create database for "{}".'.format(org.name))
+        Org_log.objects.create(org_id=org_id, description='{}. Start DB Recreating'.format(org.name))
+        raw=RawModel('create_org.sql').filter(org_id=org.id)
+        startTime = time.time()
+        raw.open().close()
+        totalTime = int(time.time() - startTime)
+        self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime//60, totalTime%60))
+        Org_log.objects.create(org_id=org_id, description='{}. Finish DB Recreating. Elapsed time: {:0=2}:{:0=2}'.format(org.name, totalTime//60, totalTime%60))
+        org.sync_status = DB_READY
+        org.save()
 
     def updateAll(self):
         for org in Org.objects.filter(sync_flag=True):
