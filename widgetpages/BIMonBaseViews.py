@@ -175,7 +175,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
             # Показываем все доступные Годы для сотрудника организации
             year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name",org_id=org_id).order_by('PlanTYear')
             # Но активными будут выглядеть только Годы, доступные сотруднику (через ЛПУ)
-            year_active = self.apply_filters(RawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
+            year_active = self.apply_filters(RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
             year_list_active = [e['iid'] for e in year_active.open().fetchall()]
             year_active.close()
         else:

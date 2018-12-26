@@ -22,7 +22,6 @@ function processAjaxData(data, src_id) {
         {% if flt.type == 'tbl' %}
             // Скрываем (дисаблим) строки только если перегрузка не иницирована этой же таблицей
             if (src_id != '{{ flt.id }}_') {
-                var dt_page = tbl_{{ flt.id }}.page();
                 tbl_{{ flt.id }}.data().each(function (d) {
                     d.disabled = '1';
                 });
@@ -30,7 +29,7 @@ function processAjaxData(data, src_id) {
                     d = tbl_{{ flt.id }}.row('#{{ flt.id }}_' + data.filters.{{ flt.id }}.data[i].iid);
                     if (d && d.data()) d.data().disabled = '0';
                 };
-                tbl_{{ flt.id }}.page( dt_page ).draw();
+                tbl_{{ flt.id }}.draw('full-hold');
             }
         {% endif %}
         {% if flt.type == 'ajx' %}

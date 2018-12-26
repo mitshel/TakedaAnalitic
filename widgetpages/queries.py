@@ -407,23 +407,11 @@ where a.org_id = {{ org_id }}
 
 q_years_hs = """
 {% autoescape off %}
-select distinct {{ fields }} from org_CACHE_{{ org_id }} a
-{% if targets %}left join db_lpu_employee e on a.cust_id=e.lpu_id {% endif %}
---{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
-where a.PlanTYear is not Null and a.cust_id is Not Null
+select distinct {{ fields }} from org_CACHE_{{ org_id }} s
+{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
+where s.PlanTYear is not Null and s.cust_id is Not Null
 {% if targets %} and {{targets}} {% endif %}
 {% if own_select %}and {{own_select}} {% endif %}
-{{ order_by }}
-{% endautoescape %} 
-"""
-
-q_years_hs_empl = """
-{% autoescape off %}
-select distinct {{ fields }} from org_CACHE_{{ org_id }} a
-{% if targets %}left join db_lpu_employee e on a.cust_id=e.lpu_id {% endif %}
---{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
-where a.PlanTYear is not Null and a.cust_id is Not Null
-{% if targets %} and {{targets}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
 """
