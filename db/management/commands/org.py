@@ -36,12 +36,10 @@ class Command(BaseCommand):
             return
         org=Org.objects.get(id=org_id)
 
-        if org.sync_flag:
-            self.stdout.write('Create database process already in running state for "{}".'.format(org.name))
-            return
-
         if org.sync_status != DB_READY:
-            self.stdout.write('Recreate impossible becouse DB not in READY state for "{}".'.format(org.name))
+            msg = 'Start recreate impossible (DB not READY) for "{}".'.format(org.name)
+            Org_log.objects.create(org_id=org_id,description=msg)
+            self.stdout.write(msg)
             return
 
         org.sync_flag = False

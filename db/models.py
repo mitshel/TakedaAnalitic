@@ -32,7 +32,7 @@ class Org(models.Model):
 class Org_log(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE)
     time = models.DateTimeField(null=False, blank=False, auto_now_add=True)
-    description = models.CharField(max_length=64, null=False, blank=False, verbose_name='Сообщение')
+    description = models.CharField(max_length=128, null=False, blank=False, verbose_name='Сообщение')
 
     class Meta:
         verbose_name = 'Событие БД'
