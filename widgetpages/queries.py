@@ -446,6 +446,25 @@ inner join org_CACHE_{{ org_id }} b on a.id=b.statusT_ID and b.cust_id<>0
 {% endautoescape %} 
 """
 
+q_budgets = """
+{% autoescape off %}
+select distinct {{fields}} from db_budgets a
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_budgets_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from db_budgets a
+inner join org_CACHE_{{ org_id }} b on a.id=b.budgets_ID and b.cust_id<>0
+{% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id {% endif %}
+--{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+{% if targets %} and {{targets}} {% endif %}
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+
 q_innr_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_innr a

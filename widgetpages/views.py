@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from widgetpages.BIMonBaseViews import unique, extra_in_filter, OrgMixin, FiltersView, BaseDatatableYearView
-from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv
+from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv, fbudg
 from widgetpages import queries
 
 from db.rawmodel import RawModel
@@ -37,6 +37,7 @@ class SalessheduleView(FiltersView):
         return pivot_data
 
 class BudgetsView(FiltersView):
+    filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
     template_name = 'ta_budgets.html'
     ajax_filters_url = reverse_lazy('widgetpages:budgets')
     ajax_datatable_url = reverse_lazy('widgetpages:budgets_table')

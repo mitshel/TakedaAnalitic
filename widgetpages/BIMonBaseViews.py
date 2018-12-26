@@ -20,6 +20,7 @@ fstat = 'stat'
 finnr = 'innr'
 ftrnr = 'trnr'
 fwinr = 'winr'
+fbudg = 'budg'
 
 fempa = 'empa'
 fserv = 'serv'
@@ -201,6 +202,20 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 'icon':'check-square',
                 'data': status_list}
 
+    def filter_budg(self, flt_active=None, org_id=0, targets = []):
+        if not flt_active.get(fbudg):
+            status_enabled = RawModel(queries.q_budgets).filter(fields="id as iid, name").order_by('name')
+        else:
+            status_enabled = self.apply_filters(RawModel(queries.q_budgets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+
+        budgets_list = list(status_enabled.open().fetchall())
+        status_enabled.close()
+        return {'id': fbudg,
+                'type': 'tbl',
+                'name': 'Бюджет',
+                'icon':'ruble-sign',
+                'data': budgets_list}
+
     def filter_innr(self, flt_active=None, org_id=0, targets = []):
         return {'id': finnr,
                 'type': 'ajx',
@@ -240,6 +255,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 filters.append(self.filter_year(flt_active, org_id, targets))
             if fstat == f:
                 filters.append(self.filter_stat(flt_active, org_id, targets))
+            if fbudg == f:
+                filters.append(self.filter_budg(flt_active, org_id, targets))
             if finnr == f:
                 filters.append(self.filter_innr(flt_active, org_id, targets))
             if ftrnr == f:
