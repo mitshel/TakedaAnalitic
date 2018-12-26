@@ -400,6 +400,7 @@ inner join org_CACHE_{{ org_id }} s on a.id=s.market_id --and b.cust_id<>0
 {% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
 where a.org_id = {{ org_id }}
 {% if targets %} and {{targets}} {% endif %}
+{% if own_select %}and {{own_select}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
 """
@@ -411,6 +412,7 @@ select distinct {{ fields }} from org_CACHE_{{ org_id }} a
 --{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where a.PlanTYear is not Null and a.cust_id is Not Null
 {% if targets %} and {{targets}} {% endif %}
+{% if own_select %}and {{own_select}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
 """
