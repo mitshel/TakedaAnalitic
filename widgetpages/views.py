@@ -25,7 +25,6 @@ class SalessheduleView(FiltersView):
         hsy_active = self.apply_filters(RawModel(queries.q_sales_year).order_by('1', '2'),flt_active, org_id, targets)
         hsm_active = self.apply_filters(RawModel(queries.q_sales_month).order_by('1', '2'),flt_active, org_id, targets)
 
-        print(hsm_active.query)
         pivot_data['pivot1'] = list (hsy_active.open().fetchall())
         pivot_data['pivot2'] = list (hsm_active.open().fetchall())
         pivot_data['year'] = list( unique([e['iid'] for e in pivot_data['pivot1']]) )
@@ -51,7 +50,6 @@ class BudgetsView(FiltersView):
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
         budgets = self.apply_filters(RawModel(queries.q_budgets_chart).order_by('3'),flt_active, org_id, targets)
-        print(budgets.query)
         budgets_list = list (budgets.open().fetchall())
         budgets.close()
 
@@ -102,7 +100,6 @@ class BudgetsAjaxTable(BaseDatatableYearView):
             qs = qs.order_by('t.name', 'gr','l.Org_CustNm')
         else:
             qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 't.name', 'gr desc', 'l.Org_CustNm')
-        print(qs.query)
         return qs
 
 

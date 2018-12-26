@@ -385,25 +385,20 @@ select {{fields}} from db_market a where org_id={{org_id}}
 {% endautoescape %} 
 """
 
-q_markets_hs = """
+q_markets = """
 {% autoescape off %}
 select distinct {{ fields }} from db_market a
-inner join org_CACHE_{{ org_id }} b on a.id=b.market_id --and b.cust_id<>0
-{% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id {% endif %}
---{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where a.org_id = {{ org_id }}
-{% if targets %} and {{targets}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
 """
 
-q_markets_hs_empl = """
+q_markets_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_market a
-inner join org_CACHE_{{ org_id }} b on a.id=b.market_id and b.cust_id<>0
-{% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id {% endif %}
---{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
-where 1=1
+inner join org_CACHE_{{ org_id }} s on a.id=s.market_id --and b.cust_id<>0
+{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
+where a.org_id = {{ org_id }}
 {% if targets %} and {{targets}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
@@ -441,9 +436,10 @@ select distinct {{fields}} from db_statusT a where a.id>0
 q_status_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_statusT a
-inner join org_CACHE_{{ org_id }} b on a.id=b.statusT_ID and b.cust_id<>0
+inner join org_CACHE_{{ org_id }} b on a.id=b.statusT_ID --and b.cust_id<>0
 {% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id {% endif %}
 --{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+where 1=1 
 {% if targets %} and {{targets}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
@@ -459,9 +455,9 @@ select distinct {{fields}} from db_budgets a
 q_budgets_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_budgets a
-inner join org_CACHE_{{ org_id }} b on a.id=b.budgets_ID and b.cust_id<>0
+inner join org_CACHE_{{ org_id }} b on a.id=b.budgets_ID --and b.cust_id<>0
 {% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id {% endif %}
---{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+where 1=1 
 {% if targets %} and {{targets}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
