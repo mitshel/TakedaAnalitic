@@ -32,7 +32,7 @@
 <script>
 var dsOrg = [
     {% for row in object_list %}
-        [{{ row.id }}, '{{ row.name }}','{% if row.sync_time|lower == 'none' %}{% else %}{{ row.sync_time }}{% endif %}',{{ row.sync_flag|lower }},'{% for u in row.users.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
+        [{{ row.id }}, '{{ row.name }}','{% if row.sync_time|lower == 'none' %}{% else %}{{ row.sync_time }}{% endif %}',{{ row.sync_flag|lower }},{{ row.sync_status }},'{% for u in row.users.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
     {% endfor %}
 ];
 
@@ -60,6 +60,7 @@ $(document).ready(function() {
                      return "<i style='"+ style +"' class='fa "+ icon +"'></i>"
                  }
             },
+            { title: "Состояние БД", searchable: true },
             { title: "Пользователи", searchable: true },
         ],
         language: lang_russian

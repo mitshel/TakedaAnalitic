@@ -309,6 +309,11 @@ class OrgsAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, Lis
     supressorg = True
     permission_required = ('db.view_org', )
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sync_status_choices'] = dict(SYNC_STATUS_CHOICES)
+        return context
+
     def get_queryset(self):
         return Org.objects.all()
 
