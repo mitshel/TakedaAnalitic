@@ -12,7 +12,7 @@ t.TenderPrice,
 t.SrcInf,
 t.StatusT_ID,
 t.FormT_ID,
-t.Budgets_ID,
+t.Budgets_ID COLLATE database_default as Budgets_ID,
 isnull(c1.cust_id, t.cust_id) as cust_id,
 t.TendSYSDATE,
 t.T_UPDDATE,
@@ -20,9 +20,7 @@ t.Lot_ID,
 t.Lotspec_ID,
 t.PlanTYear,
 t.InnNx as Order_InnNx,
---t.Order_InnNx,
 t.TradeNx as Order_TradeNx,
---t.Order_TradeNmNx as Order_TradeNx,
 t.Order_Price as Order_Price,
 t.Order_Count as Order_Count,
 t.Order_Sum as Order_Summa,
@@ -33,19 +31,18 @@ t.Winner_Id,
 t.Unit_Id as Order_Unit_ID,
 t.Order_Unit,
 c1.Ship_Unit as Contract_Unit,
-isnull(m1.name, m2.name) as market_name,
-isnull(m1.id, m2.id) as market_id,
-IIF(    IIF(m1.id is null,0,isnull(b1.own,0))>0
-    or  IIF(m2.id is null,0,isnull(b2.own,0))>0, 1,0) as market_own,
+isnull( ctm.market_name, isnull(cmnn.market_name, isnull(otm.market_name, isnull(omnn.market_name) ) ) ) as market_name,
+isnull( ctm.market_id, isnull(cmnn.market_id, isnull(otm.market_id, isnull(omnn.market_id) ) ) ) as market_id,
+IIF(
+(ctm.own is null) and (cmnn.own is null),
+-- Если в контрактах везде NULL то определяем OWN по аукционам
+IIF(otm.own is null,0,isnull(ctm.own,0))>0 or IIF(omnn.own is null,0,isnull(b2.own,0))>0,1,0)
+-- Иначе определяем OWN по контрактам
+IIF(ctm.own is null,0,isnull(ctm.own,0))>0 or IIF(cmnn.own is null,0,isnull(b2.own,0))>0,1,0)
+) as market_own,
+
 c1.IntlName_ID as Contract_InnNx,
 c1.TradeName_ID as Contract_TradeNx,
---ISNULL(c1.RegNumber,c.RegNumber) as ContractNr,
---ISNULL(c1.SignedDate,c.SignedDate) as ContractDate,
---c1.ItemName as ContractItemNm,
---c1.ItemForma as ItemForma,
---c1.ItemUnit as ContractItemUnit,
---c1.ItemPrice as ContractItemPrice,
---c1.ItemCount as ContractItemCount,
 ISNULL(c1.Url,c.Url) as Contract_URL,
 isnull(c1.[Ship_Price],c1.[ItemPrice]) as Contract_Price,
 isnull(CAST(c1.[Ship_Count] as bigint),c1.[ItemCount]) as Contract_Count,
@@ -53,7 +50,6 @@ isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
 c1.Ship_Dosage as Contract_Dosage,
 c1.Ship_Volume as Contract_Volume,
 c1.Ship_BatchSize as Contract_BatchSize,
---c1.Dod_id
 
 into org_CACHE_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
 
@@ -67,26 +63,24 @@ LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	   and isnull(c1.LotSpec_ID,0) > 0
 
 --Markets
-left join db_market_innrs b1 on isNull(c1.IntlName_ID,t.InnNx)=b1.innr_id
-left join db_market m1 on ((m1.id=b1.market_id) and m1.org_id={{org_id}})
+left join (select ji.innr_id, ji.market_id, ji.own, jm.name as market_name
+           from db_market_innrs ji
+		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) cmnn on c1.IntlName_ID=cmnn.innr_id
+left join (select ji.innr_id, ji.market_id, ji.own, jm.name as market_name
+           from db_market_innrs ji
+		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) omnn on t.InnNx=omnn.innr_id
+left join (select ji.tradenr_id, ji.market_id, ji.own, jm.name as market_name
+           from db_market_tmnrs ji
+		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) ctm on c1.TradeName_ID=ctm.tradenr_id
+left join (select ji.tradenr_id, ji.market_id, ji.own, jm.name as market_name
+           from db_market_tmnrs ji
+		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) otm on t.TradeNx=otm.tradenr_id
 
-left join db_market_tmnrs b2 on isNull(c1.TradeName_ID,t.TradeNx)=b2.tradenr_id
-left join db_market m2 on ((m2.id=b2.market_id) and m2.org_id={{org_id}})
 
-
-where (t.Reg_ID < 100) AND (t.ProdType_ID = 'L') and (m1.id is not null or m2.id is not null)
+where (t.Reg_ID < 100) AND (t.ProdType_ID = 'L')
 
 alter table org_CACHE_{{org_id}} add id bigint identity not null primary key
 
---CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Order_InnNx] ON [dbo].[org_CACHE_{{org_id}}]
---(
---	[InnNx] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
-
---CREATE NONCLUSTERED INDEX [idx_{{org_id}}_TradeNx] ON [dbo].[org_CACHE_{{org_id}}]
---(
---	[TradeNx] ASC
---)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 CREATE NONCLUSTERED INDEX [idx_{{org_id}}_market_id] ON [dbo].[org_CACHE_{{org_id}}]
 (
 	[market_id] ASC
