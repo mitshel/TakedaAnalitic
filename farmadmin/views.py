@@ -329,9 +329,10 @@ class OrgUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        object = self.get_object()
         context['users'] = User.objects.filter(org__isnull=True).order_by('username')
         context['sync_status_choices'] = SYNC_STATUS_CHOICES
-        context['log'] = Org_log.objects.filter(org=self.org).order_by('-time')
+        context['log'] = Org_log.objects.filter(org_id=object.id).order_by('-time')
         return context
 
     def get_success_url(self):
