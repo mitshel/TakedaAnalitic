@@ -171,7 +171,6 @@ class Market_CompetitionsAjaxTable(BaseDatatableYearView):
             qs = qs.order_by('nn.id', 'gr','t.name')
         else:
             qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'nn.id', 'gr','t.name')
-        print('Market_CompetitionsAjaxTable ordering query >',qs.query)
         return qs
 
 

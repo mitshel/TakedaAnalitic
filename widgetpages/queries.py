@@ -9,7 +9,7 @@ select pvt.cust_id, pvt.budgets_id as id, grouping(pvt.cust_id) as gr
     from
     (
         select distinct s.cust_id, s.budgets_id, PlanTYear, sum(isnull({{market_type_prefix }}Summa,0)) as Summa
-        from [dbo].[org_CACHE_1] s
+        from [dbo].[org_CACHE_{{ org_id }}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
@@ -50,7 +50,7 @@ select COUNT_BIG(*) from
 	select pvt.budgets_id as id, pvt.cust_id
     from
     ( 
-		select distinct s.cust_id, s.budgets_id, s.PlanTYear from [dbo].[org_CACHE_1] s
+		select distinct s.cust_id, s.budgets_id, s.PlanTYear from [dbo].[org_CACHE_{{ org_id }}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
