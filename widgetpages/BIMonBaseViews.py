@@ -83,7 +83,6 @@ class FiltersMixin(View):
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
         flt = json.loads(filters_ajax_request) if filters_ajax_request else {}
         flt_active = {}
-        print(flt)
         if flt:
             for f in self.filters_list:
                 flt_str = flt.get('{}_active'.format(f), '')
@@ -349,7 +348,6 @@ class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
             rawmodel = RawModel(self.empty_datatable_query)
 
         rawmodel = self.apply_filters(rawmodel, flt_active, org_id, targets)
-        print(rawmodel.query)
         return rawmodel
 
     def filter_queryset(self, qs):
