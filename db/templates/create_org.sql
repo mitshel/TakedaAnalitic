@@ -31,14 +31,14 @@ t.Winner_Id,
 t.Unit_Id as Order_Unit_ID,
 t.Order_Unit,
 c1.Ship_Unit as Contract_Unit,
-isnull( ctm.market_name, isnull(cmnn.market_name, isnull(otm.market_name, isnull(omnn.market_name) ) ) ) as market_name,
-isnull( ctm.market_id, isnull(cmnn.market_id, isnull(otm.market_id, isnull(omnn.market_id) ) ) ) as market_id,
+isnull( ctm.market_name, isnull(cmnn.market_name, isnull(otm.market_name,omnn.market_name ) ) ) as market_name,
+isnull( ctm.market_id, isnull(cmnn.market_id, isnull(otm.market_id, omnn.market_id ) ) ) as market_id,
 IIF(
 (ctm.own is null) and (cmnn.own is null),
 -- Если в контрактах везде NULL то определяем OWN по аукционам
-IIF(otm.own is null,0,isnull(ctm.own,0))>0 or IIF(omnn.own is null,0,isnull(b2.own,0))>0,1,0)
+IIF( IIF(otm.own is null,0,isnull(ctm.own,0))>0 or IIF(omnn.own is null,0,isnull(omnn.own,0))>0,1,0),
 -- Иначе определяем OWN по контрактам
-IIF(ctm.own is null,0,isnull(ctm.own,0))>0 or IIF(cmnn.own is null,0,isnull(b2.own,0))>0,1,0)
+IIF( IIF(ctm.own is null,0,isnull(ctm.own,0))>0 or IIF(cmnn.own is null,0,isnull(cmnn.own,0))>0,1,0)
 ) as market_own,
 
 c1.IntlName_ID as Contract_InnNx,
@@ -49,7 +49,7 @@ isnull(CAST(c1.[Ship_Count] as bigint),c1.[ItemCount]) as Contract_Count,
 isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
 c1.Ship_Dosage as Contract_Dosage,
 c1.Ship_Volume as Contract_Volume,
-c1.Ship_BatchSize as Contract_BatchSize,
+c1.Ship_BatchSize as Contract_BatchSize
 
 into org_CACHE_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
 
@@ -77,7 +77,7 @@ left join (select ji.tradenr_id, ji.market_id, ji.own, jm.name as market_name
 		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) otm on t.TradeNx=otm.tradenr_id
 
 
-where (t.Reg_ID < 100) AND (t.ProdType_ID = 'L')
+where (t.Reg_ID < 100) AND (t.ProdType_ID = 'L') and (cmnn.market_id is not null or omnn.market_id is not null or ctm.market_id is not null or otm.market_id is not null)
 
 alter table org_CACHE_{{org_id}} add id bigint identity not null primary key
 
