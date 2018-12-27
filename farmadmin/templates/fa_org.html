@@ -51,23 +51,30 @@ table.datatable tbody {
         <label for="nameInput">Организация</label>
         <input type="text" class="form-control" id="nameInput" placeholder="" value="{{ object.name }}">
       </div>
+  <div class="form-group col-4">
+    <label for="nameInput">Время синхронизации</label>
+    <input type="text" class="form-control" id="synctimeInput" placeholder="" value="{% if object.sync_time|lower == 'none' %}{% else %}{{ object.sync_time }}{% endif %}">
+  </div>
+  <div class="form-group col-4">
+    <label for="sync_status">Состояние БД</label>
+    <select class="form-control" id="sync_status">
+      {% for o in sync_status_choices %}
+        <option {% if o.0 == object.sync_status %}selected{% endif %} value="{{ o.0 }}">{{ o.1 }}</option>
+      {% endfor %}
+    </select>
+  </div>
 </div>
 <div class="row">
-      <div class="form-group col-lg-3 col-md-4 col-sm-6">
-        <label for="nameInput">Время синхронизации</label>
-        <input type="text" class="form-control" id="synctimeInput" placeholder="" value="{% if object.sync_time|lower == 'none' %}{% else %}{{ object.sync_time }}{% endif %}">
-      </div>
+  <div class="form-group col-4">
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" value="" id="sync_flag" {% if object.sync_flag|lower == 'true' %}checked{% endif %}>
+      <label class="form-check-label" for="sync_flag">
+        Запланирована синхронизация данных
+      </label>
+    </div>
+  </div>
 </div>
-<div class="row">
-      <div class="form-group col-lg-3 col-md-4 col-sm-6">
-        <div class="form-check">
-          <input class="form-check-input" type="checkbox" value="" id="sync_flag" {% if object.sync_flag|lower == 'true' %}checked{% endif %}>
-          <label class="form-check-label" for="sync_flag">
-            Запланирована синхронизация данных
-          </label>
-        </div>
-      </div>
-</div>
+
 <br>
 <b>Присоединенные пользователи:</b><br>
 {% include "fa_usre.html" %}
@@ -82,6 +89,28 @@ table.datatable tbody {
 </div>
 
 <br>
+{% if log %}
+<b>Лог сообщений:</b><br>
+<div class="row">
+    <div class="col-12">
+        <table class="table table-striped table-sm">
+            <thead class="thead-light">
+                <tr>
+                    <th width="200px">Время</th><th>Сообщение</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for l in log %}
+                <tr>
+                    <td>{{ l.time }}</td>
+                    <td>{{ l.description }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
 <br>
 
 <script>
@@ -92,6 +121,7 @@ $(document).ready(function() {
         var name = $("#nameInput").val();
         var sync_time = $("#synctimeInput").val();
         var sync_flag = $("#sync_flag").prop("checked");
+        var sync_status = $("#sync_status").val();
 
         $.ajax({
             type: 'POST',
@@ -103,6 +133,7 @@ $(document).ready(function() {
                 "name": name,
                 "sync_time": sync_time,
                 "sync_flag": sync_flag,
+                "sync_status": sync_status,
                 "users": users_array,
                 "csrfmiddlewaretoken": '{{ csrf_token }}'
             },
