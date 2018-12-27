@@ -349,6 +349,7 @@ class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
             rawmodel = RawModel(self.empty_datatable_query)
 
         rawmodel = self.apply_filters(rawmodel, flt_active, org_id, targets)
+        print(rawmodel.query)
         return rawmodel
 
     def filter_queryset(self, qs):

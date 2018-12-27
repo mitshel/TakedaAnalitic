@@ -1,6 +1,6 @@
-select c1.*, m1.name, b1.own, m2.name, b2.own
+select c1.*, m1.id, m1.name, b1.own, m2.id, m2.name, b2.own, b2.market_id
 from (
-select 1 as intlName_id, 1802 as innNx, NULL as TradeName_ID, 17241 as TradeNx
+select null as intlName_id, 1802 as innNx, NULL as TradeName_ID, 17241 as TradeNx
 ) c1
 left join db_market_innrs b1 on isNull(c1.IntlName_ID,c1.InnNx)=b1.innr_id
 left join db_market m1 on ((m1.id=b1.market_id) and m1.org_id=9)
@@ -16,3 +16,5 @@ select * from db_tradeNr where name like 'Маб%'
 select * from db_InNr where name like 'Ритуксим%'
 -- Устекин% = 52610
 -- 1802	Ритуксимаб
+
+select * from db_market where id=18
