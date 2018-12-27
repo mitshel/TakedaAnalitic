@@ -158,8 +158,6 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
             # Показываем все доступные рынки
             market_enabled = self.apply_filters(RawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
-        print(market_enabled.query)
-
         market_list = list(market_enabled.open().fetchall())
         market_enabled.close()
         return {'id': fmrkt,

@@ -52,7 +52,7 @@ isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
 c1.Ship_Dosage as Contract_Dosage,
 c1.Ship_Volume as Contract_Volume,
 c1.Ship_BatchSize as Contract_BatchSize,
-c1.Dod_id
+--c1.Dod_id
 
 into org_CACHE_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
 
@@ -71,6 +71,7 @@ left join db_market m1 on ((m1.id=b1.market_id) and m1.org_id={{org_id}})
 
 left join db_market_tmnrs b2 on isNull(c1.TradeName_ID,t.TradeNx)=b2.tradenr_id
 left join db_market m2 on ((m2.id=b2.market_id) and m2.org_id={{org_id}})
+
 
 where (t.Reg_ID < 100) AND (t.ProdType_ID = 'L') and (m1.id is not null or m2.id is not null)
 

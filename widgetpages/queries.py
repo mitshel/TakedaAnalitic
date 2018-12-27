@@ -145,7 +145,7 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
 	{% for y in years %},sum([{{y}}-1]) as [{{y}}-1], isnull(sum([{{y}}-2]),0) as [{{y}}-2], IIF(isnull(sum([{{y}}-1]),0)=0,'-',cast(isnull(cast(sum([{{y}}-2])/sum([{{y}}-1])*100 as int),0) as varchar)+'%') as [{{y}}-3]{% endfor %}
 	from
 		(
-            select market_id, cast(PlanTYear as varchar)+'-1' as PlanTYear, sum({{ market_type_prefix }}summa) as Summa
+            select market_id, cast(PlanTYear as varchar)+'-1' as PlanTYear, sum(isnull({{ market_type_prefix }}summa,0)) as Summa
             from [dbo].[org_CACHE_{{org_id}}] s
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
@@ -159,11 +159,11 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %}                    
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}    
             group by market_id, PlanTYear
             
             union all
-            select market_id, cast(PlanTYear as varchar)+'-2' as PlanTYear, sum({{ market_type_prefix }}summa) as Summa
+            select market_id, cast(PlanTYear as varchar)+'-2' as PlanTYear, sum(isnull({{ market_type_prefix }}summa,0)) as Summa
             from [dbo].[org_CACHE_{{org_id}}] s
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
@@ -177,7 +177,7 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %}             
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}         
             group by market_id, PlanTYear          
 		) m
 		PIVOT
@@ -208,7 +208,7 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
 	{% endfor %}
 	from
 		(
-            select s.cust_id, cast(PlanTYear as varchar)+'-1' as PlanTYear, sum({{ market_type_prefix }}summa) as Summa
+            select s.cust_id, cast(PlanTYear as varchar)+'-1' as PlanTYear, sum(isnull({{ market_type_prefix }}summa,0)) as Summa
             from [dbo].[org_CACHE_{{org_id}}] s
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
@@ -222,11 +222,11 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %}                    
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}       
             group by s.cust_id, PlanTYear
             
             union all
-            select s.cust_id, cast(PlanTYear as varchar)+'-2' as PlanTYear, sum({{ market_type_prefix }}summa) as Summa
+            select s.cust_id, cast(PlanTYear as varchar)+'-2' as PlanTYear, sum(isnull({{ market_type_prefix }}summa,0)) as Summa
             from [dbo].[org_CACHE_{{org_id}}] s
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
@@ -240,7 +240,7 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %}             
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}    
             group by s.cust_id, PlanTYear          
 		) m
 		PIVOT
@@ -285,7 +285,8 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}tradeNx as tradeNx, groupi
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select distinct isnull(s.Lotspec_ID,0) as Lotspec_ID, s.cust_id, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, {{ market_type_prefix }}Summa
+        select distinct s.cust_id, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, 
+        sum(isnull({{ market_type_prefix }}Summa,0)) as {{ market_type_prefix }}Summa
         from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
@@ -301,7 +302,9 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}tradeNx as tradeNx, groupi
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
+        group by s.cust_id, isnull({{ market_type_prefix }}tradeNx, -2), PlanTYear
     ) m
     PIVOT
     (
@@ -326,7 +329,9 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select distinct isnull(s.Lotspec_ID,0) as Lotspec_ID, s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, {{ market_type_prefix }}Summa from [dbo].[org_CACHE_{{org_id}}] s
+        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, 
+        sum(isnull({{ market_type_prefix }}Summa,0)) as {{ market_type_prefix }}Summa
+        from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
@@ -341,7 +346,9 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
+     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2), PlanTYear
     ) m
     PIVOT
     (
