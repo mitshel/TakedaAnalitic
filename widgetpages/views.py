@@ -192,7 +192,6 @@ class AvgAjaxTable(BaseDatatableYearView):
         else:
             qs = qs.order_by('Nm', '[{}] {}'.format(self._columns[sort_col], sort_dir))
 
-        print(qs.query)
         return qs
 
 class PartsView(FiltersView):

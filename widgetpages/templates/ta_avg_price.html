@@ -38,7 +38,7 @@
 	</div>
 
 <script>
-    function ChartsUpdate1(data, src_id) {
+    function UpdateColumns() {
         // Скрываем/показываем столбцы в соответсвии с активностью кнопок по годам
         var s = [];
         var h = [];
@@ -54,6 +54,10 @@
                 }
             };
         });
+    }
+
+    function ChartsUpdate1(data, src_id) {
+        UpdateColumns()
         ta_competitions_table.ajax.reload( null, true );
         //ta_competitions_table.columns.adjust().draw( true );
     }
@@ -153,7 +157,8 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
             });
 
     $(document).ready(function() {
-        ChartsUpdate1(null, null);
+        //ChartsUpdate1(null, null);
+        UpdateColumns()
     });
 
 </script>

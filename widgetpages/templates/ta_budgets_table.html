@@ -32,8 +32,7 @@
 	</div>
 
 <script>
-
-function ChartsUpdate2(data, src_id) {
+function UpdateColumns() {
     // Скрываем/показываем столбцы в соответсвии с активностью кнопок по годам
     var s = [];
     var h = [];
@@ -49,6 +48,10 @@ function ChartsUpdate2(data, src_id) {
             }
         };
     });
+}
+
+function ChartsUpdate2(data, src_id) {
+    UpdateColumns();
     ta_budgets_table.ajax.reload( null, true );
 }
 
@@ -111,6 +114,7 @@ var ta_budgets_table = $('#ta_budgets_table').DataTable({
 
     $(document).ready(function() {
         //ChartsUpdate2(null, null);
+        UpdateColumns();
     });
 
 </script>
