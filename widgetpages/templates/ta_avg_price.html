@@ -67,14 +67,14 @@
 {% block afterpage %}
 <script type="text/javascript">
 
-function fixval ( data ) {
-    if (data != '') val=( data / 1000 ).toFixed(0); else val='';
+function fixval ( data, divider=1000 ) {
+    if (data != '') val=( data / divider ).toFixed(0); else val='';
     return val;
 }
 
 function floatWithSpaces(x) {
     var parts = x.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, "&nbsp;");
     return parts.join(".");
 }
 
@@ -98,7 +98,7 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                     {% for y in data.year %}
                     { "name": "{{ y }}", "targets": {{ forloop.counter0|add:3 }}, "visible": true, "searchable": false,
                       "className": "dt-right", "orderSequence": ["desc","asc"],
-                      render: function ( data, type, row ) { return intWithSpaces ( fixval( data ) ); } }{% if not forloop.last %},{% endif %}{% endfor %}
+                      render: function ( data, type, row ) { return intWithSpaces ( fixval(data,1) ); } }{% if not forloop.last %},{% endif %}{% endfor %}
                 ],
                 "processing": true,
                 "serverSide": true,

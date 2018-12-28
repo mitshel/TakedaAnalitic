@@ -173,6 +173,27 @@ class Market_CompetitionsAjaxTable(BaseDatatableYearView):
             qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'nn.id', 'gr','t.name')
         return qs
 
+class AvgMarketView(CompetitionsView):
+    template_name = 'ta_avg_price.html'
+    ajax_filters_url = reverse_lazy('widgetpages:avg_price')
+    ajax_datatable_url = reverse_lazy('widgetpages:javg_price')
+    view_id = 'avg_price'
+    view_name = 'Анализ средней цены'
+
+class AvgAjaxTable(BaseDatatableYearView):
+    order_columns = ['name']
+    datatable_query = queries.q_avg_price
+
+    def ordering(self, qs):
+        sort_col = int(self._querydict.get('order[0][column]'))
+        sort_dir = self._querydict.get('order[0][dir]')
+        if sort_col<=3:
+            qs = qs.order_by('Nm', 'TradeNx')
+        else:
+            qs = qs.order_by('Nm', '[{}] {}'.format(self._columns[sort_col], sort_dir))
+
+        print(qs.query)
+        return qs
 
 class PartsView(FiltersView):
     template_name = 'ta_parts.html'
