@@ -89,17 +89,18 @@ class FiltersMixin(View):
                 flt_select = flt.get('{}_select'.format(f), '')
                 flt_active[f] = {'list':[e for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
                 flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
-                flt_active[fserv] = {'market': int(flt.get('market_type','1')), 'own': int(flt.get('own_type', '1'))}
+                flt_active[fserv] = {'market': int(flt.get('market_type','1')), 'own': int(flt.get('own_type', '1')), 'prod': int(flt.get('prod_type','2'))}
         else:
             flt_active[fempl] = self.targets_in_filter(targets)
             flt_active[fempa] = {'list': [], 'select': 0}
-            flt_active[fserv] = {'market': 1, 'own': 1}
+            flt_active[fserv] = {'market': 1, 'own': 1, 'prod': 2}
 
         return flt_active
 
     def apply_filters(self, qs, flt_active, org_id, targets):
         market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
         own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
+        product_type = 'InnNx' if flt_active[fserv]['prod'] == 1 else 'TradeNx'
 
         if self.fempa_selected(flt_active, fempa):
             disabled_targets = [e['iid'] for e in targets if e['iid'] not in flt_active[fempl]['list']]
@@ -112,6 +113,7 @@ class FiltersMixin(View):
                        markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active.get(fmrkt) else ''),
                        status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active.get(fstat) else ''),
                        targets = flt_targets,
+                       product_type = product_type,
                        employees=','.join([str(e) for e in flt_active[fempl]['list']]) if not self.fempa_selected(flt_active, fempa) else '',
                        budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')),
                        lpus_in=extra_in_filter('l.Cust_ID',flt_active.get(fcust,'')),
@@ -131,8 +133,10 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     view_name = 'Пустая страница'
     select_market_type = 0
     select_own = 0
+    select_prod_type = 0
     default_market_type = 1
     default_own = 1
+    default_prod_type = 2
 
     def filter_empl(self, flt_active=None, org_id=0, targets = []):
         employee_list = targets
@@ -296,8 +300,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         context['data'] = data
         context['org_id'] = org_id
         context['view'] = {'id': self.view_id, 'name': self.view_name,
-                           'select_market_type': self.select_market_type, 'select_own': self.select_own,
-                           'default_market_type' : self.default_market_type, 'default_own':  self.default_own }
+                           'select_market_type': self.select_market_type, 'select_own': self.select_own,  'select_prod_type': self.select_prod_type,
+                           'default_market_type' : self.default_market_type, 'default_own':  self.default_own, 'default_prod_type' : self.default_prod_type }
         context['ajax_filters_url'] = self.ajax_filters_url
         context['ajax_datatable_url'] = self.ajax_datatable_url
         return context

@@ -110,8 +110,10 @@ class CompetitionsView(FiltersView):
     view_name = 'Конкурентный анализ(тыс.руб.)'
     select_market_type = 1
     select_own = 1
+    select_prod_type = 1
     default_market_type = 2 # Контракты
     default_own = 3  # Все рынки
+    default_prod_type = 2 # TradeMark
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
@@ -191,6 +193,8 @@ class AvgAjaxTable(BaseDatatableYearView):
             qs = qs.order_by('Nm', 'TradeNx')
         else:
             qs = qs.order_by('Nm', '[{}] {}'.format(self._columns[sort_col], sort_dir))
+
+        print(qs.query)
 
         return qs
 

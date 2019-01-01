@@ -281,16 +281,16 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_CACHE_{{org_id}}] s
 q_competitions_lpu = """
 {% autoescape off %}
 select l.Org_CustINN as ext, l.Org_CustNm as Nm, CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
-select pvt.cust_id as id, pvt.{{ market_type_prefix }}tradeNx as tradeNx, grouping(pvt.{{ market_type_prefix }}tradeNx) as gr
+select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, grouping(pvt.{{ market_type_prefix }}{{ product_type }}) as gr
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select distinct s.cust_id, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, 
+        select distinct s.cust_id, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         sum(isnull({{ market_type_prefix }}Summa,0)) as {{ market_type_prefix }}Summa
         from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
-        left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+        left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on s.{{ market_type_prefix }}{{ product_type }} = t.id
         left join db_lpu_employee e on s.cust_id=e.lpu_id
         --where s.{{ market_type_prefix }}TradeNx > 0
         where 1=1 
@@ -304,7 +304,7 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}tradeNx as tradeNx, groupi
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
-        group by s.cust_id, isnull({{ market_type_prefix }}tradeNx, -2), PlanTYear
+        group by s.cust_id, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
     ) m
     PIVOT
     (
@@ -312,10 +312,10 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}tradeNx as tradeNx, groupi
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
 group by
-rollup (pvt.cust_id, pvt.{{ market_type_prefix }}tradeNx)
+rollup (pvt.cust_id, pvt.{{ market_type_prefix }}{{ product_type }})
 ) nn    
 left join db_lpu l on nn.id = l.cust_id
-left join db_TradeNR t on nn.TradeNx = t.id
+left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on nn.TradeNx = t.id
 where nn.id is not null
 --order by sum([2018]) over (PARTITION BY nn.id, nn.gr) desc, l.Org_CustNm, gr, t.name
 {{ order_by }}
@@ -325,16 +325,16 @@ where nn.id is not null
 q_competitions_market = """
 {% autoescape off %}
 select CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
-select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}tradeNx as tradeNx, grouping(pvt.{{ market_type_prefix }}tradeNx) as gr 
+select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, grouping(pvt.{{ market_type_prefix }}{{ product_type }}) as gr 
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, 
+        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         sum(isnull({{ market_type_prefix }}Summa,0)) as {{ market_type_prefix }}Summa
         from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
-        left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+        left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on s.{{ market_type_prefix }}{{ product_type }} = t.id
         left join db_lpu_employee e on s.cust_id=e.lpu_id
         --where s.{{ market_type_prefix }}TradeNx > 0
         where 1=1 
@@ -348,7 +348,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
-     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2), PlanTYear
+     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
     ) m
     PIVOT
     (
@@ -356,9 +356,9 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
 group by
-rollup (pvt.market_id, pvt.market_name, pvt.{{ market_type_prefix }}tradeNx)
+rollup (pvt.market_id, pvt.market_name, pvt.{{ market_type_prefix }}{{ product_type }})
 ) nn    
-left join db_TradeNR t on nn.TradeNx = t.id
+left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on nn.TradeNx = t.id
 where nn.id is not null and nn.Nm is not Null
 --order by sum([2018]) over (PARTITION BY nn.id, nn.gr) desc, l.Org_CustNm, gr, t.name
 {{ order_by }}
@@ -367,11 +367,11 @@ where nn.id is not null and nn.Nm is not Null
 
 q_avg_price = """
 {% autoescape off %}
-select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}tradeNx as tradeNx, isnull(t.name,'') as name, 0 as gr 
+select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, isnull(t.name,'') as name, 0 as gr 
     {% for y in years %},[{{y}}]{% endfor %}
     from
     (
-        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2) as {{ market_type_prefix }}tradeNx, PlanTYear, 
+        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         avg({{ market_type_prefix }}Price) as {{ market_type_prefix }}AVG
         from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
@@ -389,14 +389,14 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}t
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
-     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}tradeNx, -2), PlanTYear
+     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
     ) m
     PIVOT
     (
     AVG({{ market_type_prefix }}AVG)
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
-left join db_TradeNR t on pvt.{{ market_type_prefix }}tradeNx = t.id
+left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on pvt.{{ market_type_prefix }}{{ product_type }} = t.id
 where pvt.market_id is not null and pvt.market_name is not Null and isnull(t.name,'')<>''
 --order by pvt.market_name
 {{ order_by }}

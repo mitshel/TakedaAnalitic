@@ -61,6 +61,7 @@ function make_request() {
 
     market_type = $('#serv_market').val();
     own_type = $('#serv_own').val();
+    prod_type = $('#serv_prod').val();
 
     if ($('#empl-all').hasClass('active')) empl_all = 1; else empl_all = 0;
 
@@ -70,6 +71,7 @@ function make_request() {
                             {% endfor %}
                             'market_type': market_type,
                             'own_type': own_type,
+                            'prod_type': prod_type,
                             'empl_all': empl_all
                             //'csrfmiddlewaretoken': '{ { csrf_token }}'
     }
