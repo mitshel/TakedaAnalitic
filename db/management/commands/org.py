@@ -48,6 +48,7 @@ class Command(BaseCommand):
         self.stdout.write('Create database for "{}".'.format(org.name))
         Org_log.objects.create(org_id=org_id, description='{}. Start DB Recreating'.format(org.name))
         raw=RawModel('create_org.sql').filter(org_id=org.id)
+        print(raw.query)
         startTime = time.time()
         raw.open().close()
         totalTime = int(time.time() - startTime)
