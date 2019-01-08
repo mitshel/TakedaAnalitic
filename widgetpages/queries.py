@@ -107,8 +107,9 @@ q_sales_analysis = """
 {% autoescape off %}
 select CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as Order_TradeName, t2.name as Contract_TradeName, 
        i1.name as Order_InnName, i2.name as Contract_InnName,
-       isnull(Order_Dosage,'')+IIF(Order_BatchSize is Null,'',' №'+CAST(Order_BatchSize as varchar)) as Order_Dosage,
-       isnull(Contract_Dosage,'')+IIF(Contract_Volume is Null, '', ' '+Contract_volume)+IIF(Contract_BatchSize is Null,'',' №'+CAST(Contract_BatchSize as varchar)) as Contract_Dosage, 
+       Order_Dosage, Contract_Dosage,
+       -- isnull(Order_Dosage,'')+IIF(Order_BatchSize is Null,'',' №'+CAST(Order_BatchSize as varchar)) as Order_Dosage,
+       -- isnull(Contract_Dosage,'')+IIF(Contract_Volume is Null, '', ' '+Contract_volume)+IIF(Contract_BatchSize is Null,'',' №'+CAST(Contract_BatchSize as varchar)) as Contract_Dosage, 
        Order_Count, Contract_Count, Order_Price, Contract_Price, Order_Summa, 
        Order_AVG_Price*Order_Count as Order_AVG_Summa, Contract_Summa,  u.name as status_name, SrcInf, Contract_URL
 from [dbo].[org_CACHE_{{org_id}}] s

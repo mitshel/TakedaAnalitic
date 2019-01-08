@@ -24,8 +24,6 @@ t.TradeNx as Order_TradeNx,
 t.Order_Price as Order_Price,
 t.Order_Count as Order_Count,
 t.Order_Sum as Order_Summa,
-t.Order_Dosage,
-t.Order_BatchSize,
 t.Order_AVG_Price,
 t.Winner_Id,
 t.Unit_Id as Order_Unit_ID,
@@ -47,9 +45,14 @@ ISNULL(c1.Url,c.Url) as Contract_URL,
 isnull(c1.[Ship_Price],c1.[ItemPrice]) as Contract_Price,
 isnull(CAST(c1.[Ship_Count] as bigint),c1.[ItemCount]) as Contract_Count,
 isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
-c1.Ship_Dosage as Contract_Dosage,
-c1.Ship_Volume as Contract_Volume,
-c1.Ship_BatchSize as Contract_BatchSize
+
+--t.Order_Dosage,
+--t.Order_BatchSize,
+-- c1.Ship_Dosage as Contract_Dosage,
+-- c1.Ship_Volume as Contract_Volume,
+-- c1.Ship_BatchSize as Contract_BatchSize
+isnull(t.Order_Dosage,'')+IIF(t.Order_BatchSize is Null,'',' №'+CAST(t.Order_BatchSize as varchar)) as Order_Dosage,
+isnull(c1.Ship_Dosage,'')+IIF(c1.Ship_Volume is Null, '', ' '+c1.Ship_Volume)+IIF(c1.Ship_BatchSize is Null,'',' №'+CAST(c1.Ship_BatchSize as varchar)) as Contract_Dosage,
 
 into org_CACHE_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
 
@@ -141,6 +144,11 @@ CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Unit_ID] ON [dbo].[org_CACHE_{{org_id}
 CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Dod_ID] ON [dbo].[org_CACHE_{{org_id}}]
 (
 	[Dod_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Contract_Dosage] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[Contract_Dosage] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 
 update db_org set sync_status=0 where id={{ org_id }}
