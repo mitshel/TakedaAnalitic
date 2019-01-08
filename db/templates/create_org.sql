@@ -36,7 +36,7 @@ isnull( ctm.market_id, isnull(cmnn.market_id, isnull(otm.market_id, omnn.market_
 IIF(
 (ctm.own is null) and (cmnn.own is null),
 -- Если в контрактах везде NULL то определяем OWN по аукционам
-IIF( IIF(otm.own is null,0,isnull(ctm.own,0))>0 or IIF(omnn.own is null,0,isnull(omnn.own,0))>0,1,0),
+IIF( IIF(otm.own is null,0,isnull(otm.own,0))>0 or IIF(omnn.own is null,0,isnull(omnn.own,0))>0,1,0),
 -- Иначе определяем OWN по контрактам
 IIF( IIF(ctm.own is null,0,isnull(ctm.own,0))>0 or IIF(cmnn.own is null,0,isnull(cmnn.own,0))>0,1,0)
 ) as market_own,
