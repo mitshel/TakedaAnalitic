@@ -404,6 +404,46 @@ where pvt.market_id is not null and pvt.market_name is not Null and isnull(t.nam
 {% endautoescape %}  
 """
 
+q_packages = """
+{% autoescape off %}
+select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, isnull(t.name,'') as name, 0 as gr 
+    {% for y in years %},[{{y}}]{% endfor %}
+    from
+    (
+        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
+        sum(isnull({{ market_type_prefix }}Count,0)) as {{ market_type_prefix }}Count
+        from [dbo].[org_CACHE_{{org_id}}] s
+        left join db_lpu l on s.cust_id = l.cust_id
+        left join db_WinnerOrg w on s.Winner_ID = w.id
+        left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
+        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        where 1=1 
+        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+        {% if targets %} and {{targets}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %}    
+        {% if winrs_in %}and {{winrs_in}} {% endif %} 
+        {% if innrs_in %}and {{innrs_in}} {% endif %}
+        {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}
+        {% if own_select %}and {{own_select}} {% endif %}                                    
+        {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
+     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
+    ) m
+    PIVOT
+    (
+    SUM({{ market_type_prefix }}Count)
+    for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
+    ) as pvt
+left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on pvt.{{ market_type_prefix }}{{ product_type }} = t.id
+where pvt.market_id is not null and pvt.market_name is not Null and isnull(t.name,'')<>''
+--order by pvt.market_name
+{{ order_by }}
+{% endautoescape %}  
+"""
+
 q_employees = """
 {% autoescape off %}
 with tree as 
@@ -499,6 +539,44 @@ where 1=1
 {% endautoescape %} 
 """
 
+
+q_dosage = """
+{% autoescape off %}
+select distinct {{fields}} from org_DOSAGE_{{ org_id }} a
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+
+q_dosage_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from org_CACHE_{{ org_id }} s
+        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        left join org_DOSAGE_{{ org_id }} dos on s.Contract_Dosage_id=dos.id
+        where 1=1 
+        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+        {% if targets %} and {{targets}} {% endif %}
+        {% if own_select %}and {{own_select}} {% endif %}                                    
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_form_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from org_CACHE_{{ org_id }} s
+        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        left join org_FORM_{{ org_id }} frm on s.Contract_Form_id=frm.id
+        where 1=1 
+        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+        {% if targets %} and {{targets}} {% endif %}
+        {% if own_select %}and {{own_select}} {% endif %}                                    
+{{ order_by }}
+{% endautoescape %} 
+"""
 
 q_innr_hs = """
 {% autoescape off %}

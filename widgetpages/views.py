@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
 from widgetpages.BIMonBaseViews import unique, extra_in_filter, OrgMixin, FiltersView, BaseDatatableYearView
-from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv, fbudg
+from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv, fbudg, fdosg, fform
 from widgetpages import queries
 
 from db.rawmodel import RawModel
@@ -194,7 +194,36 @@ class AvgAjaxTable(BaseDatatableYearView):
         else:
             qs = qs.order_by('Nm', '[{}] {}'.format(self._columns[sort_col], sort_dir))
 
-        print(qs.query)
+        return qs
+
+class PackagesView(CompetitionsView):
+    filters_list = [fempl, fmrkt, fyear, fstat, fdosg, fform, finnr, ftrnr, fwinr, fcust]
+    template_name = 'ta_packages.html'
+    ajax_filters_url = reverse_lazy('widgetpages:packages')
+    ajax_datatable_url = reverse_lazy('widgetpages:jpackages')
+    view_id = 'Packages'
+    view_name = 'Анализ упаковок (контракты, шт)'
+    select_market_type = 0
+    select_own = 1
+    select_prod_type = 1
+    default_market_type = 2 # Контракты
+    default_own = 1  # Свои рынки
+    default_prod_type = 2 # TradeMark
+
+class PackagesAjaxTable(BaseDatatableYearView):
+    order_columns = ['name']
+    datatable_query = queries.q_packages
+    default_market_type = 2 # Контракты
+    default_own = 1  # Свои рынки
+    default_prod_type = 2 # TradeMark
+
+    def ordering(self, qs):
+        sort_col = int(self._querydict.get('order[0][column]'))
+        sort_dir = self._querydict.get('order[0][dir]')
+        if sort_col<=3:
+            qs = qs.order_by('Nm', 'TradeNx')
+        else:
+            qs = qs.order_by('Nm', '[{}] {}'.format(self._columns[sort_col], sort_dir))
 
         return qs
 

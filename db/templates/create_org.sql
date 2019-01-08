@@ -26,9 +26,9 @@ t.Order_Count as Order_Count,
 t.Order_Sum as Order_Summa,
 t.Order_AVG_Price,
 t.Winner_Id,
-t.Unit_Id as Order_Unit_ID,
-t.Order_Unit,
-c1.Ship_Unit as Contract_Unit,
+--t.Unit_Id as Order_Unit_ID,
+--t.Order_Unit,
+--c1.Ship_Unit as Contract_Unit,
 isnull( ctm.market_name, isnull(cmnn.market_name, isnull(otm.market_name,omnn.market_name ) ) ) as market_name,
 isnull( ctm.market_id, isnull(cmnn.market_id, isnull(otm.market_id, omnn.market_id ) ) ) as market_id,
 IIF(
@@ -51,8 +51,9 @@ isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
 -- c1.Ship_Dosage as Contract_Dosage,
 -- c1.Ship_Volume as Contract_Volume,
 -- c1.Ship_BatchSize as Contract_BatchSize
-isnull(t.Order_Dosage,'')+IIF(t.Order_BatchSize is Null,'',' №'+CAST(t.Order_BatchSize as varchar)) as Order_Dosage,
-isnull(c1.Ship_Dosage,'')+IIF(c1.Ship_Volume is Null, '', ' '+c1.Ship_Volume)+IIF(c1.Ship_BatchSize is Null,'',' №'+CAST(c1.Ship_BatchSize as varchar)) as Contract_Dosage,
+isnull(t.Order_Dosage,'')+IIF(t.Order_BatchSize is Null,'',' №'+CAST(t.Order_BatchSize as varchar)) COLLATE database_default as Order_Dosage,
+isnull(c1.Ship_Dosage,'')+IIF(c1.Ship_Volume is Null, '', ' '+c1.Ship_Volume)+IIF(c1.Ship_BatchSize is Null,'',' №'+CAST(c1.Ship_BatchSize as varchar)) COLLATE database_default as Contract_Dosage,
+c1.Ship_form COLLATE database_default as Contract_Form
 
 into org_CACHE_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
 
@@ -136,19 +137,89 @@ CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Budgets_ID] ON [dbo].[org_CACHE_{{org_
 	[Budgets_ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 
-CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Unit_ID] ON [dbo].[org_CACHE_{{org_id}}]
-(
-	[Unit_ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
-
-CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Dod_ID] ON [dbo].[org_CACHE_{{org_id}}]
-(
-	[Dod_ID] ASC
-)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
-
 CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Contract_Dosage] ON [dbo].[org_CACHE_{{org_id}}]
 (
 	[Contract_Dosage] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Contract_Form] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[Contract_Form] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+
+--
+-- Нормализуем БД
+--
+
+--
+-- НОРМАЛИЗАЦИЯ ДОЗИРОВОК
+--
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('org_DOSAGE_{{org_id}}')
+            and   type = 'U')
+   drop table org_DOSAGE_{{org_id}}
+
+CREATE TABLE [dbo].[org_DOSAGE_{{org_id}}](
+	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](128) NULL,
+PRIMARY KEY CLUSTERED
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+insert into [dbo].[org_DOSAGE_{{org_id}}](name) select distinct isnull(RTRIM(LTRIM(Contract_Dosage)),'') from org_CACHE_{{org_id}}
+alter table org_CACHE_{{org_id}} add Contract_Dosage_id bigint
+
+update u
+set u.Contract_Dosage_id=t.id
+from org_CACHE_{{org_id}} u
+left join org_DOSAGE_{{org_id}} t on isnull(RTRIM(LTRIM(u.Contract_Dosage)),'') = t.name
+
+update org_DOSAGE_{{org_id}} set name=' НЕТ ДАННЫХ' where name = ''
+
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Contract_Dosage_id] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[Contract_Dosage_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+
+--
+-- НОРМАЛИЗАЦИЯ ЛЕКАРСТВЕННЫХ ФОРМ
+--
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('org_FORM_{{org_id}}')
+            and   type = 'U')
+   drop table org_FORM_{{org_id}}
+
+CREATE TABLE [dbo].[org_FORM_{{org_id}}](
+	[id] [bigint] IDENTITY(1,1) NOT NULL,
+	[name] [varchar](256) NULL,
+PRIMARY KEY CLUSTERED
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+insert into [dbo].[org_FORM_{{org_id}}](name) select distinct isnull(RTRIM(LTRIM(Contract_Form)),'') from org_CACHE_{{org_id}}
+alter table org_CACHE_{{org_id}} add Contract_Form_id bigint
+
+update u
+set u.Contract_Form_id=t.id
+from org_CACHE_{{org_id}} u
+left join org_FORM_{{org_id}} t on isnull(RTRIM(LTRIM(u.Contract_Form)),'') = t.name
+
+update org_FORM_{{org_id}} set name=' НЕТ ДАННЫХ' where name = ''
+
+CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Contract_Form_id] ON [dbo].[org_CACHE_{{org_id}}]
+(
+	[Contract_Form_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
 
 update db_org set sync_status=0 where id={{ org_id }}

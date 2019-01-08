@@ -21,6 +21,9 @@ finnr = 'innr'
 ftrnr = 'trnr'
 fwinr = 'winr'
 fbudg = 'budg'
+fdosg = 'dosg'
+fform = 'form'
+
 
 fempa = 'empa'
 fserv = 'serv'
@@ -66,6 +69,10 @@ class OrgMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgPOST | bOrgUSER
 
 class FiltersMixin(View):
+    default_market_type = 2 # Контракт
+    default_own = 1         # Свой рынок
+    default_prod_type = 2   # ТМ
+
     def fempa_selected(self, flt_active, fname):
         return flt_active[fname]['select'] if flt_active else 0
 
@@ -84,12 +91,16 @@ class FiltersMixin(View):
         flt = json.loads(filters_ajax_request) if filters_ajax_request else {}
         flt_active = {}
         if flt:
+            print(flt)
+            print(self.filters_list)
             for f in self.filters_list:
                 flt_str = flt.get('{}_active'.format(f), '')
                 flt_select = flt.get('{}_select'.format(f), '')
                 flt_active[f] = {'list':[e for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
                 flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
-                flt_active[fserv] = {'market': int(flt.get('market_type','1')), 'own': int(flt.get('own_type', '1')), 'prod': int(flt.get('prod_type','2'))}
+                flt_active[fserv] = {'market': int(flt.get('market_type',str(self.default_market_type))), \
+                                     'own': int(flt.get('own_type', str(self.default_own))), \
+                                     'prod': int(flt.get('prod_type',str(self.default_prod_type)))}
         else:
             flt_active[fempl] = self.targets_in_filter(targets)
             flt_active[fempa] = {'list': [], 'select': 0}
@@ -103,7 +114,7 @@ class FiltersMixin(View):
         product_type = 'InnNx' if flt_active[fserv]['prod'] == 1 else 'TradeNx'
 
         if self.fempa_selected(flt_active, fempa):
-            disabled_targets = [e['iid'] for e in targets if e['iid'] not in flt_active[fempl]['list']]
+            disabled_targets = [e['iid'] for e in targets if str(e['iid']) not in flt_active[fempl]['list']]
             flt_targets = '(e.employee_id  not in ({}) or e.employee_id is null) '.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
         else:
             enabled_targets = [str(e) for e in flt_active[fempl]['list']]
@@ -120,6 +131,8 @@ class FiltersMixin(View):
                        winrs_in=extra_in_filter('w.id', flt_active.get(fwinr,'')),
                        innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')),
                        trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')),
+                       dosage_in=extra_in_filter('s.Contract_Dosage_id', flt_active.get(fdosg, '')),
+                       form_in=extra_in_filter('s.Contract_Form_id', flt_active.get(fform, '')),
                        market_type_prefix = market_type_prefix, own_select = own_select, org_id = org_id)
         return qs
 
@@ -134,9 +147,6 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     select_market_type = 0
     select_own = 0
     select_prod_type = 0
-    default_market_type = 1
-    default_own = 1
-    default_prod_type = 2
 
     def filter_empl(self, flt_active=None, org_id=0, targets = []):
         employee_list = targets
@@ -218,11 +228,26 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 'icon':'ruble-sign',
                 'data': budgets_list}
 
+
+    def filter_dosg(self, flt_active=None, org_id=0, targets = []):
+        return {'id': fdosg,
+                'type': 'ajx',
+                'name': 'Фасовка',
+                'icon': 'th',
+                'data': []}
+
+    def filter_form(self, flt_active=None, org_id=0, targets = []):
+        return {'id': fform,
+                'type': 'ajx',
+                'name': 'Лекарственные формы',
+                'icon': 'medkit',
+                'data': []}
+
     def filter_innr(self, flt_active=None, org_id=0, targets = []):
         return {'id': finnr,
                 'type': 'ajx',
                 'name': 'МНН',
-                'icon':'globe',
+                'icon': 'globe',
                 'data': []}
 
     def filter_trnr(self, flt_active=None, org_id=0, targets = []):
@@ -267,6 +292,10 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 filters.append(self.filter_winr(flt_active, org_id, targets))
             if fcust == f:
                 filters.append(self.filter_cust(flt_active, org_id, targets))
+            if fdosg == f:
+                filters.append(self.filter_dosg(flt_active, org_id, targets))
+            if fform == f:
+                filters.append(self.filter_form(flt_active, org_id, targets))
 
         return filters
 
@@ -327,7 +356,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
 
 class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     order_columns = ['name']
-    filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
+    filters_list = [fempl, fmrkt, fyear, fstat, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     org_id = 1
     orderable = 1
     datatable_query = None
