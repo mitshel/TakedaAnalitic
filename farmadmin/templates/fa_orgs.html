@@ -25,6 +25,7 @@
            <table id="tblOrg" class="table table-hover table-sm table-striped display w-100"></table>
         </div>
         </div>
+        <br>
     </div>
 </div>
 </div>
@@ -61,7 +62,12 @@ $(document).ready(function() {
                  }
             },
             { title: "Состояние БД", searchable: false },
-            { title: "Версия БД", searchable: false },
+            { title: "Версия БД", searchable: false ,
+                 render:function(data, type, row, meta) {
+                     if ( data == {{ db_version }} )  badge_type = 'badge-success'; else badge_type = 'badge-danger';
+                     return '<span class="badge '+badge_type+'">'+data+'</span>'
+                 }
+            },
             { title: "Пользователи", searchable: true },
         ],
         language: lang_russian
