@@ -153,12 +153,6 @@ CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Contract_Form] ON [dbo].[org_CACHE_{{o
 -- НОРМАЛИЗАЦИЯ ДОЗИРОВОК
 --
 
---if exists (select 1
---            from  sysobjects
---           where  id = object_id('org_DOSAGE_{{org_id}}')
---            and   type = 'U')
---   drop table org_DOSAGE_{{org_id}}
-
 CREATE TABLE [dbo].[org_DOSAGE_{{org_id}}](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[name] [varchar](128) NULL,
@@ -188,12 +182,6 @@ CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Contract_Dosage_id] ON [dbo].[org_CACH
 -- НОРМАЛИЗАЦИЯ ЛЕКАРСТВЕННЫХ ФОРМ
 --
 
---if exists (select 1
---            from  sysobjects
---           where  id = object_id('org_FORM_{{org_id}}')
---            and   type = 'U')
---   drop table org_FORM_{{org_id}}
-
 CREATE TABLE [dbo].[org_FORM_{{org_id}}](
 	[id] [bigint] IDENTITY(1,1) NOT NULL,
 	[name] [varchar](256) NULL,
@@ -219,4 +207,4 @@ CREATE NONCLUSTERED INDEX [idx_{{org_id}}_Contract_Form_id] ON [dbo].[org_CACHE_
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 
 
-update db_org set sync_status=0, db_version='{{db_version}}' where id={{ org_id }}
+update db_org set sync_status=0, db_version='{{ db_version }}' where id={{ org_id }}
