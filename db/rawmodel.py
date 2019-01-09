@@ -120,6 +120,11 @@ class RawModel(object):
         self._columns = [col[0] for col in self._cursor.description] if self._cursor.description else None
         return self
 
+    def exec(self):
+        self.open()
+        connection.commit()
+        return self
+
     def close(self):
         self._cursor.close()
         self._cursor = None
