@@ -51,7 +51,7 @@ class Lpu(models.Model):
     shortname = models.CharField(db_column='shortname', max_length=512, null=True, blank=True, verbose_name='Грузополучатель полное имя')
     addr1 = models.CharField(db_column='addr1', max_length=512, null=True, blank=True, verbose_name='Адрес1')
     addr2 = models.CharField(db_column='addr2', max_length=512, null=True, blank=True, verbose_name='Адрес2')
-    regcode = models.IntegerField(db_column='regcode', null=True, blank=True, verbose_name='Код региона')
+    regcode = models.ForeignKey('Region', db_column='regcode', null=True, verbose_name='Код региона', on_delete=models.SET_NULL)
     employee = models.ManyToManyField('Employee', related_name='employees', verbose_name='Сотрудник')
 
     class Meta:
@@ -63,6 +63,20 @@ class Lpu(models.Model):
     def __str__(self):
          return  self.inn+' '+self.name
 
+class Region(models.Model):
+    reg_id = models.IntegerField(db_column='Reg_ID', primary_key=True, db_index=True, null=False, blank=False)
+    regnm = models.CharField(db_column='RegNm', max_length=50, db_index=True, null=False, blank=False, verbose_name='Название региона')
+    employee = models.ManyToManyField('Employee', related_name='region_employees', verbose_name='Сотрудник')
+
+    class Meta:
+        verbose_name = 'Регион'
+        verbose_name_plural = 'Регионы'
+        managed = False
+        db_table = 'db_region'
+
+    def __str__(self):
+         return  self.regnm
+
 class Employee(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
     parent = models.ForeignKey('self',on_delete=models.SET_NULL, null=True, blank=True, db_index=True, verbose_name='Руководитель')
@@ -70,6 +84,7 @@ class Employee(models.Model):
     users = models.ManyToManyField(User, related_name='employee_user', verbose_name='Логин входа', blank=True)
     istarget = models.BooleanField(default=True, db_index=True, verbose_name='Таргет')
     lpu = models.ManyToManyField('Lpu', through=Lpu.employee.through, related_name='lpus', blank=True, verbose_name='Грузополучатели') #Lpu.employee.through
+    region = models.ManyToManyField('Region', through=Region.employee.through, related_name='employee_regions', blank=True, verbose_name='Регионы')  # Region.employee.through
 
     class Meta:
         verbose_name = 'Сотрудник'

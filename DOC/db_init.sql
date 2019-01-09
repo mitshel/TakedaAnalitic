@@ -150,13 +150,19 @@ CREATE TABLE [dbo].[db_lpu](
 	[shortname] [varchar](512) NULL,
 	[addr1] [varchar](512) NULL,
 	[addr2] [varchar](512) NULL,
-	[regcode] [int] NULL,
+	[regcode] [int] NOT NULL,
  CONSTRAINT [PK_Lpu] PRIMARY KEY CLUSTERED
 (
 	[cust_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 GO
+
+CREATE NONCLUSTERED INDEX [idx_db_lpu_regcode] ON [dbo].[db_lpu]
+(
+	[regcode] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+go
 
 -- Обновляем Таблицу Организаций
 update t1
@@ -165,7 +171,7 @@ update t1
 		t1.shortname = t2.OrgNmS,
 		t1.addr1 = t2.addr1,
 		t1.addr2 = t2.addr2,
-		t1.regcode = t2.regcode
+		t1.regcode = isnull(t2.regcode,0)
 	from db_lpu t1
 	inner join [VM1-12\CURSORMAIN].[Cursor].[dbo].[org] as t2 on t1.cust_id=t2.Org_ID
 go
@@ -173,7 +179,7 @@ go
 -- Добавляем новые ЛПУ, но только те, которые есть в кэше
 --
 insert into db_lpu
-select DISTINCT Org_ID as cust_id, INN as Org_CustINN, OrgNm as Org_CustNm, OrgNmS as shortname, Addr1, Addr2, regcode
+select DISTINCT Org_ID as cust_id, INN as Org_CustINN, OrgNm as Org_CustNm, OrgNmS as shortname, Addr1, Addr2, isnull(regcode,0) as regcode
 from [VM1-12\CURSORMAIN].[Cursor].[dbo].[org]
 where (Org_ID in (select cust_id from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE])
 or Org_ID in (select cust_id from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract]))
@@ -183,16 +189,16 @@ go
 
 -- Добавляем новые ЛПУ, которые есть в кэше, но нет даже в спрвочнике ORG
 --
-insert into db_lpu(cust_id,Org_CustNm)
-select DISTINCT cust_id, cast(cust_id as varchar)+' #expected in Org from Contract' as Org_CustNm
+insert into db_lpu(cust_id,Org_CustNm, regcode)
+select DISTINCT cust_id, cast(cust_id as varchar)+' #expected in Org from Contract' as Org_CustNm, 0 as regcode
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE]
 where cust_id not in (select cust_id from  db_lpu)
 go
 
 -- Добавляем новые ЛПУ, которые есть в контрактах, но нет даже в спрвочнике ORG
 --
-insert into db_lpu(cust_id,Org_CustNm)
-select DISTINCT cust_id, cast(cust_id as varchar)+' #expected in Org from Contract' as Org_CustNm
+insert into db_lpu(cust_id,Org_CustNm, regcode)
+select DISTINCT cust_id, cast(cust_id as varchar)+' #expected in Org from Contract' as Org_CustNm, 0 as regcode
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract]
 where cust_id not in (select cust_id from  db_lpu)
 go
@@ -248,6 +254,39 @@ go
 
 -- (затронуто строк: 14063)
 
+
+--
+-- Создание и наполнение таблицы Регионов db_region
+--
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('dbo.db_region')
+            and   type = 'U')
+   drop table dbo.db_region
+go
+
+CREATE TABLE [dbo].[db_region](
+	[Reg_ID] [int] NOT NULL,
+	[RegNm] [varchar](50) NOT NULL,
+	[RegNmEn] [varchar](50) NULL,
+	[FO_ID] [int] NULL,
+	[RegCode] [int] NULL,
+	[Cond] [char](1) NULL,
+ CONSTRAINT [PK_Region] PRIMARY KEY CLUSTERED
+(
+	[Reg_ID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+insert into [dbo].[db_region]([Reg_ID],[RegNm],[RegNmEn],[FO_ID],[RegCode],[Cond])
+select [Reg_ID],[RegNm],[RegNmEn],[FO_ID],[RegCode],[Cond]
+from [VM1-12\CURSORMAIN].[Cursor].[dbo].[Region]
+where isnull([Cond],'W')<>'A'
+go
+
+update db_lpu set regcode=isnull(regcode,0)
+go
 
 
 --dbo.regFO
