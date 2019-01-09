@@ -1,0 +1,118 @@
+{% extends "fa_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+<div class="container-fluid px-4">
+<div class="row">
+<div class="col-12">
+
+<!-- Modal Confirm-->
+<div class="modal" id="confirmModal" tabindex="-1" role="dialog" aria-labelledby="confirmModalTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmModalTitle">Подтверждение запроса на удаление.</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="confirmText">
+           Подтвердите удаление выбранного сотрудника.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
+        <button type="button" class="btn btn-danger" id="confirmBtn">Удалить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <label for="nameInput">Сотрудник</label>
+        <input type="text" class="form-control" id="nameInput" placeholder="" value="{{ object.name }}">
+      </div>
+
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <label for="parentSelect">Руководитель</label>
+        <select class="form-control" id="parentSelect">
+               <option value="" {% if p == "" %}selected{% endif %}>---</option>
+           {% for p in parents %}
+               <option value="{{ p.id }}" {% if p == object.parent %}selected{% endif %}>{{ p.name }}</option>
+           {% endfor %}
+        </select>
+      </div>
+</div>
+<div class="row">
+      <div class="form-group col-lg-3 col-md-4 col-sm-6">
+        <div class="form-check">
+          <input class="form-check-input" type="checkbox" value="" id="isTarget" {% if object.istarget %}checked{% endif %}>
+          <label class="form-check-label" for="isTarget">
+            Показывать как таргет
+          </label>
+        </div>
+      </div>
+</div>
+<br>
+<hr>
+<div class="row">
+    <div class="col-12">
+            <a href="{% url 'farmadmin:employees' %}" role="button" class="btn btn-secondary">Выйти без сохранения</a>
+            <a href="#" role="button" class="btn btn-primary" id="emplSubmit">Сохранить</a>
+            {% if object %}<a href="#" role="button" class="btn btn-danger float-right" id="emplRemove" data-toggle="modal" data-target="#confirmModal">Удалить</a>{% endif %}
+     </div>
+</div>
+
+<br>
+<br>
+
+<script>
+
+$(document).ready(function() {
+    $("#emplSubmit").on('click', function(){
+        var istarget = $("#isTarget").prop("checked");
+        var parent = $("#parentSelect").val();
+        var name = $("#nameInput").val();
+
+        $.ajax({
+            type: 'POST',
+            url: "{% if object %}{%  url 'farmadmin:employee' object.id %}{% else %}{%  url 'farmadmin:employee' %}{% endif %}",
+            traditional: true,
+            async: false,
+            data: {
+                {% if object %}"id": {{ object.id }}{% else %}"org": {{ org.id }}{% endif %},
+                "name": name,
+                "parent": parent,
+                "istarget": istarget,
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            },
+            success: function (data) {
+            },
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+            }
+        })
+        window.location = "{%  url 'farmadmin:employees' %}";
+    });
+
+   $("#confirmBtn").on('click', function(){
+        $.ajax({
+            type: 'POST',
+            url: "{% if object %}{%  url 'farmadmin:employee_rm' object.id %}{% else %}{%  url 'farmadmin:employees' %}{% endif %}",
+            async: false,
+            data: {
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            }
+        })
+        window.location = "{%  url 'farmadmin:employees' %}";
+   });
+
+});
+</script>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
