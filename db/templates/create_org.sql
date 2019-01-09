@@ -1,7 +1,8 @@
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('org_CACHE_{{org_id}}')
-            and   type = 'U')
+--if exists (select 1
+--            from  sysobjects
+--           where  id = object_id('org_CACHE_{{org_id}}')
+--            and   type = 'U')
+IF OBJECT_ID('dbo.org_CACHE_{{org_id}}', 'U') IS NOT NULL
    drop table org_CACHE_{{org_id}}
 
 select
