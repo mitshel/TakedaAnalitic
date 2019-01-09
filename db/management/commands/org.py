@@ -1,6 +1,6 @@
 import time
 from django.core.management.base import BaseCommand
-from db.models import Org, Org_log, DB_RECREATE, DB_READY
+from db.models import Org, Org_log, DB_RECREATE, DB_READY, DB_VERSION
 from db.rawmodel import RawModel
 
 
@@ -43,19 +43,15 @@ class Command(BaseCommand):
             return
 
         org.sync_flag = False
-        org.sync_status = DB_RECREATE
         org.save()
-        self.stdout.write('Create database for "{}".'.format(org.name))
+        self.stdout.write('ReCreate database for "{}".'.format(org.name))
         Org_log.objects.create(org_id=org_id, description='{}. Start DB Recreating'.format(org.name))
-        raw=RawModel('create_org.sql').filter(org_id=org.id)
-        print(raw.query)
         startTime = time.time()
-        raw.open().close()
+        RawModel('drop_org.sql').filter(org_id=org.id).open().close()
+        RawModel('create_org.sql').filter(org_id=org.id, db_version = DB_VERSION).open().close()
         totalTime = int(time.time() - startTime)
         self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime//60, totalTime%60))
         Org_log.objects.create(org_id=org_id, description='{}. Finish DB Recreating. Elapsed time: {:0=2}:{:0=2}'.format(org.name, totalTime//60, totalTime%60))
-        org.sync_status = DB_READY
-        org.save()
 
     def updateAll(self):
         for org in Org.objects.filter(sync_flag=True):

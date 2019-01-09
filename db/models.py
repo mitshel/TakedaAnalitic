@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+DB_VERSION = '0.07'
+
 DB_READY = 0
 DB_UPDATE = 1
 DB_RECREATE = 2
@@ -21,6 +23,7 @@ class Org(models.Model):
     sync_flag = models.BooleanField(default=False, verbose_name='Запустить формирование БД', null=False, blank=True)
     sync_status = models.IntegerField(default=0, verbose_name='Состояние синхронизации', null=False, blank=True, choices = SYNC_STATUS_CHOICES)
     users = models.ManyToManyField(User, verbose_name='Логин входа', blank=True)
+    db_version = models.CharField(verbose_name='Версия БД', max_length=5, null=True, blank=True, default='0.00')
 
     class Meta:
         verbose_name = 'Организация'
