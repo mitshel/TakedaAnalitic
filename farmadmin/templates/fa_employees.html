@@ -8,7 +8,7 @@
     <div style="width:1200px;">
         <div class="row">
         <div class="col-6">
-            <a role="button" class="btn btn-primary btn-sm" href="{% url 'farmadmin:employee' %}"><i class="fa fa-plus" id="addEmployee"></i> Добавить сотрудника</a>
+            <a role="button" class="btn btn-primary btn-sm" href="{% url 'farmadmin:employee_base' %}"><i class="fa fa-plus" id="addEmployee"></i> Добавить сотрудника</a>
             <a role="button" class="btn btn-primary btn-sm" href="#" id="addList"><i class="fa fa-list"></i> Добавить списком</a>
         </div>
         <div class="col-6">
@@ -49,7 +49,7 @@ $(document).ready(function() {
             { title: "employee_id", visible: false, searchable: false},
             { title: "Сотрудник", searchable: true , //className: 'text-center',
                  render:function(data, type, row, meta) {
-                     url = "{% url 'farmadmin:employee' 90000000000000009 %}".replace('90000000000000009',row[0]);
+                     url = "{% url 'farmadmin:employee_base' 90000000000000009 %}".replace('90000000000000009',row[0]);
                      return "<a href='"+url+"'>"+data+"</a>"
                  }
             },
@@ -74,7 +74,8 @@ $(document).ready(function() {
             },
             { title: "ЛПУ", searchable: false , //className: 'text-center',
                  render:function(data, type, row, meta) {
-                     return "<a href='#'>Изменить <span class='badge badge-primary'>"+data+"</span></a>"
+                     var url = "{% url 'farmadmin:employee_lpu' 90000000000000009 %}".replace('90000000000000009',row[0]);
+                     return "<a href='"+url+"'>Изменить <span class='badge badge-primary'>"+data+"</span></a>"
                  }
             },
             { title: "Привязка аккаунтов", searchable: false , //className: 'text-center',
@@ -84,7 +85,8 @@ $(document).ready(function() {
                      arr.forEach(function(item, i, arr) {
                        badges += "<span class='badge badge-primary'>"+item+"</span> "
                      });
-                     return "<a href='#'>Изменить "+badges+"</a>"
+                     var url = "{% url 'farmadmin:employee_user' 90000000000000009 %}".replace('90000000000000009',row[0]);
+                     return "<a href='"+url+"'>Изменить "+badges+"</a>"
                  }
             }
         ],
@@ -97,7 +99,7 @@ $(document).ready(function() {
 
     //$('#tblEmployee').on('click', 'tr', function (event) {
     //    var id = tblEmployee.row(this).data()[0];
-    //    location.href='{% url 'farmadmin:employee' 90000000000000009 %}'.replace('90000000000000009',id);
+    //    location.href='{ % url 'farmadmin:employee' 90000000000000009 %}'.replace('90000000000000009',id);
     //} );
 
 } );

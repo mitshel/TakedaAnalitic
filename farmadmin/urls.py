@@ -10,9 +10,12 @@ urlpatterns = [
     path('setuporg/', bi_login(views.SetupOrgView.as_view()), name='setuporg'),
 
     path('employees/', bi_login(views.EmployeesAdminView.as_view()), name='employees'),
-    path('employee/<int:pk>/', bi_login(views.EmployeeUpdateAdminView.as_view()), name='employee'),
+    #path('employee/<int:pk>/', bi_login(views.EmployeeUpdateAdminView.as_view()), name='employee'),
+    path('employee/', bi_login(views.EmployeeCreateBaseAdminView.as_view()), name='employee_base'),
+    path('employee/<int:pk>/', bi_login(views.EmployeeUpdateBaseAdminView.as_view()), name='employee_base'),
+    path('employee/lpu/<int:pk>/', bi_login(views.EmployeeUpdateLpuAdminView.as_view()), name='employee_lpu'),
+    path('employee/user/<int:pk>/', bi_login(views.EmployeeUpdateUserAdminView.as_view()), name='employee_user'),
     path('employee/rm/<int:pk>/', bi_login(views.EmployeeDeleteAdminView.as_view()), name='employee_rm'),
-    path('employee/', bi_login(views.EmployeeCreateAdminView.as_view()), name='employee'),
 
     path('markets/', bi_login(views.MarketsAdminView.as_view()), name='markets'),
     path('market/<int:pk>/', bi_login(views.MarketUpdateAdminView.as_view()), name='market'),

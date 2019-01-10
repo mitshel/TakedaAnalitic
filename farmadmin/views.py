@@ -148,7 +148,6 @@ class EmployeeUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumb
     def get_success_url(self):
         return reverse('farmadmin:success')
 
-
 class EmployeeCreateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, CreateView):
     template_name = 'fa_employee.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')},
@@ -165,6 +164,63 @@ class EmployeeCreateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumb
 
     def get_success_url(self):
         return reverse('farmadmin:success')
+
+class EmployeeUpdateBaseAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
+    template_name = 'fa_employee_base.html'
+    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
+    model = Employee
+    fields = ['id','name','parent','istarget']
+    permission_required = ('db.change_employee',)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object = self.get_object()
+        context['parents'] = Employee.objects.filter(org=self.org).exclude(id=object.id).exclude(parent_id=object.id)
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:employees')
+
+class EmployeeUpdateLpuAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
+    template_name = 'fa_employee_lpu.html'
+    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
+    model = Employee
+    fields = ['id','lpu']
+    permission_required = ('db.change_employee',)
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
+class EmployeeUpdateUserAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
+    template_name = 'fa_employee_user.html'
+    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
+    model = Employee
+    fields = ['id','users']
+    permission_required = ('db.change_employee',)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.filter(org=self.org).filter(employee_user__isnull=True).order_by('username')
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
+class EmployeeCreateBaseAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, CreateView):
+    template_name = 'fa_employee_base.html'
+    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')},
+                   {'name': 'Новый сотрудник', 'url': ''}]
+    model = Employee
+    fields = ['org', 'name','parent','istarget']
+    permission_required = ('db.add_employee',)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['parents'] = Employee.objects.filter(org=self.org)
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:employees')
 
 class EmployeeDeleteAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, DeleteView):
     template_name = 'fa_employee.html'
