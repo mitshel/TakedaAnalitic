@@ -61,7 +61,7 @@ class Lpu(models.Model):
         db_table = 'db_lpu'
 
     def __str__(self):
-         return  self.inn+' '+self.name
+         return  self.inn if self.inn else ''+' '+self.name if self.name else ''
 
 class Region(models.Model):
     reg_id = models.IntegerField(db_column='Reg_ID', primary_key=True, db_index=True, null=False, blank=False)

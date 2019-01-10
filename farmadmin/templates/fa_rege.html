@@ -1,0 +1,161 @@
+<div class="row" style="background-color: #E5E5F5">
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchRegAll" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="float-right">
+                    <button type="button" class="btn btn-outline-primary btn-sm"  id="addReg">Добавить Регион&nbsp;&nbsp;<i class="fa fa-arrow-right"></i></button>
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblRegAll" class="table datatable table-hover table-sm display w-100">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>Наименование региона</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in regions %}
+                        <tr><td>{{ r.reg_id }}</td><td>{{ r.regnm }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+         </div>
+
+    </div>
+
+    <div class="col-lg-6 col-sm-12 pt-4">
+
+        <div class="row">
+            <div class="col-6">
+                <div>
+                    <button type="button" class="btn btn-outline-primary btn-sm" id="removeReg"><i class="fa fa-arrow-left"></i>&nbsp;&nbsp;Удалить Регион</button>
+                </div>
+            </div>
+
+            <div class="col-6">
+                 <div class="input-group input-group-sm mb-3">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text" id="basic-addon1">Поиск</span>
+                  </div>
+                  <input type="text" class="form-control" id="searchLpuEmp" placeholder="" aria-label="Search" aria-describedby="basic-addon1">
+                </div>
+            </div>
+        </div>
+
+         <div class="row">
+            <div class="col-12">
+                <table id="tblRegEmp" class="table datatable table-hover table-sm display w-100">
+                    <thead>
+                        <tr>
+                            <th>id</th>
+                            <th>Наименование региона</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for r in object.region.all %}
+                        <tr><td>{{ r.reg_id }}</td><td>{{ r.regnm }}</td></tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+         </div>
+
+    </div>
+
+
+</div>
+
+
+<script>
+
+    var tblRegEmp = $('#tblRegEmp').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        select: { style: 'multi' },
+        ordering:  true,
+        order: [[ 1, "asc" ]],
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        scroller: true,
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "reg_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "Наименование региона", name: "regnm", "targets": 1 , "visible": true, "searchable": true }
+        ],
+        language: lang_russian
+    } );
+
+    var tblRegAll = $('#tblRegAll').DataTable( {
+        dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
+        select: { style: 'multi' },
+        ordering:  true,
+        scrollY: "300px",
+        scrollX: false,
+        scrollCollapse: true,
+        scroller: true,
+        paging: true,
+        "columnDefs": [
+                    { title: "id", name: "reg_id", "targets": 0 , "visible": false, "searchable": false },
+                    { title: "Наименование региона", name: "regnm", "targets": 1 , "visible": true, "searchable": true }
+        ],
+        language: lang_russian
+    } );
+
+$(document).ready(function() {
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВСЕХ Регионов
+    //
+
+    // Поиск
+    $("#searchRegAll").keyup(function(){
+        tblRegAll.search( this.value, false ).draw();
+    });
+
+    // Обработка кнопки "Добавить Login"
+    $("#addReg").on( 'click', function () {
+        tblRegAll.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+            var v = this.data();
+            tblRegEmp.row.add([v[0], v[1]]).draw('full-hold');
+        });
+        tblRegAll.rows('.selected').remove().draw('full-hold');
+        $('#tblRegAll tbody > tr').removeClass('selected');
+    });
+
+
+    //
+    // РАБОТА С ТАБЛИЦЕЙ ВЫБРАННЫХ Регионов ДЛЯ СОТРУДНИКА
+    //
+
+    // Поиск
+    $("#searchRegEmp").keyup(function(){
+        tblRegEmp.search( this.value ).draw();
+    });
+
+    // Обработка кнопки "Удалить Регион"
+    $("#removeReg").on( 'click', function () {
+        tblRegEmp.rows('.selected').every( function ( rowIdx, tableLoop, rowLoop ) {
+            var v = this.data();
+            tblRegAll.row.add([v[0], v[1]]);
+        });
+        tblRegAll.order( [ 1, 'asc' ] ).draw();
+        tblRegEmp.rows('.selected').remove().draw('full-hold');
+        $('#tblRegEmp tbody > tr').removeClass('selected');
+    });
+
+} );
+
+</script>

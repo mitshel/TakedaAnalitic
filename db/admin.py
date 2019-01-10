@@ -21,9 +21,9 @@ class Org_admin(admin.ModelAdmin):
 class Employee_admin(admin.ModelAdmin):
     list_filter = ['org__name']
     list_display = ('name', 'parent', 'org', 'istarget', 'logons')
-    fields = ('name','parent','org', 'istarget', 'lpu', 'users')
+    fields = ('name','parent','org', 'istarget', 'region', 'lpu', 'users')
     readonly_fields = ('logons', )
-    filter_horizontal = ('lpu','users',)
+    filter_horizontal = ('region', 'lpu','users',)
     search_fields = ['name',]
 
     def logons(self, obj):

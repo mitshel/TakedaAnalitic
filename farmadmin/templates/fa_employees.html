@@ -69,7 +69,8 @@ $(document).ready(function() {
             },
             { title: "Территории", searchable: false , //className: 'text-center',
                  render:function(data, type, row, meta) {
-                     return "<a href='#'>Изменить <span class='badge badge-primary'>"+data+"</span></a>"
+                     var url = "{% url 'farmadmin:employee_reg' 90000000000000009 %}".replace('90000000000000009',row[0]);
+                     return "<a href='"+url+"'>Изменить <span class='badge badge-primary'>"+data+"</span></a>"
                  }
             },
             { title: "ЛПУ", searchable: false , //className: 'text-center',

@@ -9,7 +9,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django import forms
 from django.http import JsonResponse
 
-from db.models import Org, Employee, Market, Lpu, InNR, TradeNR, Market_Innrs, Market_Tmnrs, SYNC_STATUS_CHOICES, Org_log
+from db.models import Org, Employee, Market, Lpu, InNR, TradeNR, Market_Innrs, Market_Tmnrs, SYNC_STATUS_CHOICES, Org_log, Region
 
 bOrgPOST = 4
 bOrgSESSION = 2
@@ -206,6 +206,22 @@ class EmployeeUpdateUserAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadC
     def get_success_url(self):
         return reverse('farmadmin:success')
 
+class EmployeeUpdateRegAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
+    template_name = 'fa_employee_reg.html'
+    breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')}]
+    model = Employee
+    fields = ['id','region']
+    permission_required = ('db.change_employee',)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        object = self.get_object()
+        context['regions'] = Region.objects.exclude(employee=object).order_by('regnm')
+        return context
+
+    def get_success_url(self):
+        return reverse('farmadmin:success')
+
 class EmployeeCreateBaseAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, CreateView):
     template_name = 'fa_employee_base.html'
     breadcrumbs = [{'name': 'Сотрудники', 'url': reverse_lazy('farmadmin:employees')},
@@ -236,7 +252,8 @@ class AjaxLpuAllDatatableView(BaseDatatableView):
     columns = ['cust_id','inn','name']
 
     def get_initial_queryset(self):
-        return Lpu.objects.order_by('name', 'inn')
+        employee_id = int(self.request.POST.get('employee', '0'))
+        return Lpu.objects.filter(regcode__employee=employee_id).order_by('name', 'inn')
 
     def paging(self, qs):
         """ Не используем пакинацию, а возвращаем весь датасет """

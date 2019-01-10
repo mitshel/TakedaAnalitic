@@ -1,0 +1,70 @@
+{% extends "fa_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+<style>
+table.datatable tr {
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 0.9rem;
+}
+
+.rowGrayed {
+    background-color: #a9a9a9; !important;
+    font-style: italic;
+}
+
+</style>
+
+<div class="container-fluid px-4">
+<div class="row">
+<div class="col-12">
+
+
+<b>ТЕРРИТОРИИ в зоне ответственности сотрудника <i>{{ object.name }}</i>:</b><br>
+{% include "fa_rege.html" %}
+<br>
+<hr>
+<div class="row">
+    <div class="col-12">
+            <a href="{% url 'farmadmin:employees' %}" role="button" class="btn btn-secondary">Выйти без сохранения</a>
+            <a href="#" role="button" class="btn btn-primary" id="emplSubmit">Сохранить</a>
+     </div>
+</div>
+
+<br>
+<br>
+
+<script>
+
+$(document).ready(function() {
+    $("#emplSubmit").on('click', function(){
+        var rege_array = tblRegEmp.column(0).data().toArray();
+
+        $.ajax({
+            type: 'POST',
+            url: "{%  url 'farmadmin:employee_reg' object.id %}",
+            traditional: true,
+            async: false,
+            data: {
+                "id": {{ object.id }},
+                "region": rege_array,
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            },
+            success: function (data) {
+            },
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+            }
+        })
+        window.location = "{%  url 'farmadmin:employees' %}";
+    });
+});
+</script>
+</div>
+</div>
+</div>
+
+
+{% endblock %}
