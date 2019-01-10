@@ -3,7 +3,7 @@ import json
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView, RedirectView, View
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
-from django.db.models import Q
+from django.db.models import Q, F
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django import forms
@@ -249,11 +249,11 @@ class EmployeeDeleteAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumb
 # Загрузка полной таблицы со всеми учреждениями
 class AjaxLpuAllDatatableView(BaseDatatableView):
     order_columns = ['name','inn']
-    columns = ['cust_id','inn','name']
+    columns = ['cust_id','inn','name','regnm']
 
     def get_initial_queryset(self):
         employee_id = int(self.request.POST.get('employee', '0'))
-        return Lpu.objects.filter(regcode__employee=employee_id).order_by('name', 'inn')
+        return Lpu.objects.filter(regcode__employee=employee_id).annotate(regnm=F('regcode__regnm')).order_by('name', 'inn')
 
     def paging(self, qs):
         """ Не используем пакинацию, а возвращаем весь датасет """

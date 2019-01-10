@@ -90,7 +90,7 @@
 
     var dsLpuEmp = [
         {%  for l in object.lpu.all %}
-            { 'cust_id': '{{ l.cust_id }}', 'inn': '{{ l.inn }}', 'name': '{{ l.name }}' }{% if not forloop.last %}, {% endif %}
+            { 'cust_id': '{{ l.cust_id }}', 'inn': '{{ l.inn }}', 'name': '{{ l.name }}', 'regnm': '{{ l.regcode.regnm }}' }{% if not forloop.last %}, {% endif %}
         {% endfor %}
     ];
 
@@ -99,7 +99,7 @@
         select: { style: 'api' },
         ordering:  true,
         order: [[ 2, "asc" ]],
-        scrollY: "300px",
+        scrollY: "500px",
         scrollX: false,
         scrollCollapse: true,
         scroller: true,
@@ -108,6 +108,7 @@
                     { "title": "id",  "data": "cust_id", "visible": false, "searchable": false },
                     { "title": "ИНН", "data": "inn", "visible": true, "searchable": true },
                     { "title": "ЛПУ", "data": "name", "visible": true, "searchable": true },
+                    { "title": "Регион", "data": "regnm", "visible": true, "searchable": true }
         ],
         data: dsLpuEmp,
         language: lang_russian
@@ -117,7 +118,7 @@
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
         select: { style: 'api' },
         ordering:  false,
-        scrollY: "300px",
+        scrollY: "500px",
         scrollX: false,
         scrollCollapse: true,
         scroller: true,
@@ -126,6 +127,7 @@
                     { title: "id", name: "cust_id", "targets": 0 , "visible": false, "searchable": false },
                     { title: "ИНН", name: "inn", "targets": 1, "visible": true, "searchable": true },
                     { title: "ЛПУ", name: "name", "targets": 2, "visible": true, "searchable": true },
+                    { title: "Регион", name: "regnm", "targets": 3, "visible": true, "searchable": true }
         ],
         rowCallback: function(row, data){
             var fnd = tblLpuEmp.column(0).data().toArray().indexOf(data[0]) >= 0;
