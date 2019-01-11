@@ -105,7 +105,7 @@ left join db_Budgets b on a.Budgets_ID=b.id
 
 q_sales_analysis = """
 {% autoescape off %}
-select CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as Order_TradeName, t2.name as Contract_TradeName, 
+select DISTINCT CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as Order_TradeName, t2.name as Contract_TradeName, 
        i1.name as Order_InnName, i2.name as Contract_InnName,
        Order_Dosage, Contract_Dosage,
        -- isnull(Order_Dosage,'')+IIF(Order_BatchSize is Null,'',' №'+CAST(Order_BatchSize as varchar)) as Order_Dosage,

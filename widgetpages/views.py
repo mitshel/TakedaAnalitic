@@ -309,4 +309,5 @@ class SalesAnlysisAjaxTable(BaseDatatableYearView):
         sort_col = int(self._querydict.get('order[0][column]'))
         sort_dir = self._querydict.get('order[0][dir]')
         qs = qs.order_by('[{0}] {1}'.format(self._columns[sort_col], sort_dir))
+        print(qs.query)
         return qs
