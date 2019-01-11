@@ -558,7 +558,8 @@ select distinct {{ fields }} from org_CACHE_{{ org_id }} s
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
         {% if targets %} and {{targets}} {% endif %}
-        {% if own_select %}and {{own_select}} {% endif %}                                    
+        {% if own_select %}and {{own_select}} {% endif %}    
+{% if name__icontains %} and dos.name like '%{{ name__icontains }}%'{% endif %}                                
 {{ order_by }}
 {% endautoescape %} 
 """
@@ -573,7 +574,8 @@ select distinct {{ fields }} from org_CACHE_{{ org_id }} s
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
         {% if targets %} and {{targets}} {% endif %}
-        {% if own_select %}and {{own_select}} {% endif %}                                    
+        {% if own_select %}and {{own_select}} {% endif %}    
+{% if name__icontains %} and frm.name like '%{{ name__icontains }}%'{% endif %}                                        
 {{ order_by }}
 {% endautoescape %} 
 """
