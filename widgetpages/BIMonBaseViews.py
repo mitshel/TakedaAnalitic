@@ -28,6 +28,9 @@ fform = 'form'
 fempa = 'empa'
 fserv = 'serv'
 
+def prepare_serach(s):
+    return s.replace("'","")
+
 def extra_in_filter(field, flt):
     if flt:
         if (len(flt['list']) > 0):
@@ -386,7 +389,7 @@ class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     def filter_queryset(self, qs):
         search = self.request.POST.get('search[value]', None)
         if search:
-            qs = qs.filter(icontains=search)
+            qs = qs.filter(icontains=prepare_serach(search))
         return qs
 
     def get_context_data(self, **kwargs):
