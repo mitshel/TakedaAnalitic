@@ -16,6 +16,7 @@ urlpatterns = [
     path('employee/lpu/<int:pk>/', bi_login(views.EmployeeUpdateLpuAdminView.as_view()), name='employee_lpu'),
     path('employee/user/<int:pk>/', bi_login(views.EmployeeUpdateUserAdminView.as_view()), name='employee_user'),
     path('employee/reg/<int:pk>/', bi_login(views.EmployeeUpdateRegAdminView.as_view()), name='employee_reg'),
+    path('employee/regquery/', bi_login(views.EmployeeQueryRegAdminView.as_view()), name='employee_regquery'),
     path('employee/rm/<int:pk>/', bi_login(views.EmployeeDeleteAdminView.as_view()), name='employee_rm'),
 
     path('markets/', bi_login(views.MarketsAdminView.as_view()), name='markets'),

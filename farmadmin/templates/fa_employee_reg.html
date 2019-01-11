@@ -15,7 +15,41 @@ table.datatable tr {
     font-style: italic;
 }
 
+.dscroll {
+    margin-top: 1rem;
+    height: 300px; /* высота нашего блока */
+    width: 750px; /* ширина нашего блока */
+    background: #fff; /* цвет фона, белый */
+    border: 1px solid #C1C1C1; /* размер и цвет границы блока */
+    overflow-y: scroll; /* прокрутка по вертикали */
+    font-size: 0.9rem;
+    font-weight: 400;
+    line-height: 0.9rem;
+}
+
 </style>
+
+<!-- Modal -->
+<div class="modal fade" id="RegModalQuery" tabindex="-1" role="dialog" aria-labelledby="RegModalQueryTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="RegModalQueryTitle"><b>Внимание!!!</b></h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          Изменения в спиcке территорий приведут к автоматическому удалению у текущего сотрудника <span class="badge badge-warning" id="lpu_count">0</span> заказчиков (грузополучателей):<br>
+          <div class="dscroll"><ul id="lpu_list"></ul></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-danger" id="emplSubmit">Сохранить изменения</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div class="container-fluid px-4">
 <div class="row">
@@ -29,7 +63,7 @@ table.datatable tr {
 <div class="row">
     <div class="col-12">
             <a href="{% url 'farmadmin:employees' %}" role="button" class="btn btn-secondary">Выйти без сохранения</a>
-            <a href="#" role="button" class="btn btn-primary" id="emplSubmit">Сохранить</a>
+            <a href="#" role="button" class="btn btn-primary" id="emplPreSubmit">Сохранить</a>
      </div>
 </div>
 
@@ -39,10 +73,11 @@ table.datatable tr {
 <script>
 
 $(document).ready(function() {
-    $("#emplSubmit").on('click', function(){
-        var rege_array = tblRegEmp.column(0).data().toArray();
 
-        $.ajax({
+    function SubmitRegionChanges() {
+         var rege_array = tblRegEmp.column(0).data().toArray();
+
+         $.ajax({
             type: 'POST',
             url: "{%  url 'farmadmin:employee_reg' object.id %}",
             traditional: true,
@@ -53,12 +88,54 @@ $(document).ready(function() {
                 "csrfmiddlewaretoken": '{{ csrf_token }}'
             },
             success: function (data) {
+                window.location = "{%  url 'farmadmin:employees' %}";
             },
             error: function (xhr, str) {
                     alert('Error loading data. ' + str);
             }
         })
-        window.location = "{%  url 'farmadmin:employees' %}";
+    };
+
+    function QuerySave(data) {
+        var arr = data.lpu_for_delete;
+        if (arr.length>0) {
+            var lpus = "";
+            arr.forEach(function (item, i, arr) {
+                lpus += "<li>" + item + "</li>"
+            });
+            $('#lpu_count').text(arr.length);
+            $('#lpu_list').html(lpus);
+            $('#RegModalQuery').modal('show');
+        }
+        else SubmitRegionChanges();
+    };
+
+    $("#emplSubmit").on('click', function() {
+        SubmitRegionChanges();
+    });
+
+    $("#emplPreSubmit").on('click', function(){
+        var rege_array = tblRegEmp.column(0).data().toArray();
+
+        $.ajax({
+            type: 'POST',
+            url: "{%  url 'farmadmin:employee_regquery' %}",
+            //"{%  url 'farmadmin:employee_reg' object.id %}",
+            traditional: true,
+            async: false,
+            data: {
+                "id": {{ object.id }},
+                "region": rege_array,
+                "csrfmiddlewaretoken": '{{ csrf_token }}'
+            },
+            success: function (data) {
+                QuerySave(data);
+            },
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+            }
+        })
+        //window.location = "{%  url 'farmadmin:employees' %}";
     });
 });
 </script>

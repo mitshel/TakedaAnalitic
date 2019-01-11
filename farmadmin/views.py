@@ -219,8 +219,46 @@ class EmployeeUpdateRegAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCr
         context['regions'] = Region.objects.exclude(employee=object).order_by('regnm')
         return context
 
+    def form_valid(self, form):
+        redirect_url = super(EmployeeUpdateRegAdminView, self).form_valid(form)
+        object = self.get_object()
+        try:
+            empl = Employee.objects.get(id=object.id)
+        except:
+            empl = None
+
+        if empl:
+            lpu_for_delete = empl.lpu.exclude(regcode__in=empl.region.all())
+            lpu_for_delete.delete()
+
+        return redirect_url
+
     def get_success_url(self):
         return reverse('farmadmin:success')
+
+class EmployeeQueryRegAdminView(PermissionRequiredMixin, View):
+    permission_required = ('db.change_employee',)
+
+    def post(self, request, *args, **kwargs):
+        status = 1
+        lpu_for_delete = []
+        if request.is_ajax():
+            if request.POST:
+                status = 0
+                employee_id = int(request.POST.get('id', 0))
+                regions = request.POST.getlist('region', [])
+
+                try:
+                    empl = Employee.objects.get(id=employee_id)
+                except:
+                    empl = None
+                    status = 2
+
+                if empl:
+                    lpus = empl.lpu.exclude(regcode__in=[int(r) for r in regions])
+                    lpu_for_delete = [l.name for l in lpus]
+
+        return JsonResponse({'status':status, 'lpu_for_delete':lpu_for_delete})
 
 class EmployeeCreateBaseAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, CreateView):
     template_name = 'fa_employee_base.html'
