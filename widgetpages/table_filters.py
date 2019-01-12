@@ -1,6 +1,6 @@
 import json
 
-from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust, fdosg, fform, fempa
+from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust, fdosg, fform, fempa, fbudg
 from widgetpages.BIMonBaseViews import extra_in_filter, OrgMixin, FiltersMixin
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 from widgetpages import queries
@@ -10,7 +10,7 @@ from db.rawmodel import RawModel
 class FilterListJson(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     columns = ['name', 'ext', 'iid']
     order_columns = ['name']
-    filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
+    filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
 
     def initial_dosg(self, org_id=0):
         dosg_enabled = RawModel(queries.q_dosage_hs).filter(fields='a.id as iid, a.name', org_id=org_id)

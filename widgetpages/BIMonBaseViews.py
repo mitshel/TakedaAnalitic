@@ -152,7 +152,8 @@ class FiltersMixin(View):
 
 class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     template_name = 'ta_competitions.html'
-    filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
+    #filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
+    filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     ajax_filters_url = '#'
     ajax_datatable_url = '#'
     view_id = 'blank'
@@ -371,7 +372,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
 
 class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     order_columns = ['name']
-    filters_list = [fempl, fmrkt, fyear, fstat, fdosg, fform, finnr, ftrnr, fwinr, fcust]
+    filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     org_id = 1
     datatable_query = None
     datatable_count_query = None

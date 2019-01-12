@@ -21,16 +21,19 @@ select pvt.cust_id, pvt.budgets_id as id, grouping(pvt.cust_id) as gr
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
-        {% endif %}
+        {% endif %}       
         {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
-        {% if status_in %}and {{status_in}} {% endif %}
-        {% if budgets_in %}and {{budgets_in}} {% endif %}   
+        {% if status_in %}and {{status_in}} {% endif %}        
+        {% if budgets_in %}and {{budgets_in}} {% endif %}
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
-        {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if own_select %}and {{own_select}} {% endif %}
+        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %} 
+        {% if own_select %}and {{own_select}} {% endif %}              
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
         group by s.cust_id, s.budgets_id, PlanTYear
     ) m
@@ -72,11 +75,14 @@ select COUNT_BIG(*) from
         {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}        
-        {% if budgets_in %}and {{budgets_in}} {% endif %}   
+        {% if budgets_in %}and {{budgets_in}} {% endif %}
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
-        {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}	
         group by s.cust_id, s.budgets_id, PlanTYear
@@ -107,12 +113,15 @@ from [dbo].[org_CACHE_{{org_id}}] s
         {% endif %}
         {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
-        {% if status_in %}and {{status_in}} {% endif %}
-        {% if budgets_in %}and {{budgets_in}} {% endif %}            
+        {% if status_in %}and {{status_in}} {% endif %}        
+        {% if budgets_in %}and {{budgets_in}} {% endif %}
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
-        {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}
 group by PlanTYear,  Budgets_ID) a
 left join db_Budgets b on a.Budgets_ID=b.id
@@ -149,11 +158,15 @@ where 1=1
 {% endif %}
 {% if years_in %}and {{years_in}} {% endif %}
 {% if markets_in %}and {{markets_in}} {% endif %}
-{% if status_in %}and {{status_in}} {% endif %}
+{% if status_in %}and {{status_in}} {% endif %}        
+{% if budgets_in %}and {{budgets_in}} {% endif %}
+{% if dosage_in %}and {{dosage_in}} {% endif %}
+{% if form_in %}and {{form_in}} {% endif %}        
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
-{% if winrs_in %}and {{winrs_in}} {% endif %} 
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+{% if winners_in %}and {{winners_in_in}} {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %} 
 {% if own_select %}and {{own_select}} {% endif %}
 {% if icontains %}and (l.Org_CustNm like '%{{ icontains }}%' or l.Org_CustINN like '%{{ icontains }}%'){% endif %}
 {{ order_by }}
@@ -182,11 +195,15 @@ where 1=1
 {% endif %}
 {% if years_in %}and {{years_in}} {% endif %}
 {% if markets_in %}and {{markets_in}} {% endif %}
-{% if status_in %}and {{status_in}} {% endif %}
+{% if status_in %}and {{status_in}} {% endif %}        
+{% if budgets_in %}and {{budgets_in}} {% endif %}
+{% if dosage_in %}and {{dosage_in}} {% endif %}
+{% if form_in %}and {{form_in}} {% endif %}        
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
-{% if winrs_in %}and {{winrs_in}} {% endif %} 
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+{% if winners_in %}and {{winners_in_in}} {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %} 
 {% if own_select %}and {{own_select}} {% endif %}
 {% if icontains %}and (l.Org_CustNm like '%{{ icontains }}%' or l.Org_CustINN like '%{{ icontains }}%'){% endif %}
 {{ order_by }}
@@ -219,11 +236,16 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             {% endif %}
             {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
-            {% if status_in %}and {{status_in}} {% endif %}            
+            {% if status_in %}and {{status_in}} {% endif %}        
+            {% if budgets_in %}and {{budgets_in}} {% endif %}
+            {% if dosage_in %}and {{dosage_in}} {% endif %}
+            {% if form_in %}and {{form_in}} {% endif %}        
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
-            {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %}    
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if lpus_in %}and {{lpus_in}} {% endif %} 
+            {% if own_select %}and {{own_select}} {% endif %}   
             group by market_id, PlanTYear
             
             union all
@@ -243,11 +265,16 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             {% endif %}
             {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
-            {% if status_in %}and {{status_in}} {% endif %}
+            {% if status_in %}and {{status_in}} {% endif %}        
+            {% if budgets_in %}and {{budgets_in}} {% endif %}
+            {% if dosage_in %}and {{dosage_in}} {% endif %}
+            {% if form_in %}and {{form_in}} {% endif %}        
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
-            {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %}         
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if lpus_in %}and {{lpus_in}} {% endif %} 
+            {% if own_select %}and {{own_select}} {% endif %}        
             group by market_id, PlanTYear          
 		) m
 		PIVOT
@@ -295,11 +322,16 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             {% endif %}
             {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
-            {% if status_in %}and {{status_in}} {% endif %}            
+            {% if status_in %}and {{status_in}} {% endif %}        
+            {% if budgets_in %}and {{budgets_in}} {% endif %}
+            {% if dosage_in %}and {{dosage_in}} {% endif %}
+            {% if form_in %}and {{form_in}} {% endif %}        
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
-            {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %}       
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if lpus_in %}and {{lpus_in}} {% endif %} 
+            {% if own_select %}and {{own_select}} {% endif %}       
             group by s.cust_id, PlanTYear
             
             union all
@@ -318,11 +350,16 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             {% endif %}
             {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
-            {% if status_in %}and {{status_in}} {% endif %}            
+            {% if status_in %}and {{status_in}} {% endif %}        
+            {% if budgets_in %}and {{budgets_in}} {% endif %}
+            {% if dosage_in %}and {{dosage_in}} {% endif %}
+            {% if form_in %}and {{form_in}} {% endif %}        
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
-            {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %}    
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if lpus_in %}and {{lpus_in}} {% endif %} 
+            {% if own_select %}and {{own_select}} {% endif %}   
             group by s.cust_id, PlanTYear          
 		) m
 		PIVOT
@@ -355,11 +392,16 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_CACHE_{{org_id}}] s
             {% endif %}
             {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
-            {% if status_in %}and {{status_in}} {% endif %}            
+            {% if status_in %}and {{status_in}} {% endif %}        
+            {% if budgets_in %}and {{budgets_in}} {% endif %}
+            {% if dosage_in %}and {{dosage_in}} {% endif %}
+            {% if form_in %}and {{form_in}} {% endif %}        
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
-            {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
-            {% if trnrs_in %}and {{trnrs_in}} {% endif %} 
+            {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if lpus_in %}and {{lpus_in}} {% endif %} 
+            {% if own_select %}and {{own_select}} {% endif %} 
             {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}            
 {% endautoescape %}
 """
@@ -390,10 +432,14 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
         {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}        
+        {% if budgets_in %}and {{budgets_in}} {% endif %}
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
-        {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
         group by s.cust_id, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
@@ -438,11 +484,15 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% endif %} 
         {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
-        {% if status_in %}and {{status_in}} {% endif %}               
+        {% if status_in %}and {{status_in}} {% endif %}        
+        {% if budgets_in %}and {{budgets_in}} {% endif %}
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
-        {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
      	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
@@ -486,11 +536,15 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}        
+        {% if budgets_in %}and {{budgets_in}} {% endif %}
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
-        {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if own_select %}and {{own_select}} {% endif %}                                    
+        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %} 
+        {% if own_select %}and {{own_select}} {% endif %}                                     
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
      	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
     ) m
@@ -530,13 +584,15 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}        
+        {% if budgets_in %}and {{budgets_in}} {% endif %}
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
-        {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if dosage_in %}and {{dosage_in}} {% endif %}
-        {% if form_in %}and {{form_in}} {% endif %}
-        {% if own_select %}and {{own_select}} {% endif %}                                    
+        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if lpus_in %}and {{lpus_in}} {% endif %} 
+        {% if own_select %}and {{own_select}} {% endif %}                                   
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
      	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
     ) m
@@ -662,6 +718,8 @@ where exists
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
+        {% if markets_in %}and {{markets_in}} {% endif %}               
         )
 {{ order_by }}
 {% endautoescape %} 
@@ -698,6 +756,9 @@ where exists
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
+        {% if markets_in %}and {{markets_in}} {% endif %}
+        {% if status_in %}and {{status_in}} {% endif %}                       
         )
 {{ order_by }}
 {% endautoescape %} 
@@ -735,10 +796,11 @@ where exists
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
-           {% if years_in %}and {{years_in}} {% endif %}
+          {% if years_in %}and {{years_in}} {% endif %}
           {% if markets_in %}and {{markets_in}} {% endif %}
-          {% if status_in %}and {{status_in}} {% endif %}            
-          {% if own_select %}and {{own_select}} {% endif %}    
+          {% if status_in %}and {{status_in}} {% endif %}
+          {% if budgets_in %}and {{budgets_in}} {% endif %}      
+          {% if own_select %}and {{own_select}} {% endif %}           
           {% if name__icontains %} and a.name like '%{{ name__icontains }}%'{% endif %}  
         )                              
 {{ order_by }}
@@ -777,7 +839,8 @@ where exists
             {% endif %}
           {% if years_in %}and {{years_in}} {% endif %}
           {% if markets_in %}and {{markets_in}} {% endif %}
-          {% if status_in %}and {{status_in}} {% endif %}            
+          {% if status_in %}and {{status_in}} {% endif %}       
+          {% if budgets_in %}and {{budgets_in}} {% endif %}      
           {% if own_select %}and {{own_select}} {% endif %}    
           {% if name__icontains %} and a.name like '%{{ name__icontains }}%'{% endif %} 
         )                                       
@@ -814,8 +877,12 @@ where exists
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
-        {% if status_in %}and {{status_in}} {% endif %}        
+        {% if status_in %}and {{status_in}} {% endif %}  
+        {% if budgets_in %}and {{budgets_in}} {% endif %}       
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}          
         {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
       )  
 {{ order_by }}
@@ -848,8 +915,12 @@ where exists
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
-        {% if status_in %}and {{status_in}} {% endif %}        
+        {% if status_in %}and {{status_in}} {% endif %}    
+        {% if budgets_in %}and {{budgets_in}} {% endif %}     
+        {% if dosage_in %}and {{dosage_in}} {% endif %}
+        {% if form_in %}and {{form_in}} {% endif %}                        
         {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
       )
 {{ order_by }}
@@ -882,6 +953,14 @@ where exists
     {% else %}
         {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
     {% endif %}
+    {% if years_in %}and {{years_in}} {% endif %}
+    {% if markets_in %}and {{markets_in}} {% endif %}
+    {% if status_in %}and {{status_in}} {% endif %}    
+    {% if budgets_in %}and {{budgets_in}} {% endif %}     
+    {% if innrs_in %}and {{innrs_in}} {% endif %}
+    {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+    {% if dosage_in %}and {{dosage_in}} {% endif %}
+    {% if form_in %}and {{form_in}} {% endif %}       
     {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
   )
 {{ order_by }}
@@ -912,6 +991,14 @@ where exists
     {% else %}
         {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
     {% endif %}
+    {% if years_in %}and {{years_in}} {% endif %}
+    {% if markets_in %}and {{markets_in}} {% endif %}
+    {% if status_in %}and {{status_in}} {% endif %}
+    {% if budgets_in %}and {{budgets_in}} {% endif %}         
+    {% if innrs_in %}and {{innrs_in}} {% endif %}
+    {% if trnrs_in %}and {{trnrs_in}} {% endif %}
+    {% if dosage_in %}and {{dosage_in}} {% endif %}
+    {% if form_in %}and {{form_in}} {% endif %}    
     {% if name__icontains %} and a.Org_CustNm like '%{{ name__icontains }}%'{% endif %}
   )
 {{ order_by }}
@@ -947,8 +1034,15 @@ where s.PlanTYear is not NULL --and s.cust_id<>0
 {% endif %}
 {% if years_in %}and {{years_in}} {% endif %}
 {% if markets_in %}and {{markets_in}} {% endif %}
-{% if status_in %}and {{status_in}} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}      
+{% if status_in %}and {{status_in}} {% endif %}        
+{% if budgets_in %}and {{budgets_in}} {% endif %}
+{% if dosage_in %}and {{dosage_in}} {% endif %}
+{% if form_in %}and {{form_in}} {% endif %}        
+{% if lpus_in %}and {{lpus_in}} {% endif %}    
+{% if innrs_in %}and {{innrs_in}} {% endif %}
+{% if trnrs_in %}and {{trnrs_in}} {% endif %}
+{% if winners_in %}and {{winners_in_in}} {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %}        
 group by b.name, PlanTYear
 {{ order_by }}
 {% endautoescape %} 
@@ -972,8 +1066,15 @@ where s.PlanTYear is not NULL --and s.cust_id<>0
 {% endif %}
 {% if years_in %}and {{years_in}} {% endif %}
 {% if markets_in %}and {{markets_in}} {% endif %}
-{% if status_in %}and {{status_in}} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}       
+{% if status_in %}and {{status_in}} {% endif %}        
+{% if budgets_in %}and {{budgets_in}} {% endif %}
+{% if dosage_in %}and {{dosage_in}} {% endif %}
+{% if form_in %}and {{form_in}} {% endif %}        
+{% if lpus_in %}and {{lpus_in}} {% endif %}    
+{% if innrs_in %}and {{innrs_in}} {% endif %}
+{% if trnrs_in %}and {{trnrs_in}} {% endif %}
+{% if winners_in %}and {{winners_in_in}} {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %}        
 group by b.name, month(ProcDt)
 {{ order_by }}
 {% endautoescape %} 

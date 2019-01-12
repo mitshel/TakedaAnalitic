@@ -14,7 +14,7 @@ class HomeView(OrgMixin, TemplateView):
     template_name = 'ta_hello.html'
 
 class SalessheduleView(FiltersView):
-    filters_list = [fempl, fmrkt, fyear, fcust]
+    #filters_list = [fempl, fmrkt, fyear, fcust]
     template_name = 'ta_salesshedule.html'
     ajax_filters_url = reverse_lazy('widgetpages:salesshedule')
     view_id = 'salesshedule'
@@ -36,7 +36,7 @@ class SalessheduleView(FiltersView):
         return pivot_data
 
 class BudgetsView(FiltersView):
-    filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
+    #filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
     template_name = 'ta_budgets.html'
     ajax_filters_url = reverse_lazy('widgetpages:budgets')
     ajax_datatable_url = reverse_lazy('widgetpages:budgets_table')
@@ -89,7 +89,7 @@ class BudgetsView(FiltersView):
         return data
 
 class BudgetsAjaxTable(BaseDatatableYearView):
-    filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
+    #filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
     datatable_query = queries.q_budgets_table
     datatable_count_query = queries.q_budgets_table_count
 
@@ -198,7 +198,7 @@ class AvgAjaxTable(BaseDatatableYearView):
         return qs
 
 class PackagesView(CompetitionsView):
-    filters_list = [fempl, fmrkt, fyear, fstat, fdosg, fform, finnr, ftrnr, fwinr, fcust]
+    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     template_name = 'ta_packages.html'
     ajax_filters_url = reverse_lazy('widgetpages:packages')
     ajax_datatable_url = reverse_lazy('widgetpages:jpackages')
@@ -212,6 +212,7 @@ class PackagesView(CompetitionsView):
     default_prod_type = 2 # TradeMark
 
 class PackagesAjaxTable(BaseDatatableYearView):
+    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     order_columns = ['name']
     datatable_query = queries.q_packages
     default_market_type = 2 # Контракты
