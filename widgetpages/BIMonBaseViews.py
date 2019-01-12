@@ -126,8 +126,8 @@ class FiltersMixin(View):
         #    flt_targets = 'e.employee_id in ({})'.format(','.join(enabled_targets))
 
         qs = qs.filter(years=flt_active[fyear]['list'] if flt_active.get(fyear) else '',
-                       markets=','.join([str(e) for e in flt_active[fmrkt]['list']]) if flt_active.get(fmrkt) else '',
-                       status=','.join([str(e) for e in flt_active[fstat]['list']]) if flt_active.get(fstat) else '',
+                       #markets=','.join([str(e) for e in flt_active[fmrkt]['list']]) if flt_active.get(fmrkt) else '',
+                       #status=','.join([str(e) for e in flt_active[fstat]['list']]) if flt_active.get(fstat) else '',
                        all_targets = ','.join([str(e['iid']) for e in targets]),
                        enabled_targets=','.join([e for e in enabled_targets]),
                        disabled_targets=','.join([e for e in disabled_targets]),
@@ -135,6 +135,7 @@ class FiltersMixin(View):
                        #targets = flt_targets,
                        product_type = product_type,
                        #employees=','.join([str(e) for e in flt_active[fempl]['list']]) if not self.fempa_selected(flt_active, fempa) else '',
+                       markets_cnt_in=extra_in_strfilter('s.id', flt_active.get(fmrkt, '')), #Нужно подумать как избавится от этого
                        markets_in=extra_in_strfilter('s.market_id',flt_active.get(fmrkt,'')),
                        status_in=extra_in_strfilter('s.StatusT_ID', flt_active.get(fstat, '')),
                        budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')),

@@ -229,14 +229,14 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null and market_own=1
             {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
-            {% if markets %}and s.market_id in ({{markets}}) {% endif %}
-            {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
             {% if no_target %} 
                 and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
                 {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+            {% if markets_in %}and {{markets_in}} {% endif %}
+            {% if status_in %}and {{status_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -258,8 +258,10 @@ left join db_market mt on mt.id=nn.market_id
 """
 
 q_mparts_count = """
+{% autoescape off %}
 select count(*) from db_market s where s.org_id = {{org_id}}
-{% if markets %}and s.id in ({{markets}}) {% endif %}
+{% if markets_in %}and {{markets_cnt_in}} {% endif %}
+{% endautoescape %} 
 """
 
 q_lparts = """
