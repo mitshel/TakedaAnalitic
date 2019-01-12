@@ -114,7 +114,7 @@ var ta_sales_analysis_table = $('#ta_sales_analysis_table').DataTable({
                     render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
                     { "title": "Сумма",               "name": "Order_Summa",        "targets": 8 , "visible": true, "className": "dt-right" ,
                     render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
-                    { "title": "Сумма (сред.)",               "name": "Order_AVG_Summa",     "targets": 9 , "visible": true, "className": "dt-right" ,
+                    { "title": "Сумма (сред.)",               "name": "Order_AVG_Summa",     "targets": 9 , "visible": false, "className": "dt-right" ,
                     render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
 
                     { "title": "МНН",                  "name": "Contract_InnName", "targets": 10 , "visible": true, "className": "" ,
