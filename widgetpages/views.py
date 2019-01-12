@@ -304,6 +304,7 @@ class SalesAnlysisView(FiltersView):
 
 class SalesAnlysisAjaxTable(BaseDatatableYearView):
     datatable_query = queries.q_sales_analysis
+    datatable_count_query = queries.q_sales_analysis_count
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))

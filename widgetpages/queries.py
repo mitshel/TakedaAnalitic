@@ -105,13 +105,40 @@ left join db_Budgets b on a.Budgets_ID=b.id
 
 q_sales_analysis = """
 {% autoescape off %}
-select DISTINCT CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as Order_TradeName, t2.name as Contract_TradeName, 
+select CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as Order_TradeName, t2.name as Contract_TradeName, 
        i1.name as Order_InnName, i2.name as Contract_InnName,
        Order_Dosage, Contract_Dosage,
        -- isnull(Order_Dosage,'')+IIF(Order_BatchSize is Null,'',' №'+CAST(Order_BatchSize as varchar)) as Order_Dosage,
        -- isnull(Contract_Dosage,'')+IIF(Contract_Volume is Null, '', ' '+Contract_volume)+IIF(Contract_BatchSize is Null,'',' №'+CAST(Contract_BatchSize as varchar)) as Contract_Dosage, 
        Order_Count, Contract_Count, Order_Price, Contract_Price, Order_Summa, 
        Order_AVG_Price*Order_Count as Order_AVG_Summa, Contract_Summa,  u.name as status_name, SrcInf, Contract_URL
+from [dbo].[org_CACHE_{{org_id}}] s
+left join db_lpu l on s.cust_id = l.cust_id
+left join db_WinnerOrg w on s.Winner_ID = w.id
+left join db_TradeNR t1 on s.Order_TradeNx = t1.id
+left join db_TradeNR t2 on s.Contract_TradeNx = t2.id
+left join db_inNR i1 on s.Order_InnNx = i1.id
+left join db_inNR i2 on s.Contract_InnNx = i2.id
+--left join db_lpu_employee e on s.cust_id=e.lpu_id
+left join db_statusT u on s.StatusT_ID=u.id
+where 1=1 
+{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+{% if markets %}and s.market_id in ({{markets}}) {% endif %}
+{% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %}    
+{% if winrs_in %}and {{winrs_in}} {% endif %} 
+{% if innrs_in %}and {{innrs_in}} {% endif %}
+{% if trnrs_in %}and {{trnrs_in}} {% endif %}
+{% if own_select %}and {{own_select}} {% endif %}
+{% if icontains %}and (l.Org_CustNm like '%{{ icontains }}%' or l.Org_CustINN like '%{{ icontains }}%'){% endif %}
+{{ order_by }}
+{% endautoescape %}  
+"""
+
+q_sales_analysis_count = """
+{% autoescape off %}
+select COUNT_BIG(*)
 from [dbo].[org_CACHE_{{org_id}}] s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_WinnerOrg w on s.Winner_ID = w.id
@@ -602,6 +629,20 @@ select distinct {{ fields }} from org_CACHE_{{ org_id }} s
 q_innr_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_innr a
+where exists
+      ( select top 1 1 from org_CACHE_{{ org_id }} s 
+        where a.id=s.Order_innNx 
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+        {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
+      )  
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_innr_hs0 = """
+{% autoescape off %}
+select distinct {{ fields }} from db_innr a
 inner join org_CACHE_{{ org_id }} s on a.id=s.Order_innNx --and s.cust_id<>0
 --{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 {% if market_in %}inner join db_market_innrs m on a.id=m.innr_id and {{ market_in }} {% endif %}
@@ -613,6 +654,20 @@ where 1=1
 """
 
 q_tradenr_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from db_tradenr a
+where exists
+      ( select top 1 1 from org_CACHE_{{ org_id }} s 
+        where a.id=s.Order_tradeNx 
+        {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+        {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
+      )
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_tradenr_hs0 = """
 {% autoescape off %}
 select distinct {{ fields }} from db_tradenr a
 inner join org_CACHE_{{ org_id }} s on a.id=s.Order_tradeNx --and s.cust_id<>0
