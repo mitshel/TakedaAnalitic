@@ -15,13 +15,14 @@ select pvt.cust_id, pvt.budgets_id as id, grouping(pvt.cust_id) as gr
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where PlanTYear is not null
-        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}
         {% if budgets_in %}and {{budgets_in}} {% endif %}   
@@ -61,13 +62,14 @@ select COUNT_BIG(*) from
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where  PlanTYear is not null
-        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}        
         {% if budgets_in %}and {{budgets_in}} {% endif %}   
@@ -96,13 +98,14 @@ from [dbo].[org_CACHE_{{org_id}}] s
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where  PlanTYear is not null
-        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}
         {% if budgets_in %}and {{budgets_in}} {% endif %}            
@@ -137,13 +140,14 @@ left join db_inNR i2 on s.Contract_InnNx = i2.id
 --left join db_lpu_employee e on s.cust_id=e.lpu_id
 left join db_statusT u on s.StatusT_ID=u.id
 where 1=1 
-{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+--{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
     {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
 {% else %}
     {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
 {% endif %}
+{% if years_in %}and {{years_in}} {% endif %}
 {% if markets_in %}and {{markets_in}} {% endif %}
 {% if status_in %}and {{status_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -169,13 +173,14 @@ left join db_inNR i2 on s.Contract_InnNx = i2.id
 --left join db_lpu_employee e on s.cust_id=e.lpu_id
 left join db_statusT u on s.StatusT_ID=u.id
 where 1=1 
-{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+--{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
     {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
 {% else %}
     {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
 {% endif %}
+{% if years_in %}and {{years_in}} {% endif %}
 {% if markets_in %}and {{markets_in}} {% endif %}
 {% if status_in %}and {{status_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -205,13 +210,14 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
             --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null 
-            {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+            --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if no_target %} 
                 and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
                 {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+            {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
             {% if status_in %}and {{status_in}} {% endif %}            
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -228,13 +234,14 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
             --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null and market_own=1
-            {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+            --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if no_target %} 
                 and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
                 {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+            {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
             {% if status_in %}and {{status_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -279,13 +286,14 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             left join db_WinnerOrg w on s.Winner_ID = w.id
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
             where PlanTYear is not null 
-            {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+            --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if no_target %} 
                 and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
                 {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+            {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
             {% if status_in %}and {{status_in}} {% endif %}            
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -301,13 +309,14 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             left join db_WinnerOrg w on s.Winner_ID = w.id
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
             where PlanTYear is not null and market_own=1
-            {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+            --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if no_target %} 
                 and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
                 {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+            {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
             {% if status_in %}and {{status_in}} {% endif %}            
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -337,13 +346,14 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_CACHE_{{org_id}}] s
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
             --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null 
-            {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+            --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if no_target %} 
                 and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
                 {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+            {% if years_in %}and {{years_in}} {% endif %}
             {% if markets_in %}and {{markets_in}} {% endif %}
             {% if status_in %}and {{status_in}} {% endif %}            
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -370,13 +380,14 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on s.{{ market_type_prefix }}{{ product_type }} = t.id
         where 1=1 
-        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -418,13 +429,14 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on s.{{ market_type_prefix }}{{ product_type }} = t.id
         --where s.{{ market_type_prefix }}TradeNx > 0
         where 1=1 
-        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %} 
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}               
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -464,13 +476,14 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         --left join db_lpu_employee e on s.cust_id=e.lpu_id
         where 1=1 
-        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -507,13 +520,14 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
         --left join db_lpu_employee e on s.cust_id=e.lpu_id
         where 1=1 
-        {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
         {% else %}
             {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
         {% endif %}
+        {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
         {% if status_in %}and {{status_in}} {% endif %}        
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
@@ -714,13 +728,14 @@ where exists
         ( select top 1 1 from org_CACHE_{{ org_id }} s
           {% if no_target %}left join db_lpu l on s.cust_id=l.cust_id{% endif %}
           where s.Contract_Dosage_id=a.id
-          {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+          --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if no_target %} 
                 and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
                 {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+           {% if years_in %}and {{years_in}} {% endif %}
           {% if markets_in %}and {{markets_in}} {% endif %}
           {% if status_in %}and {{status_in}} {% endif %}            
           {% if own_select %}and {{own_select}} {% endif %}    
@@ -753,13 +768,14 @@ where exists
         ( select top 1 1 from org_CACHE_{{ org_id }} s
           {% if no_target %}left join db_lpu l on s.cust_id=l.cust_id{% endif %}        
           where s.Contract_Form_id=a.id
-          {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+          --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if no_target %} 
                 and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
                 {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
             {% else %}
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
+          {% if years_in %}and {{years_in}} {% endif %}
           {% if markets_in %}and {{markets_in}} {% endif %}
           {% if status_in %}and {{status_in}} {% endif %}            
           {% if own_select %}and {{own_select}} {% endif %}    
@@ -922,13 +938,14 @@ from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
 where s.PlanTYear is not NULL --and s.cust_id<>0
-{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+--{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
     {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
 {% else %}
     {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
 {% endif %}
+{% if years_in %}and {{years_in}} {% endif %}
 {% if markets_in %}and {{markets_in}} {% endif %}
 {% if status_in %}and {{status_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}      
@@ -946,13 +963,14 @@ left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
 --{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 --{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where s.PlanTYear is not NULL --and s.cust_id<>0
-{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+--{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
     {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
 {% else %}
     {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
 {% endif %}
+{% if years_in %}and {{years_in}} {% endif %}
 {% if markets_in %}and {{markets_in}} {% endif %}
 {% if status_in %}and {{status_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}       

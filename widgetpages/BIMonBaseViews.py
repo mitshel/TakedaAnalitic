@@ -136,6 +136,7 @@ class FiltersMixin(View):
                        product_type = product_type,
                        #employees=','.join([str(e) for e in flt_active[fempl]['list']]) if not self.fempa_selected(flt_active, fempa) else '',
                        markets_cnt_in=extra_in_strfilter('s.id', flt_active.get(fmrkt, '')), #Нужно подумать как избавится от этого
+                       years_in=extra_in_strfilter('s.PlanTYear', flt_active.get(fyear, '')),
                        markets_in=extra_in_strfilter('s.market_id',flt_active.get(fmrkt,'')),
                        status_in=extra_in_strfilter('s.StatusT_ID', flt_active.get(fstat, '')),
                        budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')),
@@ -372,10 +373,9 @@ class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     order_columns = ['name']
     filters_list = [fempl, fmrkt, fyear, fstat, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     org_id = 1
-    orderable = 1
     datatable_query = None
     datatable_count_query = None
-    empty_datatable_query = 'select null as name, 0 as gr '
+    empty_datatable_query = 'select null as name'
 
     def get_initial_queryset(self):
         self.view_id = self.request.POST.get('view_id', 'BaseDatatableYearView')
@@ -393,6 +393,7 @@ class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
             rawmodel = RawModel(self.datatable_query, self.datatable_count_query)
         else:
             rawmodel = RawModel(self.empty_datatable_query)
+            self.orderable = 0
 
         rawmodel = self.apply_filters(rawmodel, flt_active, org_id, targets)
         return rawmodel

@@ -3,6 +3,7 @@ from django.utils.html import escape
 
 class AjaxRawDatatableView(BaseDatatableView):
     max_display_length = 1000
+    orderable = 1
 
     def render_column(self, row, column):
         value = row.get(column,'')
@@ -46,7 +47,8 @@ class AjaxRawDatatableView(BaseDatatableView):
             total_display_records = qs.count()
 
             # apply ordering
-            qs = self.ordering(qs)
+            if self.orderable:
+                qs = self.ordering(qs)
 
             # apply pagintion
             qs = self.paging(qs)

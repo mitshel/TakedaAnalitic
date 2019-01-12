@@ -36,6 +36,7 @@
 
 <script type="text/javascript">
 var {{ flt.id }}_selectAll = 0;
+var {{ flt.id }}_selected = [];
 </script>
 
 {% if flt.type == 'btn' %}
@@ -67,7 +68,6 @@ var {{ flt.id }}_data = [
                     {% for e in flt.data %} {DT_RowId:'{{ flt.id }}_{{ e.iid }}', iid: '{{ e.iid }}', name:'{{ e.name }}', ext:'{{ e.ext }}', disabled:'0' } {% if not forloop.last %},{% endif %}
                     {% endfor %}
                 ]
-var {{ flt.id }}_selected = [];
 
 var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                 "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',

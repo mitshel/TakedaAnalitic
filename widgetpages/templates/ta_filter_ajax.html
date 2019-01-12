@@ -112,10 +112,10 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
         {% if flt.type == 'btn' %}
             // С нажатой ctrl работает мультивыделение кнопок выбора сотрудников
             if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active')))
-            if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
-               $('button[id^={{ flt.id }}_].active').removeClass('active');
-               $(this).addClass('active');
-            };
+                if ($(this).attr('id').substr(0,5) == '{{ flt.id }}_') {
+                   $('button[id^={{ flt.id }}_].active').removeClass('active');
+                   $(this).addClass('active');
+                };
 
             // Окрашиваем кнопку Выбрать ВСЕ в зависимости от количества выбранных кнопок
             if ($('button[id^={{ flt.id }}_].active').length == $('button[id^={{ flt.id }}_]').length )
