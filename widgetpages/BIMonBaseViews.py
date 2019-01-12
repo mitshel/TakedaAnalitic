@@ -95,7 +95,6 @@ class FiltersMixin(View):
         flt_active = {}
         if flt:
             print(flt)
-            print(self.filters_list)
             for f in self.filters_list:
                 flt_str = flt.get('{}_active'.format(f), '')
                 flt_select = flt.get('{}_select'.format(f), '')

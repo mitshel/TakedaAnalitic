@@ -717,6 +717,19 @@ where 1=1
 q_winner_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_winnerorg a
+where exists 
+  ( select top 1 1 from org_CACHE_{{ org_id }} s 
+    where a.id=s.winner_id
+    {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+    {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
+  )
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_winner_hs0 = """
+{% autoescape off %}
+select distinct {{ fields }} from db_winnerorg a
 inner join org_CACHE_{{ org_id }} s on a.id=s.winner_id
 --{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 where 1=1
@@ -727,6 +740,19 @@ where 1=1
 """
 
 q_lpu_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from db_lpu a
+where exists 
+  ( select top 1 1 from org_CACHE_{{ org_id }} s 
+    where a.cust_id=s.cust_id
+    {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+    {% if name__icontains %} and a.Org_CustNm like '%{{ name__icontains }}%'{% endif %}
+  )
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_lpu_hs0 = """
 {% autoescape off %}
 select distinct {{ fields }} from db_lpu a
 inner join org_CACHE_{{ org_id }} s on a.cust_id=s.cust_id
