@@ -84,6 +84,7 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                     {% endif %}
                 ],
                 {% if flt.type == 'ajx' %}
+                    "searchDelay": 1000,
                     "processing": true,
                     "serverSide": true,
                     //"stateSave" : true,
@@ -119,6 +120,27 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
             });
 
 $(tbl_{{ flt.id }}.column(0).header()).html('<b>{{ flt.name }}</b>');
+
+
+
+$('#tbl_{{ flt.id }}_filter input').off('keyup.DT input.DT');
+var {{ flt.id }}_searchDelay = null;
+
+$('#tbl_{{ flt.id }}_filter input').on('keyup', function(event) {
+
+    if ([16,17,18,27].indexOf(event.keyCode) !== -1) // ctrl, alt, shift, esc
+        return;
+
+    if (event.keyCode == 13) curTimeout = 0; else curTimeout = 2000;
+
+    var search = $('#tbl_{{ flt.id }}_filter input').val();
+    clearTimeout({{ flt.id }}_searchDelay);
+    {{ flt.id }}_searchDelay = setTimeout(function () {
+        if (search != null) {
+            tbl_{{ flt.id }}.search(search).draw();
+        }
+    }, curTimeout);
+});
 
 // Выделяет всю таблицу либо сбрасывает ее выделение
 function {{ flt.id }}_check( mode ) {

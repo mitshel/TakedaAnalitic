@@ -13,11 +13,11 @@ class FilterListJson(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     filters_list = [fempl, fmrkt, fyear, fstat, finnr, ftrnr, fwinr, fcust]
 
     def initial_dosg(self, org_id=0):
-        dosg_enabled = RawModel(queries.q_dosage_hs).filter(fields='s.Contract_Dosage_id as iid, dos.name as name', org_id=org_id)
+        dosg_enabled = RawModel(queries.q_dosage_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
         return dosg_enabled
 
     def initial_form(self, org_id=0):
-        form_enabled = RawModel(queries.q_form_hs).filter(fields='s.Contract_Form_id as iid, frm.name as name', org_id=org_id)
+        form_enabled = RawModel(queries.q_form_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
         return form_enabled
 
     def initial_innr(self, org_id=0):

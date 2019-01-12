@@ -596,6 +596,23 @@ select distinct {{fields}} from org_DOSAGE_{{ org_id }} a
 
 q_dosage_hs = """
 {% autoescape off %}
+select distinct {{ fields }} from org_DOSAGE_{{ org_id }} a
+where exists
+        ( select top 1 1 from org_CACHE_{{ org_id }} s
+          where s.Contract_Dosage_id=a.id
+          {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+          {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+          {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+          {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+          {% if own_select %}and {{own_select}} {% endif %}    
+          {% if name__icontains %} and a.name like '%{{ name__icontains }}%'{% endif %}  
+        )                              
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_dosage_hs0 = """
+{% autoescape off %}
 select distinct {{ fields }} from org_CACHE_{{ org_id }} s
         --left join db_lpu_employee e on s.cust_id=e.lpu_id
         left join org_DOSAGE_{{ org_id }} dos on s.Contract_Dosage_id=dos.id
@@ -611,6 +628,23 @@ select distinct {{ fields }} from org_CACHE_{{ org_id }} s
 """
 
 q_form_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from org_FORM_{{ org_id }} a
+where exists
+        ( select top 1 1 from org_CACHE_{{ org_id }} s
+          where s.Contract_Form_id=a.id
+          {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
+          {% if markets %}and s.market_id in ({{markets}}) {% endif %}
+          {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
+          {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+          {% if own_select %}and {{own_select}} {% endif %}    
+          {% if name__icontains %} and a.name like '%{{ name__icontains }}%'{% endif %} 
+        )                                       
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_form_hs0 = """
 {% autoescape off %}
 select distinct {{ fields }} from org_CACHE_{{ org_id }} s
         --left join db_lpu_employee e on s.cust_id=e.lpu_id
