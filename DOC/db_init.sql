@@ -1,4 +1,47 @@
 --
+-- Создание и наполнение таблицы годов db_years
+--
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('dbo.db_years')
+            and   type = 'U')
+   drop table [dbo].[db_years]
+go
+
+
+CREATE TABLE [dbo].[db_years] (
+	[PlanTYear] [int] NOT NULL
+PRIMARY KEY CLUSTERED
+(
+	[PlanTYear] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+insert into [dbo].[db_years](PlanTYear) values(2010)
+insert into [dbo].[db_years](PlanTYear) values(2011)
+insert into [dbo].[db_years](PlanTYear) values(2012)
+insert into [dbo].[db_years](PlanTYear) values(2013)
+insert into [dbo].[db_years](PlanTYear) values(2014)
+insert into [dbo].[db_years](PlanTYear) values(2015)
+insert into [dbo].[db_years](PlanTYear) values(2016)
+insert into [dbo].[db_years](PlanTYear) values(2017)
+insert into [dbo].[db_years](PlanTYear) values(2018)
+insert into [dbo].[db_years](PlanTYear) values(2019)
+insert into [dbo].[db_years](PlanTYear) values(2020)
+insert into [dbo].[db_years](PlanTYear) values(2021)
+insert into [dbo].[db_years](PlanTYear) values(2022)
+insert into [dbo].[db_years](PlanTYear) values(2023)
+insert into [dbo].[db_years](PlanTYear) values(2024)
+insert into [dbo].[db_years](PlanTYear) values(2025)
+insert into [dbo].[db_years](PlanTYear) values(2026)
+insert into [dbo].[db_years](PlanTYear) values(2027)
+insert into [dbo].[db_years](PlanTYear) values(2028)
+insert into [dbo].[db_years](PlanTYear) values(2029)
+insert into [dbo].[db_years](PlanTYear) values(2030)
+go
+
+--
 -- Создание и наполнение таблицы статусов db_statusT
 --
 if exists (select 1

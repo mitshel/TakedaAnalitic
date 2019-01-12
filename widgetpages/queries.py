@@ -464,22 +464,29 @@ where istarget=1
 {% endautoescape %} 
 """
 
-q_markets = """
-{% autoescape off %}
-select {{fields}} from db_market a where org_id={{org_id}} 
-{{ order_by }}
-{% endautoescape %} 
-"""
 
+# Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
 q_markets = """
 {% autoescape off %}
-select distinct {{ fields }} from db_market a
-where a.org_id = {{ org_id }}
+select distinct {{ fields }} from db_market a where a.org_id = {{ org_id }}
 {{ order_by }}
 {% endautoescape %} 
 """
 
 q_markets_hs = """
+{% autoescape off %}
+select distinct {{ fields }} from db_market a 
+where a.org_id = {{ org_id }}
+and exists ( select 1 from org_CACHE_{{ org_id }} s
+               where s.market_id=a.id
+               {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+               {% if own_select %}and {{own_select}} {% endif %}
+)
+{{ order_by }}
+{% endautoescape %} 
+"""
+
+q_markets_hs0 = """
 {% autoescape off %}
 select distinct {{ fields }} from db_market a
 inner join org_CACHE_{{ org_id }} s on a.id=s.market_id --and b.cust_id<>0
@@ -493,9 +500,22 @@ where a.org_id = {{ org_id }}
 
 q_years_hs = """
 {% autoescape off %}
+select {{ fields }} from db_years a
+where exists ( select 1 from org_CACHE_{{ org_id }} s
+               where s.PlanTYear=a.PlanTYear
+               {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
+               {% if own_select %}and {{own_select}} {% endif %}
+)
+{{ order_by }}
+{% endautoescape %}  
+ """
+
+# Использование условия "and s.cust_id is Not Null" увеличивает задержку с ~1 до ~7 секунд
+q_years_hs0 = """
+{% autoescape off %}
 select distinct {{ fields }} from org_CACHE_{{ org_id }} s
 --{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
-where s.PlanTYear is not Null and s.cust_id is Not Null
+where s.PlanTYear is not Null -- and s.cust_id is Not Null
 {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if own_select %}and {{own_select}} {% endif %}
 {{ order_by }}

@@ -115,11 +115,13 @@ class FiltersMixin(View):
         market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
         own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
         product_type = 'InnNx' if flt_active[fserv]['prod'] == 1 else 'TradeNx'
+        no_target = None
 
         if self.fempa_selected(flt_active, fempa):
             disabled_targets = [e['iid'] for e in targets if str(e['iid']) not in flt_active[fempl]['list']]
             #flt_targets = '(e.employee_id  not in ({}) or e.employee_id is null) '.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
             flt_targets = '(e.employee_id  not in ({})) '.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
+            no_target = 1
         else:
             enabled_targets = [str(e) for e in flt_active[fempl]['list']]
             flt_targets = 'e.employee_id in ({})'.format(','.join(enabled_targets) if enabled_targets else '-1')
@@ -127,6 +129,8 @@ class FiltersMixin(View):
         qs = qs.filter(years=flt_active[fyear]['list'] if flt_active.get(fyear) else '',
                        markets=','.join([str(e) for e in flt_active[fmrkt]['list']] if flt_active.get(fmrkt) else ''),
                        status=','.join([str(e) for e in flt_active[fstat]['list']] if flt_active.get(fstat) else ''),
+                       all_targets = ','.join([str(e['iid']) for e in targets]),
+                       no_target = no_target,
                        targets = flt_targets,
                        product_type = product_type,
                        employees=','.join([str(e) for e in flt_active[fempl]['list']]) if not self.fempa_selected(flt_active, fempa) else '',
@@ -168,12 +172,14 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
             # Показываем все доступные рынки для сотрудника организации
             market_enabled = RawModel(queries.q_markets).filter(fields="id as iid, name",org_id=org_id).order_by('name')
             # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
-            market_active = self.apply_filters(RawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+            # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
+            market_active = self.apply_filters(RawModel(queries.q_markets).filter(fields="a.id as iid"), flt_active, org_id, targets)
             market_list_active = [e['iid'] for e in market_active.open().fetchall()]
             market_active.close()
         else:
             # Показываем все доступные рынки
-            market_enabled = self.apply_filters(RawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+            # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
+            market_enabled = self.apply_filters(RawModel(queries.q_markets).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
         market_list = list(market_enabled.open().fetchall())
         market_enabled.close()
