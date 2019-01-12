@@ -31,7 +31,7 @@ select pvt.cust_id, pvt.budgets_id as id, grouping(pvt.cust_id) as gr
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if winners_in %}and {{winners_in}} {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}              
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
@@ -81,7 +81,7 @@ select COUNT_BIG(*) from
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if winners_in %}and {{winners_in}} {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}	
@@ -120,7 +120,7 @@ from [dbo].[org_CACHE_{{org_id}}] s
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if winners_in %}and {{winners_in}} {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}
 group by PlanTYear,  Budgets_ID) a
@@ -165,7 +165,7 @@ where 1=1
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-{% if winners_in %}and {{winners_in_in}} {% endif %}
+{% if winners_in %}and {{winners_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %} 
 {% if own_select %}and {{own_select}} {% endif %}
 {% if icontains %}and (l.Org_CustNm like '%{{ icontains }}%' or l.Org_CustINN like '%{{ icontains }}%'){% endif %}
@@ -202,7 +202,7 @@ where 1=1
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-{% if winners_in %}and {{winners_in_in}} {% endif %}
+{% if winners_in %}and {{winners_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %} 
 {% if own_select %}and {{own_select}} {% endif %}
 {% if icontains %}and (l.Org_CustNm like '%{{ icontains }}%' or l.Org_CustINN like '%{{ icontains }}%'){% endif %}
@@ -243,7 +243,7 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if innrs_in %}and {{innrs_in}} {% endif %}
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if winners_in %}and {{winners_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
             {% if own_select %}and {{own_select}} {% endif %}   
             group by market_id, PlanTYear
@@ -272,7 +272,7 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if innrs_in %}and {{innrs_in}} {% endif %}
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if winners_in %}and {{winners_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
             {% if own_select %}and {{own_select}} {% endif %}        
             group by market_id, PlanTYear          
@@ -329,7 +329,7 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if innrs_in %}and {{innrs_in}} {% endif %}
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if winners_in %}and {{winners_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
             {% if own_select %}and {{own_select}} {% endif %}       
             group by s.cust_id, PlanTYear
@@ -357,7 +357,7 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if innrs_in %}and {{innrs_in}} {% endif %}
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if winners_in %}and {{winners_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
             {% if own_select %}and {{own_select}} {% endif %}   
             group by s.cust_id, PlanTYear          
@@ -399,7 +399,7 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_CACHE_{{org_id}}] s
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if innrs_in %}and {{innrs_in}} {% endif %}
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-            {% if winners_in %}and {{winners_in_in}} {% endif %}
+            {% if winners_in %}and {{winners_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
             {% if own_select %}and {{own_select}} {% endif %} 
             {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}            
@@ -438,7 +438,7 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if winners_in %}and {{winners_in}} {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
@@ -491,7 +491,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if winners_in %}and {{winners_in}} {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
@@ -542,7 +542,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if winners_in %}and {{winners_in}} {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                     
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
@@ -590,7 +590,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-        {% if winners_in %}and {{winners_in_in}} {% endif %}
+        {% if winners_in %}and {{winners_in}} {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                   
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
@@ -1041,7 +1041,7 @@ where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-{% if winners_in %}and {{winners_in_in}} {% endif %}
+{% if winners_in %}and {{winners_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}        
 group by b.name, PlanTYear
 {{ order_by }}
@@ -1073,7 +1073,7 @@ where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-{% if winners_in %}and {{winners_in_in}} {% endif %}
+{% if winners_in %}and {{winners_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}        
 group by b.name, month(ProcDt)
 {{ order_by }}
