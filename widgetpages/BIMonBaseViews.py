@@ -118,7 +118,8 @@ class FiltersMixin(View):
 
         if self.fempa_selected(flt_active, fempa):
             disabled_targets = [e['iid'] for e in targets if str(e['iid']) not in flt_active[fempl]['list']]
-            flt_targets = '(e.employee_id  not in ({}) or e.employee_id is null) '.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
+            #flt_targets = '(e.employee_id  not in ({}) or e.employee_id is null) '.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
+            flt_targets = '(e.employee_id  not in ({})) '.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
         else:
             enabled_targets = [str(e) for e in flt_active[fempl]['list']]
             flt_targets = 'e.employee_id in ({})'.format(','.join(enabled_targets) if enabled_targets else '-1')

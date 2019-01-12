@@ -13,12 +13,12 @@ select pvt.cust_id, pvt.budgets_id as id, grouping(pvt.cust_id) as gr
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        left join db_lpu_employee e on s.cust_id=e.lpu_id      
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where PlanTYear is not null
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if budgets_in %}and {{budgets_in}} {% endif %}   
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
@@ -54,12 +54,12 @@ select COUNT_BIG(*) from
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        left join db_lpu_employee e on s.cust_id=e.lpu_id      
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where  PlanTYear is not null
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if budgets_in %}and {{budgets_in}} {% endif %}   
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
@@ -84,12 +84,12 @@ from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        left join db_lpu_employee e on s.cust_id=e.lpu_id      
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where  PlanTYear is not null
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if budgets_in %}and {{budgets_in}} {% endif %}            
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
@@ -119,13 +119,13 @@ left join db_TradeNR t1 on s.Order_TradeNx = t1.id
 left join db_TradeNR t2 on s.Contract_TradeNx = t2.id
 left join db_inNR i1 on s.Order_InnNx = i1.id
 left join db_inNR i2 on s.Contract_InnNx = i2.id
-left join db_lpu_employee e on s.cust_id=e.lpu_id
+--left join db_lpu_employee e on s.cust_id=e.lpu_id
 left join db_statusT u on s.StatusT_ID=u.id
 where 1=1 
 {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if markets %}and s.market_id in ({{markets}}) {% endif %}
 {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}    
 {% if winrs_in %}and {{winrs_in}} {% endif %} 
 {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -151,12 +151,12 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-            left join db_lpu_employee e on s.cust_id=e.lpu_id
+            --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null 
             {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if markets %}and s.market_id in ({{markets}}) {% endif %}
             {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-            {% if targets %} and {{targets}} {% endif %}
+            {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -169,12 +169,12 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-            left join db_lpu_employee e on s.cust_id=e.lpu_id
+            --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null and market_own=1
             {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if markets %}and s.market_id in ({{markets}}) {% endif %}
             {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-            {% if targets %} and {{targets}} {% endif %}
+            {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -214,12 +214,12 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-            left join db_lpu_employee e on s.cust_id=e.lpu_id
+            --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null 
             {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if markets %}and s.market_id in ({{markets}}) {% endif %}
             {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-            {% if targets %} and {{targets}} {% endif %}
+            {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -232,12 +232,12 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-            left join db_lpu_employee e on s.cust_id=e.lpu_id
+            --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null and market_own=1
             {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if markets %}and s.market_id in ({{markets}}) {% endif %}
             {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-            {% if targets %} and {{targets}} {% endif %}
+            {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -263,12 +263,12 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_CACHE_{{org_id}}] s
             left join db_lpu l on s.cust_id = l.cust_id
             left join db_WinnerOrg w on s.Winner_ID = w.id
             left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-            left join db_lpu_employee e on s.cust_id=e.lpu_id
+            --left join db_lpu_employee e on s.cust_id=e.lpu_id
             where PlanTYear is not null 
             {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
             {% if markets %}and s.market_id in ({{markets}}) {% endif %}
             {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-            {% if targets %} and {{targets}} {% endif %}
+            {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %}    
             {% if winrs_in %}and {{winrs_in}} {% endif %} 
             {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -292,13 +292,13 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on s.{{ market_type_prefix }}{{ product_type }} = t.id
-        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id
         --where s.{{ market_type_prefix }}TradeNx > 0
         where 1=1 
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -336,13 +336,13 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on s.{{ market_type_prefix }}{{ product_type }} = t.id
-        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id
         --where s.{{ market_type_prefix }}TradeNx > 0
         where 1=1 
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -378,12 +378,12 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id
         where 1=1 
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -416,12 +416,12 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id
         where 1=1 
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %}    
         {% if winrs_in %}and {{winrs_in}} {% endif %} 
         {% if innrs_in %}and {{innrs_in}} {% endif %}
@@ -483,9 +483,9 @@ q_markets_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_market a
 inner join org_CACHE_{{ org_id }} s on a.id=s.market_id --and b.cust_id<>0
-{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
 where a.org_id = {{ org_id }}
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if own_select %}and {{own_select}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
@@ -494,9 +494,9 @@ where a.org_id = {{ org_id }}
 q_years_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from org_CACHE_{{ org_id }} s
-{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
 where s.PlanTYear is not Null and s.cust_id is Not Null
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if own_select %}and {{own_select}} {% endif %}
 {{ order_by }}
 {% endautoescape %} 
@@ -512,11 +512,10 @@ select distinct {{fields}} from db_statusT a where a.id>0
 q_status_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_statusT a
-inner join org_CACHE_{{ org_id }} b on a.id=b.statusT_ID --and b.cust_id<>0
-{% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id {% endif %}
---{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+inner join org_CACHE_{{ org_id }} s on a.id=s.statusT_ID --and s.cust_id<>0
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
 where 1=1 
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {{ order_by }}
 {% endautoescape %} 
 """
@@ -531,10 +530,10 @@ select distinct {{fields}} from db_budgets a
 q_budgets_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_budgets a
-inner join org_CACHE_{{ org_id }} b on a.id=b.budgets_ID --and b.cust_id<>0
-{% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id {% endif %}
+inner join org_CACHE_{{ org_id }} s on a.id=s.budgets_ID --and s.cust_id<>0
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id {% endif %}
 where 1=1 
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {{ order_by }}
 {% endautoescape %} 
 """
@@ -551,13 +550,13 @@ select distinct {{fields}} from org_DOSAGE_{{ org_id }} a
 q_dosage_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from org_CACHE_{{ org_id }} s
-        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id
         left join org_DOSAGE_{{ org_id }} dos on s.Contract_Dosage_id=dos.id
         where 1=1 
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if own_select %}and {{own_select}} {% endif %}    
 {% if name__icontains %} and dos.name like '%{{ name__icontains }}%'{% endif %}                                
 {{ order_by }}
@@ -567,13 +566,13 @@ select distinct {{ fields }} from org_CACHE_{{ org_id }} s
 q_form_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from org_CACHE_{{ org_id }} s
-        left join db_lpu_employee e on s.cust_id=e.lpu_id
+        --left join db_lpu_employee e on s.cust_id=e.lpu_id
         left join org_FORM_{{ org_id }} frm on s.Contract_Form_id=frm.id
         where 1=1 
         {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if markets %}and s.market_id in ({{markets}}) {% endif %}
         {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-        {% if targets %} and {{targets}} {% endif %}
+        {% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
         {% if own_select %}and {{own_select}} {% endif %}    
 {% if name__icontains %} and frm.name like '%{{ name__icontains }}%'{% endif %}                                        
 {{ order_by }}
@@ -583,12 +582,11 @@ select distinct {{ fields }} from org_CACHE_{{ org_id }} s
 q_innr_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_innr a
-inner join org_CACHE_{{ org_id }} b on a.id=b.Order_innNx --and b.cust_id<>0
-{% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id{% endif %}
---{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+inner join org_CACHE_{{ org_id }} s on a.id=s.Order_innNx --and s.cust_id<>0
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 {% if market_in %}inner join db_market_innrs m on a.id=m.innr_id and {{ market_in }} {% endif %}
 where 1=1
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
 {{ order_by }}
 {% endautoescape %} 
@@ -597,12 +595,11 @@ where 1=1
 q_tradenr_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_tradenr a
-inner join org_CACHE_{{ org_id }} b on a.id=b.Order_tradeNx --and b.cust_id<>0
-{% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id{% endif %}
---{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+inner join org_CACHE_{{ org_id }} s on a.id=s.Order_tradeNx --and s.cust_id<>0
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 {% if market_in %}inner join db_market_tmnrs m on a.id=m.tradenr_id and {{ market_in }} {% endif %}
 where 1=1
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
 {{ order_by }}
 {% endautoescape %} 
@@ -611,11 +608,10 @@ where 1=1
 q_winner_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_winnerorg a
-inner join org_CACHE_{{ org_id }} b on a.id=b.winner_id
-{% if targets %}left join db_lpu_employee e on b.cust_id=e.lpu_id{% endif %}
---{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+inner join org_CACHE_{{ org_id }} s on a.id=s.winner_id
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 where 1=1
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
 {{ order_by }}
 {% endautoescape %} 
@@ -624,11 +620,11 @@ where 1=1
 q_lpu_hs = """
 {% autoescape off %}
 select distinct {{ fields }} from db_lpu a
-inner join org_CACHE_{{ org_id }} b on a.cust_id=b.cust_id
-{% if targets %}left join db_lpu_employee e on a.cust_id=e.lpu_id{% endif %}
+inner join org_CACHE_{{ org_id }} s on a.cust_id=s.cust_id
+--{% if targets %}left join db_lpu_employee e on a.cust_id=e.lpu_id{% endif %}
 --{% if employee_in %}inner join db_lpu_employee e on b.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where 1=1
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if name__icontains %} and a.Org_CustNm like '%{{ name__icontains }}%'{% endif %}
 {{ order_by }}
 {% endautoescape %} 
@@ -640,13 +636,13 @@ select b.name as market_name, PlanTYear as iid, Sum(isnull(Order_Summa,0))/10000
 from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
-{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 --{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if markets %}and s.market_id in ({{markets}}) {% endif %}
 {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}      
 group by b.name, PlanTYear
 {{ order_by }}
@@ -661,13 +657,13 @@ select b.name as market_name, month(ProcDt) as mon, Sum(isnull(Order_Summa,0))/1
 from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
-{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
+--{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
 --{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
 where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if markets %}and s.market_id in ({{markets}}) {% endif %}
 {% if status %}and s.StatusT_ID in ({{status}}) {% endif %}
-{% if targets %} and {{targets}} {% endif %}
+{% if targets %} and exists (select 1 from db_lpu_employee e where e.lpu_id=s.cust_id and {{targets}} ) {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}       
 group by b.name, month(ProcDt)
 {{ order_by }}
