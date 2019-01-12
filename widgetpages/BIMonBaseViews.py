@@ -219,9 +219,19 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 'data0': year_list_active}
 
     def filter_stat(self, flt_active=None, org_id=0, targets = []):
-        fields =  "a.id as iid, name" if flt_active.get(fstat) else "a.id as iid, name"
-        status_enabled = RawModel(queries.q_status).filter(fields=fields).order_by('name')
-        # status_enabled  = self.apply_filters(RawModel(queries.q_status_hs),flt_active, org_id, targets).filter(fields=fields).order_by('name')
+        status_list_active = []
+        if not flt_active.get(fstat):
+            # Показываем все доступные статусы для сотрудника организации
+            status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name",org_id=org_id).order_by('name')
+            # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
+            # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
+            status_active = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+            status_list_active = [e['iid'] for e in status_active.open().fetchall()]
+            status_active.close()
+        else:
+            # Показываем все доступные рынки
+            # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
+            status_enabled = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
         status_list = list(status_enabled.open().fetchall())
         status_enabled.close()
@@ -229,12 +239,28 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 'type': 'btn',
                 'name': 'Статус торгов',
                 'icon':'check-square',
-                'data': status_list}
+                'data':  status_list,
+                'data0': status_list_active}
 
     def filter_budg(self, flt_active=None, org_id=0, targets = []):
-        fields =  "a.id as iid, name" if flt_active.get(fbudg) else "a.id as iid, name"
-        budgets_enabled = RawModel(queries.q_budgets).filter(fields=fields).order_by('name')
+        #fields =  "a.id as iid, name" if flt_active.get(fbudg) else "a.id as iid, name"
+        #budgets_enabled = RawModel(queries.q_budgets).filter(fields=fields).order_by('name')
         # budgets_enabled = self.apply_filters(RawModel(queries.q_budgets_hs),flt_active, org_id, targets).filter(fields=fields ).order_by('name')
+
+        #budgets_list = list(budgets_enabled.open().fetchall())
+        #budgets_enabled.close()
+
+        budgets_list_active = []
+        if not flt_active.get(fbudg):
+            # Показываем все доступные Бюджеты для сотрудника организации
+            budgets_enabled = RawModel(queries.q_budgets).filter(fields="id as iid, name",org_id=org_id).order_by('name')
+            # Но активными будут выглядеть только Бюджеты, доступные сотруднику (через ЛПУ)
+            budgets_active = self.apply_filters(RawModel(queries.q_budgets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+            budgets_list_active = [e['iid'] for e in budgets_active.open().fetchall()]
+            budgets_active.close()
+        else:
+            # Показываем все доступные бюджеты
+            budgets_enabled = self.apply_filters(RawModel(queries.q_budgets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
         budgets_list = list(budgets_enabled.open().fetchall())
         budgets_enabled.close()
@@ -242,8 +268,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 'type': 'tbl',
                 'name': 'Бюджет',
                 'icon':'ruble-sign',
-                'data': budgets_list}
-
+                'data': budgets_list,
+                'data0': budgets_list_active}
 
     def filter_dosg(self, flt_active=None, org_id=0, targets = []):
         return {'id': fdosg,
