@@ -50,6 +50,7 @@ class BudgetsView(FiltersView):
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
         budgets = self.apply_filters(RawModel(queries.q_budgets_chart).order_by('3'),flt_active, org_id, targets)
+        print(budgets.query)
         budgets_list = list (budgets.open().fetchall())
         budgets.close()
 
@@ -173,6 +174,7 @@ class Market_CompetitionsAjaxTable(BaseDatatableYearView):
             qs = qs.order_by('nn.id', 'gr','t.name')
         else:
             qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'nn.id', 'gr','t.name')
+        print(qs.query)
         return qs
 
 class AvgMarketView(CompetitionsView):
