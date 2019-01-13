@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import path
 from django.conf.urls import url, include
 from django.conf import settings
+from django.views.generic import RedirectView
 
 from bi_auth.views import loginView, logoutView, bi_login
 from widgetpages.views import HomeView
@@ -29,4 +30,5 @@ urlpatterns = [
     path('fadmin/', include(('farmadmin.urls', 'farmadmin'), namespace='farmadmin')),
     # path('proto/', include(('protocols.urls', 'protocols'), namespace='protocols')),
     path('admin/', admin.site.urls, name='admin'),
+    url(r'^favicon\.ico$', RedirectView.as_view(url='/static/favicon.ico'), name='favicon'),
 ]
