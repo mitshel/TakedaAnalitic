@@ -94,6 +94,8 @@ class BudgetsAjaxTable(BaseDatatableYearView):
     #filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
     datatable_query = queries.q_budgets_table
     datatable_count_query = queries.q_budgets_table_count
+    default_market_type = 2 # Контракты
+    default_own = 3         # Все рынки
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))

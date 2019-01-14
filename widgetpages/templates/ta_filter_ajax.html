@@ -79,7 +79,7 @@ function make_request() {
     return filters_ajax_request;
 }
 
-function query_data() {
+function query_data(src_id='', debounce_timeout = 500) {
     action_url = '{{ ajax_filters_url }}';
     make_request();
 
@@ -100,7 +100,7 @@ function query_data() {
             error: function (xhr, str) {
                     alert('Error loading data. ' + str);
             }
-        }) }, 500);
+        }) }, debounce_timeout);
 
 }
 
@@ -130,7 +130,7 @@ $(document).on('click', '.btn-filter:not(.disabled)', function(event) {
        $('#empl-all').removeClass('active');
     };
 
-    query_data();
+    query_data(src_id);
 
     return true;
 });
@@ -172,10 +172,10 @@ function getCookie(name) {
             "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
     ));
     return matches ? decodeURIComponent(matches[1]) : undefined;
-}
+};
 
-cookie = getCookie('serv_market');
-if (cookie) { $('#serv_market').val(cookie); }
+//cookie = getCookie('serv_market');
+//if (cookie) { $('#serv_market').val(cookie); }
 //cookie = getCookie('serv_own');
 //if (cookie) { $('#serv_own').val(cookie); }
 //make_request();

@@ -23,20 +23,20 @@
           </div></div>-->
           <div class="row"><div class="container" style="margin-top:5px">
           {% if view.select_market_type %}
-              <select class="form-control form-control-sm" id="serv_market">
+              <select class="form-control form-control-sm" id="serv_market" autocomplete="off">
                       <option {% if view.default_market_type == 1 %}selected{% endif %} value="1">По аукциону</option>
                       <option {% if view.default_market_type == 2 %}selected{% endif %} value="2">По контракту</option>
               </select>
           {% endif %}
           {% if view.select_own %}
-              <select class="form-control form-control-sm" id="serv_own">
+              <select class="form-control form-control-sm" id="serv_own" autocomplete="off">
                       <option {% if view.default_own == 1 %}selected{% endif %} value="1">Свой рынок</option>
                       <option {% if view.default_own == 2 %}selected{% endif %} value="2">Чужой рынок</option>
                       <option {% if view.default_own == 3 %}selected{% endif %} value="3">Все рынки</option>
               </select>
           {% endif %}
           {% if view.select_prod_type %}
-              <select class="form-control form-control-sm" id="serv_prod">
+              <select class="form-control form-control-sm" id="serv_prod" autocomplete="off">
                       <option {% if view.default_prod_type == 1 %}selected{% endif %} value="1">МНН</option>
                       <option {% if view.default_prod_type == 2 %}selected{% endif %} value="2">Торговая марка</option>
               </select>

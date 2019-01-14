@@ -71,10 +71,13 @@ def unique(obj: iter):
 class OrgMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgPOST | bOrgUSER
 
-class FiltersMixin(View):
+class FiltersMixin():
     default_market_type = 2 # Контракт
     default_own = 1         # Свой рынок
     default_prod_type = 2   # ТМ
+
+    def print_defaults(self):
+        print('market_type={}, own={},product_type={}'.format(self.default_market_type,self.default_own,self.default_prod_type))
 
     def fempa_selected(self, flt_active, fname):
         return flt_active[fname]['select'] if flt_active else 0
@@ -106,7 +109,7 @@ class FiltersMixin(View):
         else:
             flt_active[fempl] = self.targets_in_filter(targets)
             flt_active[fempa] = {'list': [], 'select': 0}
-            flt_active[fserv] = {'market': 1, 'own': 1, 'prod': 2}
+            flt_active[fserv] = {'market': self.default_market_type, 'own': self.default_own, 'prod': self.default_prod_type}
 
         return flt_active
 
@@ -114,27 +117,16 @@ class FiltersMixin(View):
         market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
         own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
         product_type = 'InnNx' if flt_active[fserv]['prod'] == 1 else 'TradeNx'
-        no_target = None
+        no_target = 1 if self.fempa_selected(flt_active, fempa) else None
         disabled_targets = [str(e['iid']) for e in targets if str(e['iid']) not in flt_active[fempl]['list']]
         enabled_targets = [str(e) for e in flt_active[fempl]['list']] if flt_active[fempl]['list'] else ['-1',]
 
-        if self.fempa_selected(flt_active, fempa):
-            #flt_targets = '(e.employee_id  not in ({}) or e.employee_id is null) '.format(','.join([str(e) for e in disabled_targets])) if disabled_targets else ''
-            #flt_targets = '(e.employee_id  not in ({})) '.format(','.join([e for e in disabled_targets])) if disabled_targets else ''
-            no_target = 1
-        #else:
-        #    flt_targets = 'e.employee_id in ({})'.format(','.join(enabled_targets))
-
         qs = qs.filter(years=flt_active[fyear]['list'] if flt_active.get(fyear) else '',
-                       #markets=','.join([str(e) for e in flt_active[fmrkt]['list']]) if flt_active.get(fmrkt) else '',
-                       #status=','.join([str(e) for e in flt_active[fstat]['list']]) if flt_active.get(fstat) else '',
                        all_targets = ','.join([str(e['iid']) for e in targets]),
                        enabled_targets=','.join([e for e in enabled_targets]),
                        disabled_targets=','.join([e for e in disabled_targets]),
                        no_target = no_target,
-                       #targets = flt_targets,
                        product_type = product_type,
-                       #employees=','.join([str(e) for e in flt_active[fempl]['list']]) if not self.fempa_selected(flt_active, fempa) else '',
                        markets_cnt_in=extra_in_strfilter('s.id', flt_active.get(fmrkt, '')), #Нужно подумать как избавится от этого
                        years_in=extra_in_strfilter('s.PlanTYear', flt_active.get(fyear, '')),
                        markets_in=extra_in_strfilter('s.market_id',flt_active.get(fmrkt,'')),

@@ -58,22 +58,7 @@
     };
 
 
-    function ChartsUpdate1(data, src_id) {
-        //labels_data = [];
-        //data.data.budgets.forEach(function(name) {
-        //   labels_data.push(name)
-        //});
-        //config1.data.labels = labels_data;
-        //config1.data.datasets.forEach(function(dataset) {
-        //    chart_data = [];
-        //    for (var i in data.data.pivot1) {
-        //        if (data.data.pivot1[i].iid==dataset.label) {
-        //            chart_data.push({ x:data.data.pivot1[i].budget_name, y:data.data.pivot1[i].summa })
-        //        }
-        //    }
-        //    dataset.data = chart_data;
-        //});
-
+    function ConfigUpdate1(data, src_id) {
         labels_data = [];
         data.data.budgets.forEach(function(name) {
            labels_data.push(name)
@@ -99,7 +84,10 @@
                 });
                 config1.data.datasets.push(newDataset);
         };
+    };
 
+    function ChartsUpdate1(data, src_id) {
+        ConfigUpdate1(data, src_id);
         window.myLine1.update();
     }
 
