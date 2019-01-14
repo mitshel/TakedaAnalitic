@@ -19,6 +19,8 @@ class SalessheduleView(FiltersView):
     ajax_filters_url = reverse_lazy('widgetpages:salesshedule')
     view_id = 'salesshedule'
     view_name = 'График продаж'
+    select_own = 1
+    default_own = 3  # Все рынки
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         pivot_data = {}

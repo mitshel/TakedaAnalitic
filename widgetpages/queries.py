@@ -245,7 +245,6 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
             {% if winrs_in %}and {{winrs_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
-            {% if own_select %}and {{own_select}} {% endif %}   
             group by market_id, PlanTYear
             
             union all
@@ -274,7 +273,6 @@ select CASE WHEN nn.market_id is NULL THEN 'ИТОГО' ELSE mt.name END as name
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
             {% if winrs_in %}and {{winrs_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
-            {% if own_select %}and {{own_select}} {% endif %}        
             group by market_id, PlanTYear          
 		) m
 		PIVOT
@@ -331,7 +329,6 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
             {% if winrs_in %}and {{winrs_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
-            {% if own_select %}and {{own_select}} {% endif %}       
             group by s.cust_id, PlanTYear
             
             union all
@@ -359,7 +356,6 @@ select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as n
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
             {% if winrs_in %}and {{winrs_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
-            {% if own_select %}and {{own_select}} {% endif %}   
             group by s.cust_id, PlanTYear          
 		) m
 		PIVOT
@@ -401,7 +397,6 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_CACHE_{{org_id}}] s
             {% if trnrs_in %}and {{trnrs_in}} {% endif %}
             {% if winrs_in %}and {{winrs_in}} {% endif %}
             {% if lpus_in %}and {{lpus_in}} {% endif %} 
-            {% if own_select %}and {{own_select}} {% endif %} 
             {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}            
 {% endautoescape %}
 """
@@ -1042,7 +1037,8 @@ where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
 {% if winrs_in %}and {{winrs_in}} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}        
+{% if lpus_in %}and {{lpus_in}} {% endif %}  
+{% if own_select %}and {{own_select}} {% endif %}       
 group by b.name, PlanTYear
 {{ order_by }}
 {% endautoescape %} 
@@ -1074,7 +1070,8 @@ where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if innrs_in %}and {{innrs_in}} {% endif %}
 {% if trnrs_in %}and {{trnrs_in}} {% endif %}
 {% if winrs_in %}and {{winrs_in}} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}        
+{% if lpus_in %}and {{lpus_in}} {% endif %}      
+{% if own_select %}and {{own_select}} {% endif %}   
 group by b.name, month(ProcDt)
 {{ order_by }}
 {% endautoescape %} 
