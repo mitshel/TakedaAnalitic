@@ -14,13 +14,10 @@ class HomeView(OrgMixin, TemplateView):
     template_name = 'ta_hello.html'
 
 class SalessheduleView(FiltersView):
-    #filters_list = [fempl, fmrkt, fyear, fcust]
     template_name = 'ta_salesshedule.html'
     ajax_filters_url = reverse_lazy('widgetpages:salesshedule')
     view_id = 'salesshedule'
     view_name = 'График продаж'
-    select_own = 1
-    default_own = 3  # Все рынки
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         pivot_data = {}
@@ -38,16 +35,11 @@ class SalessheduleView(FiltersView):
         return pivot_data
 
 class BudgetsView(FiltersView):
-    #filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
     template_name = 'ta_budgets.html'
     ajax_filters_url = reverse_lazy('widgetpages:budgets')
     ajax_datatable_url = reverse_lazy('widgetpages:budgets_table')
     view_id = 'budgets'
     view_name = 'Каналы финансирования'
-    select_own = 1
-    select_market_type = 1
-    default_market_type = 2 # Контракты
-    default_own = 3         # Все рынки
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
@@ -91,11 +83,8 @@ class BudgetsView(FiltersView):
         return data
 
 class BudgetsAjaxTable(BaseDatatableYearView):
-    #filters_list = [fempl,fmrkt,fyear,fstat,fbudg,finnr,ftrnr,fwinr,fcust]
     datatable_query = queries.q_budgets_table
     datatable_count_query = queries.q_budgets_table_count
-    default_market_type = 2 # Контракты
-    default_own = 3         # Все рынки
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -112,12 +101,6 @@ class CompetitionsView(FiltersView):
     ajax_filters_url = reverse_lazy('widgetpages:competitions')
     view_id = 'competitions'
     view_name = 'Конкурентный анализ(тыс.руб.)'
-    select_market_type = 1
-    select_own = 1
-    select_prod_type = 1
-    default_market_type = 2 # Контракты
-    default_own = 3  # Все рынки
-    default_prod_type = 2 # TradeMark
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
@@ -202,26 +185,15 @@ class AvgAjaxTable(BaseDatatableYearView):
         return qs
 
 class PackagesView(CompetitionsView):
-    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     template_name = 'ta_packages.html'
     ajax_filters_url = reverse_lazy('widgetpages:packages')
     ajax_datatable_url = reverse_lazy('widgetpages:jpackages')
-    view_id = 'Packages'
+    view_id = 'packages'
     view_name = 'Анализ упаковок (контракты, шт)'
-    select_market_type = 0
-    select_own = 1
-    select_prod_type = 1
-    default_market_type = 2 # Контракты
-    default_own = 1  # Свои рынки
-    default_prod_type = 2 # TradeMark
 
 class PackagesAjaxTable(BaseDatatableYearView):
-    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     order_columns = ['name']
     datatable_query = queries.q_packages
-    default_market_type = 2 # Контракты
-    default_own = 1  # Свои рынки
-    default_prod_type = 2 # TradeMark
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -238,8 +210,6 @@ class PartsView(FiltersView):
     ajax_filters_url = reverse_lazy('widgetpages:parts')
     view_id = 'parts'
     view_name = 'Доля (тыс.руб.)'
-    select_market_type = 1
-    default_market_type = 2 # Контракты
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
@@ -317,3 +287,17 @@ class SalesAnlysisAjaxTable(BaseDatatableYearView):
         sort_dir = self._querydict.get('order[0][dir]')
         qs = qs.order_by('[{0}] {1}'.format(self._columns[sort_col], sort_dir))
         return qs
+
+class PassportView(FiltersView):
+    template_name = 'ta_passport.html'
+    ajax_filters_url = reverse_lazy('widgetpages:passport')
+    ajax_datatable_url = reverse_lazy('widgetpages:passport_winners_table')
+    view_id = 'passport'
+    view_name = 'Паспорт заказчика'
+
+    def data(self, flt=None, flt_active=None, org_id=0, targets = []):
+        data = {}
+        return data
+
+class PassportWinnersAjaxTable(BaseDatatableYearView):
+    datatable_query = queries.q_passport_winners_table

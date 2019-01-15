@@ -94,7 +94,7 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                         "data": function ( d ) {
                             d.filters_ajax_request = JSON.stringify(filters_ajax_request);
                             //d.filters_ajax_request = JSON.stringify(make_request());
-                            d.view_id = '{{ view.id }}';
+                            //d.view_id = '{ { view.id }}';
                             d.org_id = '{{ org_id }}';
                             d.csrfmiddlewaretoken = '{{ csrf_token }}';
                         }

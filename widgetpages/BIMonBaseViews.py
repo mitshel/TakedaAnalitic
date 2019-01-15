@@ -28,6 +28,24 @@ fform = 'form'
 fempa = 'empa'
 fserv = 'serv'
 
+# select_market_type, default_market_type,  select_own, default_own,           select_prod_type, default_prod_type
+# 0|1                 1-Аукц|2-Контр        0|1         1-свой|2-чужой|3-все   0|1               1-МНН|2-ТМ
+serv_defaults = [0,3,0,1,0,2]
+
+filters_all = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
+
+views_prop = {
+    'salesshedule'          : { 'filters' : filters_all, 'props': [0,2,1,3,0,2] },
+    'budgets'               : { 'filters' : filters_all, 'props': [1,2,1,1,0,2] },
+    'competitions_lpu'      : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
+    'competitions_market'   : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
+    'avg_price'             : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
+    'packages'              : { 'filters' : filters_all, 'props': [0,2,1,1,1,2] },
+    'parts'                 : { 'filters' : filters_all, 'props': [1,2,0,1,0,2] },
+    'sales_analysis'        : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
+    'passport'              : { 'filters' : [fcust,fyear], 'props': [0,2,0,1,0,2] },
+}
+
 def prepare_serach(s):
     return s.replace("'","")
 
@@ -72,12 +90,34 @@ class OrgMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgPOST | bOrgUSER
 
 class FiltersMixin():
+    view_id = 'blank'
+    filters_list = filters_all
     default_market_type = 2 # Контракт
     default_own = 1         # Свой рынок
     default_prod_type = 2   # ТМ
 
     def print_defaults(self):
         print('market_type={}, own={},product_type={}'.format(self.default_market_type,self.default_own,self.default_prod_type))
+
+    def init_view_properties(self):
+        vprop = views_prop.get(self.view_id,None)
+        if vprop:
+            self.filters_list = vprop.get('filters')
+            serv_props = vprop.get('props', serv_defaults)
+            self.select_market_type = serv_props[0]
+            self.default_market_type = serv_props[1]
+            self.select_own = serv_props[2]
+            self.default_own = serv_props[3]
+            self.select_prod_type = serv_props[4]
+            self.default_prod_type = serv_props[5]
+        else:
+            self.filters_list = filters_all
+            self.select_market_type = serv_defaults[0]
+            self.default_market_type = serv_defaults[1]
+            self.select_own = serv_defaults[2]
+            self.default_own = serv_defaults[3]
+            self.select_prod_type = serv_defaults[4]
+            self.default_prod_type = serv_defaults[5]
 
     def fempa_selected(self, flt_active, fname):
         return flt_active[fname]['select'] if flt_active else 0
@@ -95,6 +135,10 @@ class FiltersMixin():
     def filters_active(self, org_id, targets):
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
         flt = json.loads(filters_ajax_request) if filters_ajax_request else {}
+        if flt:
+            self.view_id=flt.get('view_id', self.view_id)
+        self.init_view_properties()
+
         flt_active = {}
         if flt:
             print(flt)
@@ -144,15 +188,15 @@ class FiltersMixin():
 
 class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     template_name = 'ta_competitions.html'
-    #filters_list = [fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust]
-    filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
+    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
+    filter_list = filters_all
     ajax_filters_url = '#'
     ajax_datatable_url = '#'
     view_id = 'blank'
     view_name = 'Пустая страница'
-    select_market_type = 0
-    select_own = 0
-    select_prod_type = 0
+    # select_market_type = 0
+    # select_own = 0
+    # select_prod_type = 0
 
     def filter_empl(self, flt_active=None, org_id=0, targets = []):
         employee_list = targets
@@ -390,14 +434,14 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
 
 class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     order_columns = ['name']
-    filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
-    org_id = 1
+    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
+    #org_id = 1
     datatable_query = None
     datatable_count_query = None
     empty_datatable_query = 'select null as name'
 
     def get_initial_queryset(self):
-        self.view_id = self.request.POST.get('view_id', 'BaseDatatableYearView')
+        #self.view_id = self.request.POST.get('view_id', 'BaseDatatableYearView')
         org_id = self.init_dynamic_org()
         targets = self.get_initial_targets()
         flt_active = self.filters_active(org_id, targets)

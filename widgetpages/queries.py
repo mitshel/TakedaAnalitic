@@ -412,7 +412,7 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
     (
         select distinct s.cust_id, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         sum(isnull({{ market_type_prefix }}Summa,0)) as {{ market_type_prefix }}Summa
-        from [dbo].[org_CACHE_{{org_id}}] s
+        from [dbo].[org_CACHE_{{org_id}}] s with (nolock)
         left join db_lpu l on s.cust_id = l.cust_id
         left join db_WinnerOrg w on s.Winner_ID = w.id
         left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on s.{{ market_type_prefix }}{{ product_type }} = t.id
@@ -1075,4 +1075,11 @@ where s.PlanTYear is not NULL --and s.cust_id<>0
 group by b.name, month(ProcDt)
 {{ order_by }}
 {% endautoescape %} 
+"""
+
+q_passport_winners_table = """
+{% autoescape off %}
+select * from db_WinnersOrg
+{{ order_by }}
+{% endautoescape %}
 """

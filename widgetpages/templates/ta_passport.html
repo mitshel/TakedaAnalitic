@@ -1,0 +1,32 @@
+{% extends "ta_layout.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block page %}
+
+	<script type="text/javascript" src="{% static 'chartjs\Chart.bundle.min.js' %}"></script>
+	<script type="text/javascript" src="{% static 'chartjs\utils.js' %}"></script>
+	<style>
+	canvas{
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+	}
+	</style>
+<div class="col-12">
+	<div class="col-12">
+		<canvas id="ta_budgets"></canvas>
+	</div>
+
+    <!--{ % include 'ta_budgets_chart.html' %}-->
+    <!--{ % include 'ta_budgets_table.html' %}-->
+
+    <script>
+        //window.onload = function() {
+        //    var ctx1 = document.getElementById('ta_budgets').getContext('2d');
+        //    ctx1.canvas.height = 500;
+        //    window.myLine1 = new Chart(ctx1, config1);
+        //};
+    </script>
+</div>
+{%  endblock %}

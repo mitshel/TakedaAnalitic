@@ -72,8 +72,8 @@ function make_request() {
                             'market_type': market_type,
                             'own_type': own_type,
                             'prod_type': prod_type,
-                            'empl_all': empl_all
-                            //'csrfmiddlewaretoken': '{ { csrf_token }}'
+                            'empl_all': empl_all,
+                            'view_id': '{{ view_id }}'
     }
 
     return filters_ajax_request;
