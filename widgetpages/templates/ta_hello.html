@@ -8,9 +8,9 @@
           <img src="{% static "\bim-logo.png" %}" class="align-self-start mr-3">
           <div class="media-body">
             <h2 class="display-6">Платформа BI Monitor.</h5>
+            <span class="badge badge-primary">{{ user.employee_user.all.0.org.name }}</span>
             <p><b>Приветствуем Вас, уважаемый(ая) {% if user.last_name %}{{ user.last_name }} {{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</b></p>
             <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
-            <p>Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
           </div>
         </div>
 
