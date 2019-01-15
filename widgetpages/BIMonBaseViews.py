@@ -24,7 +24,6 @@ fbudg = 'budg'
 fdosg = 'dosg'
 fform = 'form'
 
-
 fempa = 'empa'
 fserv = 'serv'
 
@@ -32,7 +31,7 @@ fserv = 'serv'
 # 0|1                 1-Аукц|2-Контр        0|1         1-свой|2-чужой|3-все   0|1               1-МНН|2-ТМ
 serv_defaults = [0,3,0,1,0,2]
 
-filters_all = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
+filters_all = [fempl, fmrkt, fyear, fstat, fbudg, fform, fdosg, finnr, ftrnr, fwinr, fcust]
 
 views_prop = {
     'salesshedule'          : { 'filters' : filters_all, 'props': [0,2,1,3,0,2] },
@@ -158,6 +157,7 @@ class FiltersMixin():
         return flt_active
 
     def apply_filters(self, qs, flt_active, org_id, targets):
+        print('targets=', targets)
         market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
         own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
         product_type = 'InnNx' if flt_active[fserv]['prod'] == 1 else 'TradeNx'
@@ -165,24 +165,24 @@ class FiltersMixin():
         disabled_targets = [str(e['iid']) for e in targets if str(e['iid']) not in flt_active[fempl]['list']]
         enabled_targets = [str(e) for e in flt_active[fempl]['list']] if flt_active[fempl]['list'] else ['-1',]
 
-        qs = qs.filter(years=flt_active[fyear]['list'] if flt_active.get(fyear) else '',
-                       all_targets = ','.join([str(e['iid']) for e in targets]),
-                       enabled_targets=','.join([e for e in enabled_targets]),
-                       disabled_targets=','.join([e for e in disabled_targets]),
-                       no_target = no_target,
-                       product_type = product_type,
-                       markets_cnt_in=extra_in_strfilter('s.id', flt_active.get(fmrkt, '')), #Нужно подумать как избавится от этого
-                       years_in=extra_in_strfilter('s.PlanTYear', flt_active.get(fyear, '')),
-                       markets_in=extra_in_strfilter('s.market_id',flt_active.get(fmrkt,'')),
-                       status_in=extra_in_strfilter('s.StatusT_ID', flt_active.get(fstat, '')),
-                       budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')),
-                       lpus_in=extra_in_filter('l.Cust_ID',flt_active.get(fcust,'')),
-                       winrs_in=extra_in_filter('w.id', flt_active.get(fwinr,'')),
-                       innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')),
-                       trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')),
-                       dosage_in=extra_in_filter('s.Contract_Dosage_id', flt_active.get(fdosg, '')),
-                       form_in=extra_in_filter('s.Contract_Form_id', flt_active.get(fform, '')),
-                       market_type_prefix = market_type_prefix, own_select = own_select, org_id = org_id)
+        qs = qs.filter(years=(flt_active[fyear]['list'] if flt_active.get(fyear) else '') if fyear in self.filters_list else None,
+           all_targets = ','.join([str(e['iid']) for e in targets]) if fempl in self.filters_list else None,
+           enabled_targets=','.join([e for e in enabled_targets]) if fempl in self.filters_list else None,
+           disabled_targets=','.join([e for e in disabled_targets]) if fempl in self.filters_list else None,
+           no_target = no_target if fempl in self.filters_list else None,
+           markets_cnt_in=extra_in_strfilter('s.id', flt_active.get(fmrkt, '')) if fmrkt in self.filters_list else None, #Нужно подумать как избавится от этого
+           years_in=extra_in_strfilter('s.PlanTYear', flt_active.get(fyear, '')) if fyear in self.filters_list else None,
+           markets_in=extra_in_strfilter('s.market_id',flt_active.get(fmrkt,'')) if fmrkt in self.filters_list else None,
+           status_in=extra_in_strfilter('s.StatusT_ID', flt_active.get(fstat, '')) if fstat in self.filters_list else None,
+           budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')) if fbudg in self.filters_list else None,
+           lpus_in=extra_in_filter('l.Cust_ID',flt_active.get(fcust,'')) if fcust in self.filters_list else None,
+           winrs_in=extra_in_filter('w.id', flt_active.get(fwinr,'')) if fwinr in self.filters_list else None,
+           innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')) if finnr in self.filters_list else None,
+           trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')) if ftrnr in self.filters_list else None,
+           dosage_in=extra_in_filter('s.Contract_Dosage_id', flt_active.get(fdosg, '')) if fdosg in self.filters_list else None,
+           form_in=extra_in_filter('s.Contract_Form_id', flt_active.get(fform, '')) if fform in self.filters_list else None,
+           market_type_prefix = market_type_prefix, own_select = own_select, product_type = product_type, org_id = org_id)
+        print(qs.query)
         return qs
 
 

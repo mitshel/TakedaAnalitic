@@ -794,7 +794,8 @@ where exists
           {% if years_in %}and {{years_in}} {% endif %}
           {% if markets_in %}and {{markets_in}} {% endif %}
           {% if status_in %}and {{status_in}} {% endif %}
-          {% if budgets_in %}and {{budgets_in}} {% endif %}      
+          {% if budgets_in %}and {{budgets_in}} {% endif %}     
+          {% if form_in %}and {{form_in}} {% endif %}    
           {% if own_select %}and {{own_select}} {% endif %}           
           {% if name__icontains %} and a.name like '%{{ name__icontains }}%'{% endif %}  
         )                              
@@ -979,6 +980,7 @@ q_lpu_hs = """
 select distinct {{ fields }} from db_lpu a
 where exists 
   ( select top 1 1 from org_CACHE_{{ org_id }} s 
+    {% if winrs_in %}left join db_WinnerOrg w on s.Winner_ID = w.id{% endif %}
     where a.cust_id=s.cust_id
     {% if no_target %} 
         and exists (select top 1 1 from db_region_employee r where r.region_id=a.regcode and r.employee_id in ({{all_targets}}) ) 
@@ -994,6 +996,7 @@ where exists
     {% if trnrs_in %}and {{trnrs_in}} {% endif %}
     {% if dosage_in %}and {{dosage_in}} {% endif %}
     {% if form_in %}and {{form_in}} {% endif %}    
+    {% if winrs_in %}and {{winrs_in}} {% endif %}
     {% if name__icontains %} and a.Org_CustNm like '%{{ name__icontains }}%'{% endif %}
   )
 {{ order_by }}
@@ -1019,8 +1022,8 @@ select b.name as market_name, PlanTYear as iid, Sum(isnull(Order_Summa,0))/10000
 from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
+{% if winrs_in %}left join db_WinnerOrg w on s.Winner_ID = w.id{% endif %}
 where s.PlanTYear is not NULL --and s.cust_id<>0
---{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
     {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
@@ -1050,10 +1053,8 @@ select b.name as market_name, month(ProcDt) as mon, Sum(isnull(Order_Summa,0))/1
 from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
---{% if targets %}left join db_lpu_employee e on s.cust_id=e.lpu_id{% endif %}
---{% if employee_in %}inner join db_lpu_employee e on a.cust_id=e.lpu_id and {{ employee_in }} {% endif %}
+{% if winrs_in %}left join db_WinnerOrg w on s.Winner_ID = w.id{% endif %}
 where s.PlanTYear is not NULL --and s.cust_id<>0
---{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
     {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
