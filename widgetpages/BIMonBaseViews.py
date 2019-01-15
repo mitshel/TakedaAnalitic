@@ -3,6 +3,7 @@ import json
 from django.http import JsonResponse
 from django.views.generic import View, TemplateView
 from django.shortcuts import render, redirect, render_to_response
+from django.urls import reverse_lazy
 
 from widgetpages import queries
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
@@ -40,7 +41,7 @@ views_prop = {
     'competitions_market'   : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
     'avg_price'             : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
     'packages'              : { 'filters' : filters_all, 'props': [0,2,1,1,1,2] },
-    'parts'                 : { 'filters' : filters_all, 'props': [1,2,0,1,0,2] },
+    'parts'                 : { 'filters' : filters_all, 'props': [1,2,0,3,0,2] },
     'sales_analysis'        : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
     'passport'              : { 'filters' : [fcust,fyear], 'props': [0,2,0,1,0,2] },
 }
@@ -135,20 +136,21 @@ class FiltersMixin():
         filters_ajax_request = self.request.POST.get('filters_ajax_request', '')
         flt = json.loads(filters_ajax_request) if filters_ajax_request else {}
         if flt:
-            self.view_id=flt.get('view_id', self.view_id)
+            # Удаляем значение view_id, т.к. далее логикой предусмотрено проверка на пустое flt
+            self.view_id=flt.pop('view_id', self.view_id)
+        print('view_id=', self.view_id)
         self.init_view_properties()
 
         flt_active = {}
         if flt:
-            print(flt)
             for f in self.filters_list:
                 flt_str = flt.get('{}_active'.format(f), '')
                 flt_select = flt.get('{}_select'.format(f), '')
                 flt_active[f] = {'list':[e for e in flt_str.split(',')] if flt_str else [], 'select': int(flt_select if flt_select else 0)}
-                flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
-                flt_active[fserv] = {'market': int(flt.get('market_type',str(self.default_market_type))), \
-                                     'own': int(flt.get('own_type', str(self.default_own))), \
-                                     'prod': int(flt.get('prod_type',str(self.default_prod_type)))}
+            flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
+            flt_active[fserv] = {'market': int(flt.get('market_type',str(self.default_market_type))), \
+                                 'own': int(flt.get('own_type', str(self.default_own))), \
+                                 'prod': int(flt.get('prod_type',str(self.default_prod_type)))}
         else:
             flt_active[fempl] = self.targets_in_filter(targets)
             flt_active[fempa] = {'list': [], 'select': 0}
@@ -158,25 +160,36 @@ class FiltersMixin():
 
     def apply_filters(self, qs, flt_active, org_id, targets):
         print('targets=', targets)
+        print('filtres=', self.filters_list)
         market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
         own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
         product_type = 'InnNx' if flt_active[fserv]['prod'] == 1 else 'TradeNx'
-        no_target = 1 if self.fempa_selected(flt_active, fempa) else None
-        disabled_targets = [str(e['iid']) for e in targets if str(e['iid']) not in flt_active[fempl]['list']]
-        enabled_targets = [str(e) for e in flt_active[fempl]['list']] if flt_active[fempl]['list'] else ['-1',]
+
+        if fempl in self.filters_list:
+            no_target = 1 if self.fempa_selected(flt_active, fempa) else None
+            all_targets = ','.join([str(e['iid']) for e in targets])
+            enabled_targets = [str(e) for e in flt_active[fempl]['list']] if flt_active[fempl]['list'] else ['-1',]
+            disabled_targets = [str(e['iid']) for e in targets if str(e['iid']) not in flt_active[fempl]['list']]
+            enabled_targets = ','.join([e for e in enabled_targets])
+            disabled_targets = ','.join([e for e in disabled_targets])
+        else:
+            no_target = None
+            disabled_targets = None
+            enabled_targets = None
+            all_targets = None
 
         qs = qs.filter(years=(flt_active[fyear]['list'] if flt_active.get(fyear) else '') if fyear in self.filters_list else None,
-           all_targets = ','.join([str(e['iid']) for e in targets]) if fempl in self.filters_list else None,
-           enabled_targets=','.join([e for e in enabled_targets]) if fempl in self.filters_list else None,
-           disabled_targets=','.join([e for e in disabled_targets]) if fempl in self.filters_list else None,
-           no_target = no_target if fempl in self.filters_list else None,
+           all_targets = all_targets,
+           enabled_targets=enabled_targets,
+           disabled_targets=disabled_targets,
+           no_target = no_target,
            markets_cnt_in=extra_in_strfilter('s.id', flt_active.get(fmrkt, '')) if fmrkt in self.filters_list else None, #Нужно подумать как избавится от этого
            years_in=extra_in_strfilter('s.PlanTYear', flt_active.get(fyear, '')) if fyear in self.filters_list else None,
            markets_in=extra_in_strfilter('s.market_id',flt_active.get(fmrkt,'')) if fmrkt in self.filters_list else None,
            status_in=extra_in_strfilter('s.StatusT_ID', flt_active.get(fstat, '')) if fstat in self.filters_list else None,
            budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')) if fbudg in self.filters_list else None,
            lpus_in=extra_in_filter('l.Cust_ID',flt_active.get(fcust,'')) if fcust in self.filters_list else None,
-           winrs_in=extra_in_filter('w.id', flt_active.get(fwinr,'')) if fwinr in self.filters_list else None,
+           winrs_in=extra_in_filter('s.Winner_ID', flt_active.get(fwinr,'')) if fwinr in self.filters_list else None,
            innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')) if finnr in self.filters_list else None,
            trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')) if ftrnr in self.filters_list else None,
            dosage_in=extra_in_filter('s.Contract_Dosage_id', flt_active.get(fdosg, '')) if fdosg in self.filters_list else None,
@@ -188,15 +201,12 @@ class FiltersMixin():
 
 class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     template_name = 'ta_competitions.html'
-    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     filter_list = filters_all
     ajax_filters_url = '#'
+    ajax_filters_tbl_url = reverse_lazy('widgetpages:jdata')
     ajax_datatable_url = '#'
     view_id = 'blank'
     view_name = 'Пустая страница'
-    # select_market_type = 0
-    # select_own = 0
-    # select_prod_type = 0
 
     def filter_empl(self, flt_active=None, org_id=0, targets = []):
         employee_list = targets
@@ -410,6 +420,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                            'select_market_type': self.select_market_type, 'select_own': self.select_own,  'select_prod_type': self.select_prod_type,
                            'default_market_type' : self.default_market_type, 'default_own':  self.default_own, 'default_prod_type' : self.default_prod_type }
         context['ajax_filters_url'] = self.ajax_filters_url
+        context['ajax_filters_tbl_url'] = self.ajax_filters_tbl_url
         context['ajax_datatable_url'] = self.ajax_datatable_url
         return context
 
@@ -425,7 +436,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                             'data': data,
                             'org_id': org_id,
                             'view': {'id' : self.view_id, 'name': self.view_name },
-                            'ajax_filters_url': self.ajax_filters_url,
+                            #'ajax_filters_url': self.ajax_filters_url,
+                            #'ajax_filters_tbl_url': self.ajax_filters_tbl_url,
                             'ajax_datatable_url': self.ajax_datatable_url}
                 return JsonResponse(response)
 

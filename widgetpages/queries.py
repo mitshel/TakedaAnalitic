@@ -11,11 +11,8 @@ select pvt.cust_id, pvt.budgets_id as id, grouping(pvt.cust_id) as gr
         select distinct s.cust_id, s.budgets_id, PlanTYear, sum(isnull({{market_type_prefix }}Summa,0)) as Summa
         from [dbo].[org_CACHE_{{ org_id }}] s
         left join db_lpu l on s.cust_id = l.cust_id
-        left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where PlanTYear is not null
-        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
@@ -61,11 +58,8 @@ select COUNT_BIG(*) from
     ( 
 		select distinct s.cust_id, s.budgets_id, s.PlanTYear from [dbo].[org_CACHE_{{ org_id }}] s
         left join db_lpu l on s.cust_id = l.cust_id
-        left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where  PlanTYear is not null
-        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
@@ -100,11 +94,8 @@ select a.budgets_id, b.name as budget_name, PlanTYear as iid, ROUND(a.summa/1000
 (select Budgets_ID, PlanTYear, sum( isnull( {{market_type_prefix }}Summa ,0 )) as summa 
 from [dbo].[org_CACHE_{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
-        left join db_WinnerOrg w on s.Winner_ID = w.id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        --left join db_lpu_employee e on s.cust_id=e.lpu_id      
         where  PlanTYear is not null
-        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
@@ -141,7 +132,6 @@ select CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as O
        Order_AVG_Price*Order_Count as Order_AVG_Summa, Contract_Summa,  u.name as status_name, SrcInf, Contract_URL
 from [dbo].[org_CACHE_{{org_id}}] s
 left join db_lpu l on s.cust_id = l.cust_id
-left join db_WinnerOrg w on s.Winner_ID = w.id
 left join db_TradeNR t1 on s.Order_TradeNx = t1.id
 left join db_TradeNR t2 on s.Contract_TradeNx = t2.id
 left join db_inNR i1 on s.Order_InnNx = i1.id
@@ -178,15 +168,12 @@ q_sales_analysis_count = """
 select COUNT_BIG(*)
 from [dbo].[org_CACHE_{{org_id}}] s
 left join db_lpu l on s.cust_id = l.cust_id
-left join db_WinnerOrg w on s.Winner_ID = w.id
 left join db_TradeNR t1 on s.Order_TradeNx = t1.id
 left join db_TradeNR t2 on s.Contract_TradeNx = t2.id
 left join db_inNR i1 on s.Order_InnNx = i1.id
 left join db_inNR i2 on s.Contract_InnNx = i2.id
---left join db_lpu_employee e on s.cust_id=e.lpu_id
 left join db_statusT u on s.StatusT_ID=u.id
 where 1=1 
---{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
     {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
@@ -714,7 +701,8 @@ where exists
                 {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
             {% endif %}
         {% if years_in %}and {{years_in}} {% endif %}
-        {% if markets_in %}and {{markets_in}} {% endif %}               
+        {% if markets_in %}and {{markets_in}} {% endif %}   
+        {% if own_select %}and {{own_select}} {% endif %}              
         )
 {{ order_by }}
 {% endautoescape %} 
@@ -753,7 +741,8 @@ where exists
             {% endif %}
         {% if years_in %}and {{years_in}} {% endif %}
         {% if markets_in %}and {{markets_in}} {% endif %}
-        {% if status_in %}and {{status_in}} {% endif %}                       
+        {% if status_in %}and {{status_in}} {% endif %}    
+        {% if own_select %}and {{own_select}} {% endif %}                     
         )
 {{ order_by }}
 {% endautoescape %} 
@@ -878,7 +867,8 @@ where exists
         {% if status_in %}and {{status_in}} {% endif %}  
         {% if budgets_in %}and {{budgets_in}} {% endif %}       
         {% if dosage_in %}and {{dosage_in}} {% endif %}
-        {% if form_in %}and {{form_in}} {% endif %}          
+        {% if form_in %}and {{form_in}} {% endif %}       
+        {% if own_select %}and {{own_select}} {% endif %}   
         {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
       )  
 {{ order_by }}
@@ -916,7 +906,8 @@ where exists
         {% if status_in %}and {{status_in}} {% endif %}    
         {% if budgets_in %}and {{budgets_in}} {% endif %}     
         {% if dosage_in %}and {{dosage_in}} {% endif %}
-        {% if form_in %}and {{form_in}} {% endif %}                        
+        {% if form_in %}and {{form_in}} {% endif %}        
+        {% if own_select %}and {{own_select}} {% endif %}                
         {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
       )
 {{ order_by }}
@@ -957,6 +948,7 @@ where exists
     {% if trnrs_in %}and {{trnrs_in}} {% endif %}
     {% if dosage_in %}and {{dosage_in}} {% endif %}
     {% if form_in %}and {{form_in}} {% endif %}       
+    {% if own_select %}and {{own_select}} {% endif %} 
     {% if name__icontains %} and name like '%{{ name__icontains }}%'{% endif %}
   )
 {{ order_by }}
@@ -988,15 +980,16 @@ where exists
     {% else %}
         {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
     {% endif %}
-    {% if years_in %}and {{years_in}} {% endif %}
-    {% if markets_in %}and {{markets_in}} {% endif %}
-    {% if status_in %}and {{status_in}} {% endif %}
-    {% if budgets_in %}and {{budgets_in}} {% endif %}         
-    {% if innrs_in %}and {{innrs_in}} {% endif %}
-    {% if trnrs_in %}and {{trnrs_in}} {% endif %}
-    {% if dosage_in %}and {{dosage_in}} {% endif %}
-    {% if form_in %}and {{form_in}} {% endif %}    
-    {% if winrs_in %}and {{winrs_in}} {% endif %}
+    {% if years_in %}and {{years_in}} --years_in{% endif %}
+    {% if markets_in %}and {{markets_in}} --markets_in{% endif %}
+    {% if status_in %}and {{status_in}} --status_in{% endif %}
+    {% if budgets_in %}and {{budgets_in}} --budgets_in{% endif %}         
+    {% if innrs_in %}and {{innrs_in}} --innrs_in{% endif %}
+    {% if trnrs_in %}and {{trnrs_in}} --trnrs_in{% endif %}
+    {% if dosage_in %}and {{dosage_in}} --dosage_in{% endif %}
+    {% if form_in %}and {{form_in}} --form_in{% endif %}    
+    {% if winrs_in %}and {{winrs_in}} --winrs_in{% endif %}
+    {% if own_select %}and {{own_select}} {% endif %} 
     {% if name__icontains %} and a.Org_CustNm like '%{{ name__icontains }}%'{% endif %}
   )
 {{ order_by }}
@@ -1022,7 +1015,6 @@ select b.name as market_name, PlanTYear as iid, Sum(isnull(Order_Summa,0))/10000
 from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
-{% if winrs_in %}left join db_WinnerOrg w on s.Winner_ID = w.id{% endif %}
 where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
@@ -1053,7 +1045,6 @@ select b.name as market_name, month(ProcDt) as mon, Sum(isnull(Order_Summa,0))/1
 from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
-{% if winrs_in %}left join db_WinnerOrg w on s.Winner_ID = w.id{% endif %}
 where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if no_target %} 
     and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
@@ -1076,6 +1067,23 @@ where s.PlanTYear is not NULL --and s.cust_id<>0
 group by b.name, month(ProcDt)
 {{ order_by }}
 {% endautoescape %} 
+"""
+
+q_years_passport = """
+{% autoescape off %}
+select DISTINCT {{ fields }} from org_DATA l
+where 1=1 
+{% if lpus_in %}and {{lpus_in}} {% endif %} 
+{{ order_by }}
+{% endautoescape %}
+"""
+
+q_lpu_passport = """
+{% autoescape off %}
+select DISTINCT {{ fields }} from db_lpu l
+where exists (select 1 from org_DATA s where s.cust_id=l.cust_id)
+{{ order_by }}
+{% endautoescape %}
 """
 
 q_passport_winners_table = """

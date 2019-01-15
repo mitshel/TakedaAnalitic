@@ -10,7 +10,6 @@ from db.rawmodel import RawModel
 class FilterListJson(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     columns = ['name', 'ext', 'iid']
     order_columns = ['name']
-    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
 
     def initial_dosg(self, org_id=0):
         dosg_enabled = RawModel(queries.q_dosage_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
@@ -43,22 +42,24 @@ class FilterListJson(OrgMixin, FiltersMixin, AjaxRawDatatableView):
 
     def get_initial_queryset(self):
         initial_data ={}
+        flt_id = self.request.POST.get('flt_id','')
         self.init_view_properties()
         org_id = self.init_dynamic_org()
         targets = self.get_initial_targets()
         flt_active = self.filters_active(org_id, targets)
 
-        if self.kwargs['flt_id'] == fdosg:
+        # self.kwargs['flt_id']
+        if flt_id == fdosg:
             initial_data = self.addfilters(self.initial_dosg(org_id), flt_active, org_id, targets)
-        if self.kwargs['flt_id'] == fform:
+        if flt_id == fform:
             initial_data = self.addfilters(self.initial_form(org_id), flt_active, org_id, targets)
-        if self.kwargs['flt_id'] == finnr:
+        if flt_id == finnr:
             initial_data = self.addfilters(self.initial_innr(org_id), flt_active, org_id, targets)
-        if self.kwargs['flt_id'] == ftrnr:
+        if flt_id == ftrnr:
             initial_data = self.addfilters(self.initial_trnr(org_id), flt_active, org_id, targets)
-        if self.kwargs['flt_id'] == fwinr:
+        if flt_id == fwinr:
             initial_data = self.addfilters(self.initial_winr(org_id), flt_active, org_id, targets)
-        if self.kwargs['flt_id'] == fcust:
+        if flt_id == fcust:
             initial_data = self.addfilters(self.initial_cust(org_id), flt_active, org_id, targets)
 
         return initial_data
@@ -81,3 +82,9 @@ class FilterListJson(OrgMixin, FiltersMixin, AjaxRawDatatableView):
         context = super().get_context_data(**kwargs)
         context['org'] = ''
         return context
+
+
+class PassportFilterListJson(FilterListJson):
+    def initial_cust(self, org_id=0):
+        lpu_enabled = RawModel(queries.q_lpu_passport).filter(fields='l.cust_id as iid, l.Org_CustInn as ext, l.Org_CustNm as name').order_by('l.Org_CustNm')
+        return lpu_enabled

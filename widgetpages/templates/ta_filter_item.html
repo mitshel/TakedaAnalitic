@@ -74,7 +74,7 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                 buttons:[],
                 ordering:  true,
                 select: true,
-                "pageLength": 10,
+                "pageLength": {% if flt.pagelength %}{{ flt.pagelength }}{% else %}10{% endif %},
                 "columnDefs": [
                     { "name": "name", "targets": [ 0 ], "visible": true, "searchable": true },
                     { "name": "ext", "targets": [ 1 ], "visible": false, "searchable": true },
@@ -89,12 +89,14 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                     "serverSide": true,
                     //"stateSave" : true,
                     "ajax": {
-                        "url": "{% url 'widgetpages:jdata' flt.id %}",
+                        //"url": "{ % url 'widgetpages:jdata' flt.id %}",
+                        "url": "{{ ajax_filters_tbl_url }}",
                         "type": "POST",
                         "data": function ( d ) {
                             d.filters_ajax_request = JSON.stringify(filters_ajax_request);
                             //d.filters_ajax_request = JSON.stringify(make_request());
                             //d.view_id = '{ { view.id }}';
+                            d.flt_id = '{{ flt.id }}'
                             d.org_id = '{{ org_id }}';
                             d.csrfmiddlewaretoken = '{{ csrf_token }}';
                         }

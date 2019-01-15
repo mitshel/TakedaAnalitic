@@ -291,9 +291,37 @@ class SalesAnlysisAjaxTable(BaseDatatableYearView):
 class PassportView(FiltersView):
     template_name = 'ta_passport.html'
     ajax_filters_url = reverse_lazy('widgetpages:passport')
+    ajax_filters_tbl_url = reverse_lazy('widgetpages:jdata_passport')
     ajax_datatable_url = reverse_lazy('widgetpages:passport_winners_table')
     view_id = 'passport'
     view_name = 'Паспорт заказчика'
+
+    def filter_year(self, flt_active=None, org_id=0, targets = []):
+        year_list_active = []
+        if not flt_active.get(fyear):
+            year_enabled = RawModel(queries.q_years_passport).filter(fields="[year] as iid, [year] as name",org_id=org_id).order_by('[year]')
+            year_active = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[year] as iid"), flt_active, org_id, targets)
+            year_list_active = [e['iid'] for e in year_active.open().fetchall()]
+            year_active.close()
+        else:
+            year_enabled = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[year] as iid"), flt_active, org_id, targets)
+
+        year_list = list(year_enabled.open().fetchall())
+        year_enabled.close()
+        return {'id': fyear,
+                'type': 'btn',
+                'name': 'Год поставки',
+                'icon':'calendar',
+                'data': year_list,
+                'data0': year_list_active}
+
+    def filter_cust(self, flt_active=None, org_id=0, targets = []):
+        return {'id': fcust,
+                'type': 'ajx',
+                'name': 'Грузополучатель',
+                'icon':'ambulance',
+                'pagelength': 5,
+                'data': []}
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
