@@ -33,8 +33,10 @@ function processAjaxData(data, src_id) {
             }
         {% endif %}
         {% if flt.type == 'ajx' %}
-            // Таблицу перегружаем только если перегрузка не иницирована этой же таблицей
-            if (src_id != '{{ flt.id }}_') tbl_{{ flt.id }}.ajax.reload( null, true );
+            {% if not flt.no_reload %}
+                // Таблицу перегружаем только если перегрузка не иницирована этой же таблицей
+                if (src_id != '{{ flt.id }}_') tbl_{{ flt.id }}.ajax.reload( null, true );
+            {% endif %}
         {% endif %}
     {% endfor %}
 
