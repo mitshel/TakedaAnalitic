@@ -321,6 +321,7 @@ class PassportView(FiltersView):
                 'name': 'Грузополучатель',
                 'icon':'ambulance',
                 'pagelength': 5,
+                'only_one_select': 1,
                 'data': []}
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):

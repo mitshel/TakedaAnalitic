@@ -13,8 +13,10 @@
               {% if flt.id == 'empl' %}
                 <button style="padding-right:1px;padding-bottom:1px;" type="button" id="empl-all" class="btn btn-sm btn-outline-primary inline btn-srv btn-filter" data-toggle="button" aria-pressed="false" autocomplete="off" title="Без учета Target"><i class="fa fa-check-circle"></i></button>
               {% endif %}
+              {% if not flt.only_one_select %}
               <button type="button" id="{{ flt.id }}-ctrl" class="btn btn-sm btn-outline-primary inline btn-srv" data-toggle="button" aria-pressed="false" autocomplete="off" title="Мультивыбор"><i class="fa fa-list"></i></button>
               <button type="button" id="{{ flt.id }}-check" class="btn btn-sm btn-outline-primary inline active btn-srv btn-filter" title="Выбрать/отменить все"><i class="fa fa-check"></i></button>
+              {% endif %}
           </div>
       </div>
     </div>
@@ -170,7 +172,7 @@ $('#tbl_{{ flt.id }} tbody').on('click', 'tr', function (event) {
     var ctrlPress = (event.ctrlKey == true);
 
     // Если не включен мультивыбор сначала сбрасываем все выбор
-    if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active'))) {
+    if ((!ctrlPress) & (!$('#{{ flt.id }}-ctrl').hasClass('active')) | ( '{{ flt.only_one_select }}' === '1' ) ) {
         {{ flt.id }}_check(0);
     }
 
@@ -206,7 +208,9 @@ $('#tbl_{{ flt.id }} tbody').on('click', 'tr', function (event) {
 } );
 
 // Делаем Выбор на всех элементах таблицы
-{{ flt.id }}_check(1);
+{% if not flt.only_one_select %}
+    {{ flt.id }}_check(1);
+{% endif %}
 
 </script>
 {% endif %}
