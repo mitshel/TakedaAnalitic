@@ -215,7 +215,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 'type': 'btn',
                 'name': 'Таргет',
                 'icon':'user',
-                'expanded': 'false',
+                'expanded': 0,
                 'data': employee_list}
 
     def filter_mrkt(self, flt_active=None, org_id=0, targets = []):
