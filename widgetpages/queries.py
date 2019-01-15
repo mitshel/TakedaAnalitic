@@ -952,11 +952,22 @@ group by b.name, month(ProcDt)
 {% endautoescape %} 
 """
 
-q_years_passport = """
+q_years_passport0 = """
 {% autoescape off %}
 select DISTINCT {{ fields }} from org_DATA l
 where 1=1 
 {% if lpus_in %}and {{lpus_in}} {% endif %} 
+{{ order_by }}
+{% endautoescape %}
+"""
+
+q_years_passport = """
+{% autoescape off %}
+select {{ fields }} from db_years a
+where exists ( select 1 from org_DATA l
+               where l.[year]=a.PlanTYear 
+               {% if lpus_in %}and {{lpus_in}} {% endif %} 
+             )
 {{ order_by }}
 {% endautoescape %}
 """
@@ -966,6 +977,19 @@ q_lpu_passport = """
 select DISTINCT {{ fields }} from db_lpu l
 where exists (select 1 from org_DATA s where s.cust_id=l.cust_id)
 {% if name__icontains %} and ( l.Org_CustNm like '%{{ name__icontains }}%' or l.Org_CustInn like '%{{ name__icontains }}%' ) {% endif %}
+{{ order_by }}
+{% endautoescape %}
+"""
+
+q_lpu_passport0 = """
+{% autoescape off %}
+select {{ fields }} from db_years a
+where exists ( 
+where s.PlanTYear=a.PlanTYear
+select 1 from db_lpu l
+                where exists (select 1 from org_DATA s where s.cust_id=l.cust_id)
+                {% if name__icontains %} and ( l.Org_CustNm like '%{{ name__icontains }}%' or l.Org_CustInn like '%{{ name__icontains }}%' ) {% endif %}
+             )   
 {{ order_by }}
 {% endautoescape %}
 """

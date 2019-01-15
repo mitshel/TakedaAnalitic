@@ -299,12 +299,12 @@ class PassportView(FiltersView):
     def filter_year(self, flt_active=None, org_id=0, targets = []):
         year_list_active = []
         if not flt_active.get(fyear):
-            year_enabled = RawModel(queries.q_years_passport).filter(fields="[year] as iid, [year] as name",org_id=org_id).order_by('[year]')
-            year_active = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[year] as iid"), flt_active, org_id, targets)
+            year_enabled = RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid, [PlanTYear] as name",org_id=org_id).order_by('[PlanTYear]')
+            year_active = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
             year_list_active = [e['iid'] for e in year_active.open().fetchall()]
             year_active.close()
         else:
-            year_enabled = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[year] as iid"), flt_active, org_id, targets)
+            year_enabled = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
 
         year_list = list(year_enabled.open().fetchall())
         year_enabled.close()
