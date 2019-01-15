@@ -4,7 +4,7 @@
       <div class="row">
           <div class="col-6">
               <h5 class="mb-0">
-                <button style="padding-left:0px;" class="btn btn-link{% if flt.expanded != 'true' %} collapsed{% endif %}" type="button" data-toggle="collapse" data-target="#collapse_{{ flt.id }}" aria-expanded="true" aria-controls="collapse_{{ flt.id }}">
+                <button style="padding-left:0px;" class="btn btn-link{% if flt.expanded %} collapsed{% endif %}" type="button" data-toggle="collapse" data-target="#collapse_{{ flt.id }}" aria-expanded="true" aria-controls="collapse_{{ flt.id }}">
                     {% if flt.icon %}<i class="fa fa-{{ flt.icon }}"></i> {% endif %}{{ flt.name }}
                 </button>
               </h5>
@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <div id="collapse_{{ flt.id }}" class="collapse {% if flt.expanded == 'true' %} show{% endif %}" aria-labelledby="heading_{{ flt.id }}">
+    <div id="collapse_{{ flt.id }}" class="collapse {% if flt.expanded %} show{% endif %}" aria-labelledby="heading_{{ flt.id }}">
       <div class="card-body">
         {% if flt.type == 'btn' %}
               {% for e in flt.data %}
@@ -76,6 +76,7 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                 buttons:[],
                 ordering:  true,
                 select: true,
+                "lengthMenu": [[5, 10, 25, 50], [5, 10, 25, 50]],
                 "pageLength": {% if flt.pagelength %}{{ flt.pagelength }}{% else %}10{% endif %},
                 "columnDefs": [
                     { "name": "name", "targets": [ 0 ], "visible": true, "searchable": true },

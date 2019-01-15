@@ -323,6 +323,7 @@ class PassportView(FiltersView):
                 'pagelength': 5,
                 'only_one_select': 1,
                 'no_reload': 1,
+                'expanded': 1,
                 'data': []}
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
