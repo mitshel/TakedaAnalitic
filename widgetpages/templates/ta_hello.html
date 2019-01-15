@@ -1,28 +1,106 @@
 {% extends "ta_main.html" %}
+{% load staticfiles %}
 {% load i18n %}
 
 {% block main-content %}
-      <!-- Main jumbotron for a primary marketing message or call to action -->
-      <div class="jumbotron" style="padding: 2rem;">
-        <div class="container">
-          <h2 class="display-6">Платформа BI Monitor.</h2>
-          <span class="badge badge-primary">{{ user.employee_user.all.0.org.name }}</span>
-          <br>
-          <br>
-          <p><b>Приветствуем Вас, уважаемый(ая) {% if user.last_name %}{{ user.last_name }} {{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</b></p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores cum eos nam officiis voluptate. Commodi eaque ex explicabo in labore laboriosam neque nostrum nulla, obcaecati praesentium repudiandae sint vero vitae?</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dignissimos dolor dolorem facilis id mollitia natus nesciunt nostrum quam quod sequi? Aliquid consequuntur exercitationem fugit nisi obcaecati optio perferendis recusandae veritatis?</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquid amet consequuntur eos eveniet facilis, illo incidunt iusto laborum laudantium magnam magni minus natus nobis odit omnis placeat qui repudiandae saepe!</p>
-          <hr class="my-4">
-          <a class="btn btn-primary" href="{% url 'widgetpages:salesshedule' %}" role="button">График продаж &raquo;</a>&nbsp;&nbsp;
-          <a class="btn btn-primary" href="{% url 'widgetpages:competitions_lpu' %}" role="button">Конкурентный анализ &raquo;</a>&nbsp;&nbsp;
-          <a class="btn btn-primary" href="{% url 'widgetpages:parts' %}" role="button">Доля &raquo;</a>&nbsp;&nbsp;
-          <a class="btn btn-primary" href="{% url 'widgetpages:sales_analysis' %}" role="button">Анализ продаж &raquo;</a>&nbsp;&nbsp;
-          <br><br>
-          <a class="btn btn-primary" href="{% url 'widgetpages:budgets' %}" role="button">Финансирование &raquo;</a>&nbsp;&nbsp;
-          <a class="btn btn-primary" href="{% url 'widgetpages:avg_price' %}" role="button">Средняя цена &raquo;</a>&nbsp;&nbsp;
-          <a class="btn btn-primary" href="{% url 'widgetpages:packages' %}" role="button">Анализ упаковок &raquo;</a> &nbsp;&nbsp;
-          <a class="btn btn-primary" href="{% url 'widgetpages:passport' %}" role="button">Анализ учреждений &raquo;</a> &nbsp;&nbsp;
+
+        <div class="jumbotron media" style="padding: 1rem; margin:1rem;">
+          <img src="{% static "\bim-logo.png" %}" class="align-self-start mr-3">
+          <div class="media-body">
+            <h2 class="display-6">Платформа BI Monitor.</h5>
+            <p><b>Приветствуем Вас, уважаемый(ая) {% if user.last_name %}{{ user.last_name }} {{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</b></p>
+            <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
+            <p>Donec sed odio dui. Nullam quis risus eget urna mollis ornare vel eu leo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+          </div>
         </div>
+
+      <div class="container-fluid">
+      <div class="row">
+          <div class="col-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">График продаж</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
+                    <a href="{% url 'widgetpages:salesshedule' %}" class="btn btn-primary">Перейти &raquo;</a>
+                  </div>
+                </div>
+          </div>
+          <div class="col-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Конкурентный анализ</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
+                    <a href="{% url 'widgetpages:competitions_lpu' %}" class="btn btn-primary">Перейти &raquo;</a>
+                  </div>
+                </div>
+          </div>
+          <div class="col-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Доля</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
+                    <a href="{% url 'widgetpages:parts' %}" class="btn btn-primary">Перейти &raquo;</a>
+                  </div>
+                </div>
+          </div>
+          <div class="col-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Анализ продаж</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
+                    <a href="{% url 'widgetpages:sales_analysis' %}" class="btn btn-primary">Перейти &raquo;</a>
+                  </div>
+                </div>
+          </div>
       </div>
+
+      <div class="row" style="margin-top:1rem;">
+          <div class="col-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Финансирование</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
+                    <a href="{% url 'widgetpages:budgets' %}" class="btn btn-primary">Перейти &raquo;</a>
+                  </div>
+                </div>
+          </div>
+          <div class="col-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Средняя цена</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
+                    <a href="{% url 'widgetpages:avg_price' %}" class="btn btn-primary">Перейти &raquo;</a>
+                  </div>
+                </div>
+          </div>
+          <div class="col-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Анализ упаковок</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
+                    <a href="{% url 'widgetpages:packages' %}" class="btn btn-primary">Перейти &raquo;</a>
+                  </div>
+                </div>
+          </div>
+          <div class="col-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Анализ учреждений</h5>
+                  <div class="card-body">
+                    <h5 class="card-title">Special title treatment</h5>
+                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
+                    <a href="{% url 'widgetpages:passport' %}" class="btn btn-primary">Перейти &raquo;</a>
+                  </div>
+                </div>
+          </div>
+      </div>
+
+      </div>
+
 {% endblock %}  {# content #}
