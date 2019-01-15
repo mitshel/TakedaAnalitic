@@ -188,7 +188,7 @@ class FiltersMixin():
            markets_in=extra_in_strfilter('s.market_id',flt_active.get(fmrkt,'')) if fmrkt in self.filters_list else None,
            status_in=extra_in_strfilter('s.StatusT_ID', flt_active.get(fstat, '')) if fstat in self.filters_list else None,
            budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')) if fbudg in self.filters_list else None,
-           lpus_in=extra_in_filter('l.Cust_ID',flt_active.get(fcust,'')) if fcust in self.filters_list else None,
+           lpus_in=extra_in_filter('s.Cust_ID',flt_active.get(fcust,'')) if fcust in self.filters_list else None,
            winrs_in=extra_in_filter('s.Winner_ID', flt_active.get(fwinr,'')) if fwinr in self.filters_list else None,
            innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')) if finnr in self.filters_list else None,
            trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')) if ftrnr in self.filters_list else None,

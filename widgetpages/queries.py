@@ -446,11 +446,10 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         sum(isnull({{ market_type_prefix }}Summa,0)) as {{ market_type_prefix }}Summa
         from [dbo].[org_CACHE_{{org_id}}] s
-        left join db_lpu l on s.cust_id = l.cust_id
+        --left join db_lpu l on s.cust_id = l.cust_id
         left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on s.{{ market_type_prefix }}{{ product_type }} = t.id
         --where s.{{ market_type_prefix }}TradeNx > 0
         where 1=1 
-        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
@@ -496,11 +495,9 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         avg({{ market_type_prefix }}Price) as {{ market_type_prefix }}AVG
         from [dbo].[org_CACHE_{{org_id}}] s
-        left join db_lpu l on s.cust_id = l.cust_id
+        --left join db_lpu l on s.cust_id = l.cust_id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        --left join db_lpu_employee e on s.cust_id=e.lpu_id
         where 1=1 
-        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
@@ -543,11 +540,9 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         sum(isnull({{ market_type_prefix }}Count,0)) as {{ market_type_prefix }}Count
         from [dbo].[org_CACHE_{{org_id}}] s
-        left join db_lpu l on s.cust_id = l.cust_id
+        --left join db_lpu l on s.cust_id = l.cust_id
         left join db_TradeNR t on s.{{ market_type_prefix }}TradeNx = t.id
-        --left join db_lpu_employee e on s.cust_id=e.lpu_id
         where 1=1 
-        --{% if years %}and s.PlanTYear in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{% endfor %}) {% endif %}
         {% if no_target %} 
             and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
             {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=s.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
@@ -896,7 +891,7 @@ q_sales_year = """
 {% autoescape off %}
 select b.name as market_name, PlanTYear as iid, Sum(isnull(Order_Summa,0))/1000000 as product_cost_sum
 from org_CACHE_{{ org_id }} s
-left join db_lpu l on s.cust_id = l.cust_id
+--left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
 where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if no_target %} 
@@ -926,7 +921,7 @@ q_sales_month = """
 {% autoescape off %}
 select b.name as market_name, month(ProcDt) as mon, Sum(isnull(Order_Summa,0))/1000000 as product_cost_sum, count(*) as product_count
 from org_CACHE_{{ org_id }} s
-left join db_lpu l on s.cust_id = l.cust_id
+--left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
 where s.PlanTYear is not NULL --and s.cust_id<>0
 {% if no_target %} 
