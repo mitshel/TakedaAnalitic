@@ -3,6 +3,19 @@
 {% load i18n %}
 
 {% block main-content %}
+<style>
+.my-flex-card > div > div.card {
+    height: calc(100% - 5px);
+    margin-bottom: 5px;
+}
+
+.my-flex-card > div > div.card {
+    height: calc(100% - 5px);
+    margin-bottom: 5px;
+}
+
+</style>
+
 
         <div class="jumbotron media" style="padding: 1rem; margin:1rem;">
           <img src="{% static "\bim-logo.png" %}" class="align-self-start mr-3">
@@ -10,95 +23,93 @@
             <h2 class="display-6">Платформа BI Monitor.</h5>
             <span class="badge badge-primary">{{ user.employee_user.all.0.org.name }}</span>
             <p><b>Приветствуем Вас, уважаемый(ая) {% if user.last_name %}{{ user.last_name }} {{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</b></p>
-            <p>Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.</p>
+            <p>Business Intelligent (BI) Monitor - Система Онлайн мониторинга и онлайн анализа аукционов и закупок Российской Федерации.</p>
           </div>
         </div>
 
       <div class="container-fluid">
-      <div class="row">
-          <div class="col-3">
-                <div class="card border-primary">
-                  <h5 class="card-header bg-primary text-white">График продаж</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
-                    <a href="{% url 'widgetpages:salesshedule' %}" class="btn btn-primary">Перейти &raquo;</a>
-                  </div>
-                </div>
-          </div>
-          <div class="col-3">
-                <div class="card border-primary">
-                  <h5 class="card-header bg-primary text-white">Конкурентный анализ</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
-                    <a href="{% url 'widgetpages:competitions_lpu' %}" class="btn btn-primary">Перейти &raquo;</a>
-                  </div>
-                </div>
-          </div>
-          <div class="col-3">
-                <div class="card border-primary">
-                  <h5 class="card-header bg-primary text-white">Доля</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
-                    <a href="{% url 'widgetpages:parts' %}" class="btn btn-primary">Перейти &raquo;</a>
-                  </div>
-                </div>
-          </div>
-          <div class="col-3">
-                <div class="card border-primary">
-                  <h5 class="card-header bg-primary text-white">Анализ продаж</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
-                    <a href="{% url 'widgetpages:sales_analysis' %}" class="btn btn-primary">Перейти &raquo;</a>
-                  </div>
-                </div>
-          </div>
-      </div>
-
-      <div class="row" style="margin-top:1rem;">
-          <div class="col-3">
-                <div class="card border-primary">
-                  <h5 class="card-header bg-primary text-white">Финансирование</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
-                    <a href="{% url 'widgetpages:budgets' %}" class="btn btn-primary">Перейти &raquo;</a>
-                  </div>
-                </div>
-          </div>
-          <div class="col-3">
-                <div class="card border-primary">
-                  <h5 class="card-header bg-primary text-white">Средняя цена</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
-                    <a href="{% url 'widgetpages:avg_price' %}" class="btn btn-primary">Перейти &raquo;</a>
-                  </div>
-                </div>
-          </div>
-          <div class="col-3">
-                <div class="card border-primary">
-                  <h5 class="card-header bg-primary text-white">Анализ упаковок</h5>
-                  <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
-                    <a href="{% url 'widgetpages:packages' %}" class="btn btn-primary">Перейти &raquo;</a>
-                  </div>
-                </div>
-          </div>
-          <div class="col-3">
+      <div class="row card-group my-flex-card">
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
                 <div class="card border-primary">
                   <h5 class="card-header bg-primary text-white">Анализ учреждений</h5>
                   <div class="card-body">
-                    <h5 class="card-title">Special title treatment</h5>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusamus accusantium, ad asperiores assumenda at beatae deserunt doloribus dolorum error id illo labore nulla officia quam, quibusdam tempore ut.</p>
-                    <a href="{% url 'widgetpages:passport' %}" class="btn btn-primary">Перейти &raquo;</a>
+                    <!--<h5 class="card-title">Special title treatment</h5>-->
+                    <p class="card-text">Информация по закупкам конкретного ЛПУ. Возможность узнать общий объем затрат ЛПУ (учреждения).</p>
+                  </div>
+                    <div class="card-footer d-flex flex-row-reverse"><a href="{% url 'widgetpages:passport' %}" class="btn btn-primary">Перейти &raquo;</a></div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Анализ продаж</h5>
+                  <div class="card-body">
+                    <!--<h5 class="card-title">Special title treatment</h5>-->
+                    <p class="card-text">Быстрый доступ ко всем аукционам вашей территории. Удобные фильтры для поиска нужной закупки. Автоматические ссылки на документы закупки.</p>
+                  </div>
+                  <div class="card-footer d-flex flex-row-reverse"><a href="{% url 'widgetpages:sales_analysis' %}" class="btn btn-primary">Перейти &raquo;</a></div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-1 mb-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Конкурентный анализ</h5>
+                  <div class="card-body">
+                    <!--<h5 class="card-title">Special title treatment</h5>-->
+                    <p class="card-text">Онлайн визуализация продаж  препаратов VS конкурентов. Возможность увидеть как все палитру продуктов в рынке вашей территории, так и проанализировать свою и работу конкурентов в конкретном ЛПУ (учреждении).</p>
+                  </div>
+                  <div class="card-footer d-flex flex-row-reverse"><a href="{% url 'widgetpages:competitions_lpu' %}" class="btn btn-primary">Перейти &raquo;</a></div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Финансирование</h5>
+                  <div class="card-body">
+                    <!--<h5 class="card-title">Special title treatment</h5>-->
+                    <p class="card-text">Графическая и табличная визуализация каналов финансирования. Сортировка и фильтрация по любым вариантам финансирования и не только.</p>
+                  </div>
+                  <div class="card-footer d-flex flex-row-reverse"><a href="{% url 'widgetpages:budgets' %}" class="btn btn-primary">Перейти &raquo;</a></div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Доля</h5>
+                  <div class="card-body">
+                    <!--<h5 class="card-title">Special title treatment</h5>-->
+                    <p class="card-text">Удобный инструмент анализа работы территории, сотрудников. Сравнение и сортировка ЛПУ (учреждений) по объему, вкладу в продажи вашей команды.</p>
+                    <div class="card-footer d-flex flex-row-reverse"><a href="{% url 'widgetpages:parts' %}" class="btn btn-primary">Перейти &raquo;</a></div>
                   </div>
                 </div>
           </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Анализ упаковок</h5>
+                  <div class="card-body">
+                    <!--<h5 class="card-title">Special title treatment</h5>-->
+                    <p class="card-text">Простой способ увидеть объемы закупок как ваших продуктов, так и продуктов конкурентов.</p>
+                  </div>
+                  <div class="card-footer d-flex flex-row-reverse"><a href="{% url 'widgetpages:packages' %}" class="btn btn-primary">Перейти &raquo;</a></div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">Средняя цена</h5>
+                  <div class="card-body">
+                    <!--<h5 class="card-title">Special title treatment</h5>-->
+                    <p class="card-text">Информация по средней стоимости продуктов (препаратов) в ваших рынках и территориях.</p>
+                  </div>
+                  <div class="card-footer d-flex flex-row-reverse"><a href="{% url 'widgetpages:avg_price' %}" class="btn btn-primary">Перейти &raquo;</a></div>
+                </div>
+          </div>
+          <div class="col-lg-3 col-md-4 col-sm-6 mb-3">
+                <div class="card border-primary">
+                  <h5 class="card-header bg-primary text-white">График продаж</h5>
+                  <div class="card-body">
+                    <!--<h5 class="card-title">Special title treatment</h5>-->
+                    <p class="card-text">Графическая визуализация количества и объемов выставленных аукционов помесячно.</p>
+                  </div>
+                  <div class="card-footer d-flex flex-row-reverse"><a href="{% url 'widgetpages:salesshedule' %}" class="btn btn-primary">Перейти &raquo;</a></div>
+                </div>
+          </div>
+
       </div>
 
       </div>
