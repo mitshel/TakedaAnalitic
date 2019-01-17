@@ -1,19 +1,4 @@
 <script>
-function fixval ( data, divider=1000 ) {
-    if (data != '') val=( data / divider ).toFixed(0); else val='';
-    return val;
-}
-
-function floatWithSpaces(x) {
-    var parts = x.toString().split(".");
-    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-    return parts.join(".");
-}
-
-function intWithSpaces(x) {
-    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
-}
-
     var config1 = {
         type: 'bar',
         data: {
@@ -109,7 +94,6 @@ function intWithSpaces(x) {
         window.myLine1.update();
     }
 
-    function ChartsUpdate2(data, src_id) { };
     function ChartsUpdate3(data, src_id) { };
 
 </script>

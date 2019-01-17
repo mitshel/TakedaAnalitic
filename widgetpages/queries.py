@@ -975,6 +975,20 @@ where 1=1
 {{ order_by }}
 {% endautoescape %}
 """
+
+q_passport_chart_markets = """
+{% autoescape off %}
+select market_id, market_name, CAST(sum(isnull(contract_Summa,0))/1000 as INT) as summa from org_CACHE_{{ org_id }} s
+where 1=1
+{% if years_in %}and {{years_in}} {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %}
+group by market_id, market_name
+having sum(isnull(contract_Summa,0)) > 0
+--order by market_name
+{{ order_by }}
+{% endautoescape %}
+"""
+
 q_passport_winners_table = """
 {% autoescape off %}
 select * from db_WinnersOrg

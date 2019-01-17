@@ -341,6 +341,8 @@ class PassportView(FiltersView):
         if cust_id:
             lpu = Lpu.objects.get(cust_id=cust_id)
             sum_by_years = self.apply_filters(RawModel(queries.q_passport_chart_years).order_by('1','2'),flt_active, org_id, targets)
+            sum_by_markets = self.apply_filters(RawModel(queries.q_passport_chart_markets).order_by('market_name'),flt_active, org_id, targets)
+            print(sum_by_markets.query)
 
             pivot_data['lpu_name'] = lpu.name
             pivot_data['lpu_shortname'] = lpu.shortname
@@ -348,7 +350,10 @@ class PassportView(FiltersView):
             pivot_data['lpu_region'] = lpu.regcode.regnm
             pivot_data['lpu_addr'] = lpu.addr1
             pivot_data['pivot1'] = list (sum_by_years.open().fetchall())
+            pivot_data['pivot2'] = list (sum_by_markets.open().fetchall())
             sum_by_years.close()
+            sum_by_markets.close()
+            print(pivot_data['pivot2'])
         return pivot_data
 
 class PassportWinnersAjaxTable(BaseDatatableYearView):
