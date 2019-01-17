@@ -298,12 +298,12 @@ class PassportView(FiltersView):
     view_name = 'Паспорт заказчика'
 
     def filter_year(self, flt_active=None, org_id=0, targets = []):
-        year_list_active = []
+        year_list_active = [0]
         if not flt_active.get(fyear):
             year_enabled = RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid, [PlanTYear] as name",org_id=org_id).order_by('[PlanTYear]')
-            year_active = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
-            year_list_active = [e['iid'] for e in year_active.open().fetchall()]
-            year_active.close()
+            #year_active = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
+            #year_list_active = [e['iid'] for e in year_active.open().fetchall()]
+            #year_active.close()
         else:
             year_enabled = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
 
@@ -323,7 +323,7 @@ class PassportView(FiltersView):
                 'icon':'ambulance',
                 'pagelength': 5,
                 'only_one_select': 1,
-                'no_reload': 1,
+                #'no_reload': 1,
                 'expanded': 1,
                 'data': []}
 
@@ -360,9 +360,13 @@ class PassportWinnersAjaxTable(BaseDatatableYearView):
     order_columns = ['name']
     datatable_query = queries.q_passport_winners_table
 
+    def apply_filters(self,rawmodel, flt_active, org_id, targets):
+        qs = super().apply_filters(rawmodel, flt_active, org_id, targets)
+        qs = qs.filter(lpus_in=extra_in_filter('c1.Cust_ID',flt_active.get(fcust,'')))
+        return qs
+
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
         sort_dir = self._querydict.get('order[0][dir]')
         qs = qs.order_by('grouping(w.Org_CustNm) desc', '[{0}] {1}'.format(self._columns[sort_col], sort_dir))
-        print(qs.query)
         return qs

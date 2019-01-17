@@ -20,12 +20,12 @@ go
 --go
 
 insert into [dbo].[org_DATA]([cust_id],[PlanTYear],[summa])
-select isnull(isnull(c1.cust_id, s.cust_id),0) as cust_id, isnull(s.PlanTYear,0) as PlanTYear, sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0)) as summa
+select isnull(c1.cust_id,0) as cust_id, isnull(s.PlanTYear,0) as PlanTYear, sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0)) as summa
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
-LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c (nolock)
-	ON c.Lot_ID = s.Lot_ID
-	   and c.Contract_ID > 0
-	   and c.Lotspec_ID IS NULL
+--LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c (nolock)
+--	ON c.Lot_ID = s.Lot_ID
+--	   and c.Contract_ID > 0
+--	   and c.Lotspec_ID IS NULL
 LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	ON c1.LotSpec_ID = s.LotSpec_ID
 	   and c1.Contract_ID > 0
@@ -34,10 +34,10 @@ where (s.Reg_ID < 100) AND (s.ProdType_ID = 'L')
 group by isnull(isnull(c1.cust_id, s.cust_id),0), isnull(s.PlanTYear,0)
 having sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0))>0
 go
--- 31644 записи 5:41
+-- 31644 записи 5:41 ,Без первого Join 2:39
 
 insert into [dbo].[org_DATA]([cust_id],[PlanTYear],[summa])
-select cust_id, isnull(year([DTExecuteEnd]),0) as [PlanTYear],sum(isnull(isnull([Ship_Sum],[ItemSum]),0)) as summa
+select isnull(cust_id,0) as cust_id, isnull(year([DTExecuteEnd]),0) as [PlanTYear],sum(isnull(isnull([Ship_Sum],[ItemSum]),0)) as summa
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1
 where exists (select 1 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s where s.LotSpec_ID=c1.LotSpec_ID and (s.Reg_ID < 100) AND (s.ProdType_ID = 'L'))
 group by cust_id, year([DTExecuteEnd])
