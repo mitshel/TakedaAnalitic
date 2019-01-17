@@ -1022,7 +1022,7 @@ where (s.Reg_ID < 100) AND (s.ProdType_ID = 'L')
 {% if icontains %}and (w.Org_CustNm like '%{{ icontains }}%' or w.Org_CustINN like '%{{ icontains }}%'){% endif %}
 group by 
 rollup (w.Org_CustNm, w.Org_CustInn)
-having (grouping(w.Org_CustInn)=0 or grouping(w.Org_CustNm)=1) and sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0))>0
+having (grouping(w.Org_CustInn)=0 or grouping(w.Org_CustNm)=1)
 --order by grouping(w.Org_CustNm) desc, [name] asc
 {{ order_by }}
 {% endautoescape %}
