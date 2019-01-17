@@ -9,6 +9,7 @@ from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr
 from widgetpages import queries
 
 from db.rawmodel import RawModel
+from db.models import Lpu
 
 class HomeView(OrgMixin, TemplateView):
     template_name = 'ta_hello.html'
@@ -327,8 +328,24 @@ class PassportView(FiltersView):
                 'data': []}
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
-        data = {}
-        return data
+        pivot_data = {}
+
+        # получаем ID  ЛПУ из фильтра
+        flt_cust = flt_active.get(fcust,'')
+        if flt_cust and flt_cust['list']:
+            cust_id = flt_cust['list'][0]
+        else:
+            cust_id = None
+
+        # Если в фильтре есть какое то ЛПУ, То готовим данные для графика
+        if cust_id:
+            lpu = Lpu.objects.get(cust_id=cust_id)
+            sum_by_years = self.apply_filters(RawModel(queries.q_passport_chart_years).order_by('1','2'),flt_active, org_id, targets)
+
+            pivot_data['lpu_name'] = lpu.name
+            pivot_data['pivot1'] = list (sum_by_years.open().fetchall())
+            sum_by_years.close()
+        return pivot_data
 
 class PassportWinnersAjaxTable(BaseDatatableYearView):
     datatable_query = queries.q_passport_winners_table

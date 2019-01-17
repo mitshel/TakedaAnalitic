@@ -5,7 +5,7 @@ go
 CREATE TABLE [dbo].[org_DATA](
   [id] bigint identity not null,
 	[cust_id] [int] not null,
-	[year] [int] not null,
+	[PlanTYear] [int] not null,
 	[Summa] [decimal](38, 2) not null
 ) ON [PRIMARY]
 GO
@@ -13,8 +13,8 @@ GO
 delete from [dbo].[org_DATA]
 go
 
-insert into [dbo].[org_DATA]([cust_id],[year],[summa])
-select cust_id, isnull(year([DTExecuteEnd]),0) as [year],sum(isnull(isnull([Ship_Sum],[ItemSum]),0)) as summa
+insert into [dbo].[org_DATA]([cust_id],[PlanTYear],[summa])
+select cust_id, isnull(year([DTExecuteEnd]),0) as [PlanTYear],sum(isnull(isnull([Ship_Sum],[ItemSum]),0)) as summa
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract]
 group by cust_id, year([DTExecuteEnd])
 go
@@ -27,7 +27,7 @@ go
 
 CREATE NONCLUSTERED INDEX [idx_org_DATA_year] ON [dbo].[org_DATA]
 (
-	[year] ASC
+	[PlanTYear] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 go
 

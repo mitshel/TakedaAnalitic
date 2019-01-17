@@ -937,7 +937,7 @@ q_years_passport = """
 {% autoescape off %}
 select {{ fields }} from db_years a
 where exists ( select 1 from org_DATA s
-               where s.[year]=a.PlanTYear 
+               where s.PlanTYear=a.PlanTYear 
                {% if lpus_in %}and {{lpus_in}} {% endif %} 
              )
 {{ order_by }}
@@ -966,6 +966,15 @@ select 1 from db_lpu l
 {% endautoescape %}
 """
 
+q_passport_chart_years = """
+{% autoescape off %}
+select [PlanTYear] as [year], isnull([summa],0)/1000 as [summa] from org_DATA s
+where 1=1
+{% if years_in %}and {{years_in}} {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %}
+{{ order_by }}
+{% endautoescape %}
+"""
 q_passport_winners_table = """
 {% autoescape off %}
 select * from db_WinnersOrg

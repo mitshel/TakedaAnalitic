@@ -1,0 +1,90 @@
+<script>
+    var config1 = {
+        type: 'bar',
+        data: {
+            labels: [{% for d in data.pivot1 %}'{{ d.year }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [
+                {
+                    label: '{{ data.lpu_name }}',
+                    fontSize: 7,
+                    backgroundColor: window.listColors[0],
+                    borderColor: window.listColors[0],
+                    data: [
+                        {% for d in data.pivot1 %}{ x:'{{ d.year }}', y:{{ d.summa|floatformat:"0" }} }{% if not forloop.last %},{% endif %}
+                        {% endfor %}
+                    ],
+                    fill: false,
+                    tension: 0
+                }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            title: {
+                display: true,
+                text: 'Все закупки учреждения'
+            },
+            tooltips: {
+                mode: 'index',
+                intersect: false,
+            },
+            hover: {
+                mode: 'nearest',
+                intersect: true
+            },
+            scales: {
+                xAxes: [{
+                    display: true,
+                    ticks: {
+                        autoSkip: false
+                    },
+                    scaleLabel: {
+                        display: false,
+                        labelString: 'Год'
+                    }
+                }],
+                yAxes: [{
+                    display: true,
+                    scaleLabel: {
+                        display: true,
+                        labelString: 'Сумма (тыс.руб.)'
+                    }
+                }]
+            }
+        }
+    };
+
+
+    function ConfigUpdate1(data, src_id) {
+        labels_data = [];
+        data.data.pivot1.forEach(function(d) {
+           labels_data.push(d.year)
+        });
+        config1.data.labels = labels_data;
+
+        //config1.data.datasets.forEach(function(datasets) { datasets.pop() });
+        config1.data.datasets = [];
+
+        var newDataset = {
+            label: data.data.lpu_name,
+            backgroundColor: window.listColors[0],
+            borderColor: window.listColors[0],
+            fontSize: 7,
+            data: []
+        };
+
+        data.data.pivot1.forEach(function(d) {
+            newDataset.data.push({ x:d.year, y:d.summa });
+        });
+        config1.data.datasets.push(newDataset);
+    };
+
+    function ChartsUpdate1(data, src_id) {
+        ConfigUpdate1(data, src_id);
+        window.myLine1.update();
+    }
+
+    function ChartsUpdate2(data, src_id) { };
+    function ChartsUpdate3(data, src_id) { };
+
+</script>

@@ -15,18 +15,18 @@
 	</style>
 <div class="col-12">
 	<div class="col-12">
-		<canvas id="ta_budgets"></canvas>
+		<canvas id="ta_passport_chart_years"></canvas>
 	</div>
 
-    <!--{ % include 'ta_budgets_chart.html' %}-->
+    {% include 'ta_passport_chart_years.html' %}
     <!--{ % include 'ta_budgets_table.html' %}-->
 
     <script>
-        //window.onload = function() {
-        //    var ctx1 = document.getElementById('ta_budgets').getContext('2d');
-        //    ctx1.canvas.height = 500;
-        //    window.myLine1 = new Chart(ctx1, config1);
-        //};
+        window.onload = function() {
+            var ctx1 = document.getElementById('ta_passport_chart_years').getContext('2d');
+            ctx1.canvas.height = 500;
+            window.myLine1 = new Chart(ctx1, config1);
+        };
     </script>
 </div>
 {%  endblock %}
