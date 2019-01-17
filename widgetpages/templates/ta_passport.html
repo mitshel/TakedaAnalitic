@@ -12,10 +12,28 @@
 		-webkit-user-select: none;
 		-ms-user-select: none;
 	}
+    div.card-chart {
+        margin-top:0.5rem;
+    }
 	</style>
-<div class="col-12">
-	<div class="col-12">
-		<canvas id="ta_passport_chart_years"></canvas>
+<div class="container-fluid">
+
+     <div class="card card-chart">
+      <div class="card-header"><b>УЧРЕЖДЕНИЕ</b></div>
+     <div class="card-body">
+        <p class="card-text" >
+            <b>Наименование:</b> <span id="lpu_name">{% if data.lpu_name %}{{ data.lpu_name }}{% else %}-{% endif %}</span><br>
+            <b>Короткое имя:</b> <span id="lpu_shortname">{% if data.lpu_shortname %}{{ data.lpu_shortname }}{% else %}-{% endif %}</span><br>
+            <b>ИНН:</b> <span id="lpu_inn">{% if data.lpu_inn %}{{ data.lpu_inn }}{% else %}-{% endif %}</span><br>
+            <b>Регион:</b> <span id="lpu_region">{% if data.lpu_region %}{{ data.lpu_region }}{% else %}-{% endif %}</span><br>
+            <b>Адрес:</b> <span id="lpu_addr">{% if data.lpu_addr %}{{ data.lpu_addr }}{% else %}-{% endif %}</span>
+        </p>
+     </div>
+     </div>
+
+    <div class="card card-chart">
+      <div class="card-header"><b>ЗАКУПКИ ПО ГОДАМ</b></div>
+          <div class="card-body"><canvas id="ta_passport_chart_years"></canvas></div>
 	</div>
 
     {% include 'ta_passport_chart_years.html' %}
@@ -24,7 +42,7 @@
     <script>
         window.onload = function() {
             var ctx1 = document.getElementById('ta_passport_chart_years').getContext('2d');
-            ctx1.canvas.height = 500;
+            ctx1.canvas.height = 300;
             window.myLine1 = new Chart(ctx1, config1);
         };
     </script>

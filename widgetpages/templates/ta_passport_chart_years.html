@@ -20,7 +20,7 @@ function intWithSpaces(x) {
             labels: [{% for d in data.pivot1 %}'{{ d.year }}'{% if not forloop.last %},{% endif %}{% endfor %}],
             datasets: [
                 {
-                    label: '{{ data.lpu_name }}',
+                    label: '',
                     fontSize: 7,
                     backgroundColor: window.listColors[0],
                     borderColor: window.listColors[0],
@@ -35,8 +35,11 @@ function intWithSpaces(x) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
+            legend: {
+                display: false
+            },
             title: {
-                display: true,
+                display: false,
                 text: 'Все закупки учреждения'
             },
             tooltips: {
@@ -82,7 +85,8 @@ function intWithSpaces(x) {
         config1.data.datasets = [];
 
         var newDataset = {
-            label: data.data.lpu_name,
+            //label: data.data.lpu_name,
+            label: '',
             backgroundColor: window.listColors[0],
             borderColor: window.listColors[0],
             fontSize: 7,
@@ -96,6 +100,11 @@ function intWithSpaces(x) {
     };
 
     function ChartsUpdate1(data, src_id) {
+        $("#lpu_name").html(data.data.lpu_name);
+        $("#lpu_shortname").html(data.data.lpu_shortname);
+        $("#lpu_inn").html(data.data.lpu_inn);
+        $("#lpu_region").html(data.data.lpu_region);
+        $("#lpu_addr").html(data.data.lpu_addr);
         ConfigUpdate1(data, src_id);
         window.myLine1.update();
     }

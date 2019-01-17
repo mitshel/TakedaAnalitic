@@ -343,6 +343,10 @@ class PassportView(FiltersView):
             sum_by_years = self.apply_filters(RawModel(queries.q_passport_chart_years).order_by('1','2'),flt_active, org_id, targets)
 
             pivot_data['lpu_name'] = lpu.name
+            pivot_data['lpu_shortname'] = lpu.shortname
+            pivot_data['lpu_inn'] = lpu.inn
+            pivot_data['lpu_region'] = lpu.regcode.regnm
+            pivot_data['lpu_addr'] = lpu.addr1
             pivot_data['pivot1'] = list (sum_by_years.open().fetchall())
             sum_by_years.close()
         return pivot_data
