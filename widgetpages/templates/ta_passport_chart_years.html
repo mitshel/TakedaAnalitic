@@ -1,4 +1,4 @@
-<script>
+
     var config1 = {
         type: 'bar',
         data: {
@@ -90,10 +90,10 @@
         $("#lpu_inn").html(data.data.lpu_inn);
         $("#lpu_region").html(data.data.lpu_region);
         $("#lpu_addr").html(data.data.lpu_addr);
+        ta_passport_table_winners.ajax.reload( null, true );
         ConfigUpdate1(data, src_id);
         window.myLine1.update();
     }
 
     function ChartsUpdate3(data, src_id) { };
 
-</script>

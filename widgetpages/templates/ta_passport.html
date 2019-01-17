@@ -15,6 +15,24 @@
     div.card-chart {
         margin-top:0.5rem;
     }
+
+        table.datatable tr {
+            font-size: 0.9rem;
+            font-weight: 400;
+            line-height: 0.9rem;
+        }
+        .buttons-select-all, .buttons-select-none, .buttons-html5 {
+            line-height: 1; !important;
+        }
+
+        .sticky-top {top:7rem;}
+        #ta_passport_table_winners thead {background-color: rgb(108, 117, 125); color: #ffffff; }
+        table.datatable tr.total td  { font-weight:bold; !important;}
+        td.dt-right { text-align: right; padding-right:5px; !important;}
+        table.dataTable.table-sm > thead > tr > th.dt-right { padding-right:1.4rem; !important; text-align: right; !important;}
+        table.dataTable tr.dtrg-end td  { background-color: #ffffff; !important;}
+        table.datatable tr.total td  { font-weight:bold; !important;}
+
 	</style>
 
 <script>
@@ -68,10 +86,23 @@
         </div>
     </div>
 
-    {% include 'ta_passport_chart_years.html' %}
-    {% include 'ta_passport_chart_markets.html' %}
+    <div class="row">
+        <div class="col-md-12">
+        <div class="card card-chart">
+          <div class="card-header"><b>ПОСТАВЩИКИ</b></div>
+          <div class="card-body">
+              <table class="table table-sm table-hover display w-100 datatable" width="100%" id="ta_passport_table_winners"></table>
+          </div>
+        </div>
+        </div>
+    </div>
+</div>
+
 
     <script>
+        {% include 'ta_passport_table_winners.html' %}
+        {% include 'ta_passport_chart_years.html' %}
+        {% include 'ta_passport_chart_markets.html' %}
         window.onload = function() {
             var ctx1 = document.getElementById('ta_passport_chart_years').getContext('2d');
             ctx1.canvas.height = 300;
@@ -81,5 +112,5 @@
             window.myLine2 = new Chart(ctx2, config2);
         };
     </script>
-</div>
+
 {%  endblock %}

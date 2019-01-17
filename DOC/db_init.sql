@@ -68,6 +68,46 @@ from [VM1-12\CURSORMAIN].[Cursor].[dbo].[StatusT]
 go
 
 --
+-- Создание и наполнение таблицы организаций db_allOrg
+--
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('dbo.db_allOrg')
+            and   type = 'U')
+   drop table dbo.db_allOrg
+go
+
+CREATE TABLE [dbo].[db_allOrg](
+	[cust_id] [int] NOT NULL,
+	[Org_CustINN] [varchar](16) NULL,
+	[Org_CustNm] [varchar](512) NULL,
+	[shortname] [varchar](512) NULL,
+	[addr1] [varchar](512) NULL,
+	[addr2] [varchar](512) NULL,
+	[regcode] [int] NOT NULL,
+ CONSTRAINT [PK_allOrg] PRIMARY KEY CLUSTERED
+(
+	[cust_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+CREATE NONCLUSTERED INDEX [idx_db_org_Org_CustNm] ON [dbo].[db_allOrg]
+(
+	[Org_CustNm] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+go
+
+-- Добавляем новые организации
+--
+insert into db_allOrg
+select DISTINCT Org_ID as cust_id, INN as Org_CustINN, OrgNm as Org_CustNm, OrgNmS as shortname, Addr1, Addr2, isnull(regcode,0) as regcode
+from [VM1-12\CURSORMAIN].[Cursor].[dbo].[org]
+go
+-- (затронуто строк: 19172)
+
+
+--
 -- Создание и наполнение таблицы статусов db_Budgets
 --
 if exists (select 1

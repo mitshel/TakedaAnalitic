@@ -1,0 +1,35 @@
+var ta_passport_table_winners =  $('#ta_passport_table_winners').DataTable({
+                "dom": 'r<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
+                buttons: ['excel'],
+                select: true,
+                "lengthMenu": [[25, 50, 100, 250, 500, 1000], [25, 50, 100, 250, 500, 1000]],
+                "pageLength": 25,
+                autoWidth: false,
+                "columnDefs": [
+                    { "title": "id", "name": "winner_id",        "targets": 0 , "visible": false, "className": "" },
+                    { "title": "ИНН", "name": "inn",         "targets": 1 , "visible": true, "className": "" },
+                    { "title": "Поставщик", "name": "name",         "targets": 2 , "visible": true, "className": "" },
+                    { "title": "Сумма", "name": "summa",        "targets": 3 , "visible": true, "className": "dt-right" ,
+                       render: function ( data, type, row ) { return floatWithSpaces ( data ); } },
+                    { "name": "gr", "targets": 4, "visible": false, "searchable": false }
+                ],
+                "processing": true,
+                "serverSide": true,
+                "ordering":  true,
+                "order": [[ 2, "asc" ]],
+                "ajax": {
+                    "url": "{{ ajax_datatable_url }}",
+                    "type": "POST",
+                    "data": function ( d ) {
+                        d.filters_ajax_request = JSON.stringify(make_request());
+                        d.view_id = '{{ view.id }}';
+                        d.org_id = '{{ org_id }}';
+                        d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                    }
+                },
+                 "createdRow": function( row, data, dataIndex ) {
+                    if ( data[4] == "1" ) { $(row).addClass('total');  }
+                 },
+                "language": lang_russian
+            });
+

@@ -989,9 +989,41 @@ having sum(isnull(contract_Summa,0)) > 0
 {% endautoescape %}
 """
 
+q_passport_winners_table0 = """
+{% autoescape off %}
+select winner_id, w.inn, w.name, CAST(sum(isnull(contract_Summa,0))/1000 as INT) as summa from org_CACHE_{{ org_id }} s
+left join db_WinnerOrg w on s.Winner_Id=w.id
+where 1=1
+{% if years_in %}and {{years_in}} {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %}
+group by winner_id, w.inn, w.name
+having sum(isnull(contract_Summa,0))>0
+{{ order_by }}
+{% endautoescape %}
+"""
+
 q_passport_winners_table = """
 {% autoescape off %}
-select * from db_WinnersOrg
+select IIF(grouping(w.Org_CustNm)=1,'ИТОГО',isnull(w.Org_CustNm,' НЕТ ДАННЫХ')) as name, w.Org_CustInn as inn, grouping(w.Org_CustNm) as gr,
+sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0)) as summa
+from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
+left join db_allOrg w on s.Winner_Id=w.cust_id
+LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c (nolock)
+	ON c.Lot_ID = s.Lot_ID
+	   and c.Contract_ID > 0
+	   and c.Lotspec_ID IS NULL
+LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
+	ON c1.LotSpec_ID = s.LotSpec_ID
+	   and c1.Contract_ID > 0
+	   and isnull(c1.LotSpec_ID,0) > 0
+where (s.Reg_ID < 100) AND (s.ProdType_ID = 'L')
+{% if years_in %}and {{years_in}} {% endif %}
+{% if lpus_in %}and {{lpus_in}} {% endif %}
+{% if icontains %}and (w.Org_CustNm like '%{{ icontains }}%' or w.Org_CustINN like '%{{ icontains }}%'){% endif %}
+group by 
+rollup (w.Org_CustNm, w.Org_CustInn)
+having (grouping(w.Org_CustInn)=0 or grouping(w.Org_CustNm)=1) and sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0))>0
+--order by grouping(w.Org_CustNm) desc, [name] asc
 {{ order_by }}
 {% endautoescape %}
 """
