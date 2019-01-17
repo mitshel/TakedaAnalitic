@@ -1028,7 +1028,7 @@ LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	ON c1.LotSpec_ID = s.LotSpec_ID
 	   and c1.Contract_ID > 0
 	   and isnull(c1.LotSpec_ID,0) > 0
-where (s.Reg_ID < 100) AND (s.ProdType_ID = 'L')
+where (s.Reg_ID < 100) --AND (s.ProdType_ID = 'L')
 {% if years_in %}and {{years_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}
 {% if icontains %}and (w.Org_CustNm like '%{{ icontains }}%' or w.Org_CustINN like '%{{ icontains }}%'){% endif %}

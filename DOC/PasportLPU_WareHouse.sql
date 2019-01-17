@@ -30,7 +30,7 @@ LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	ON c1.LotSpec_ID = s.LotSpec_ID
 	   and c1.Contract_ID > 0
 	   and isnull(c1.LotSpec_ID,0) > 0
-where (s.Reg_ID < 100) AND (s.ProdType_ID = 'L')
+where (s.Reg_ID < 100) --AND (s.ProdType_ID = 'L')
 group by isnull(isnull(c1.cust_id, s.cust_id),0), isnull(s.PlanTYear,0)
 having sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0))>0
 go
