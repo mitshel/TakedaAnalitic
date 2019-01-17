@@ -1,4 +1,19 @@
 <script>
+function fixval ( data, divider=1000 ) {
+    if (data != '') val=( data / divider ).toFixed(0); else val='';
+    return val;
+}
+
+function floatWithSpaces(x) {
+    var parts = x.toString().split(".");
+    parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    return parts.join(".");
+}
+
+function intWithSpaces(x) {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+}
+
     var config1 = {
         type: 'bar',
         data: {
@@ -27,6 +42,7 @@
             tooltips: {
                 mode: 'index',
                 intersect: false,
+                callbacks: { label: function(tooltipItems, data) { return ' '+intWithSpaces(fixval(tooltipItems.yLabel,1)) + ' тыс.руб.';;}}
             },
             hover: {
                 mode: 'nearest',
