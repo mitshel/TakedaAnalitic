@@ -926,7 +926,7 @@ group by b.name, month(ProcDt)
 
 q_years_passport0 = """
 {% autoescape off %}
-select DISTINCT {{ fields }} from org_DATA l
+select DISTINCT {{ fields }} from org_DATA s
 where 1=1 
 {% if lpus_in %}and {{lpus_in}} {% endif %} 
 {{ order_by }}
@@ -936,8 +936,8 @@ where 1=1
 q_years_passport = """
 {% autoescape off %}
 select {{ fields }} from db_years a
-where exists ( select 1 from org_DATA l
-               where l.[year]=a.PlanTYear 
+where exists ( select 1 from org_DATA s
+               where s.[year]=a.PlanTYear 
                {% if lpus_in %}and {{lpus_in}} {% endif %} 
              )
 {{ order_by }}

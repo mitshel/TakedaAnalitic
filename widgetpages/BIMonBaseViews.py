@@ -138,7 +138,6 @@ class FiltersMixin():
         if flt:
             # Удаляем значение view_id, т.к. далее логикой предусмотрено проверка на пустое flt
             self.view_id=flt.pop('view_id', self.view_id)
-        print('view_id=', self.view_id)
         self.init_view_properties()
 
         flt_active = {}
@@ -159,8 +158,6 @@ class FiltersMixin():
         return flt_active
 
     def apply_filters(self, qs, flt_active, org_id, targets):
-        print('targets=', targets)
-        print('filtres=', self.filters_list)
         market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
         own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
         product_type = 'InnNx' if flt_active[fserv]['prod'] == 1 else 'TradeNx'
@@ -195,7 +192,6 @@ class FiltersMixin():
            dosage_in=extra_in_filter('s.Contract_Dosage_id', flt_active.get(fdosg, '')) if fdosg in self.filters_list else None,
            form_in=extra_in_filter('s.Contract_Form_id', flt_active.get(fform, '')) if fform in self.filters_list else None,
            market_type_prefix = market_type_prefix, own_select = own_select, product_type = product_type, org_id = org_id)
-        print(qs.query)
         return qs
 
 
