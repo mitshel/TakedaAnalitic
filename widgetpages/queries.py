@@ -974,7 +974,7 @@ select 1 from db_lpu l
 
 q_passport_chart_years = """
 {% autoescape off %}
-select [PlanTYear] as [year], isnull([summa],0)/1000 as [summa] from org_DATA s
+select [PlanTYear] as [year], isnull(s.[{{ market_type_prefix }}summa],0)/1000 as [summa] from org_DATA s
 where 1=1
 {% if years_in %}and {{years_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}
@@ -984,12 +984,12 @@ where 1=1
 
 q_passport_chart_markets = """
 {% autoescape off %}
-select market_id, market_name, CAST(sum(isnull(contract_Summa,0))/1000 as INT) as summa from org_CACHE_{{ org_id }} s
-where 1=1
+select market_id, market_name, CAST(sum(isnull(s.[{{ market_type_prefix }}Summa],0))/1000 as INT) as summa from org_CACHE_{{ org_id }} s
+where StatusT_ID=4
 {% if years_in %}and {{years_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}
 group by market_id, market_name
-having sum(isnull(contract_Summa,0)) > 0
+having sum(isnull(s.{{ market_type_prefix }}Summa,0)) > 0
 --order by market_name
 {{ order_by }}
 {% endautoescape %}
@@ -1017,7 +1017,12 @@ having (grouping(WinnerOrgInn)=0 or grouping(WinnerOrg)=1)
 q_passport_winners_table = """
 {% autoescape off %}
 select IIF(grouping(w.Org_CustNm)=1,'ИТОГО',isnull(w.Org_CustNm,' НЕТ ДАННЫХ')) as name, w.Org_CustInn as inn, grouping(w.Org_CustNm) as gr,
-sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0)) as summa
+{% if market_type_prefix == 'Contract_' %}
+   sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0)) 
+{% else %}
+   sum(isnull(s.Order_Sum,0))
+{% endif %}   
+   as summa
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
 left join db_allOrg w on s.Winner_Id=w.cust_id
 --LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c (nolock)
@@ -1028,7 +1033,7 @@ LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	ON c1.LotSpec_ID = s.LotSpec_ID
 	   and c1.Contract_ID > 0
 	   and isnull(c1.LotSpec_ID,0) > 0
-where (s.Reg_ID < 100) --AND (s.ProdType_ID = 'L')
+where (s.Reg_ID < 100) and (s.StatusT_ID=4) --AND (s.ProdType_ID = 'L')
 {% if years_in %}and {{years_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}
 {% if icontains %}and (w.Org_CustNm like '%{{ icontains }}%' or w.Org_CustINN like '%{{ icontains }}%'){% endif %}

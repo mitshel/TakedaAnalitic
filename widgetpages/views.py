@@ -363,6 +363,7 @@ class PassportWinnersAjaxTable(BaseDatatableYearView):
     def apply_filters(self,rawmodel, flt_active, org_id, targets):
         qs = super().apply_filters(rawmodel, flt_active, org_id, targets)
         qs = qs.filter(lpus_in=extra_in_filter('c1.Cust_ID',flt_active.get(fcust,'')))
+        print(qs.query)
         return qs
 
     def ordering(self, qs):

@@ -43,7 +43,7 @@ views_prop = {
     'packages'              : { 'filters' : filters_all, 'props': [0,2,1,1,1,2] },
     'parts'                 : { 'filters' : filters_all, 'props': [1,2,0,3,0,2] },
     'sales_analysis'        : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
-    'passport'              : { 'filters' : [fempl,fcust,fyear], 'props': [0,2,0,1,0,2] },
+    'passport'              : { 'filters' : [fempl,fcust,fyear], 'props': [1,2,0,1,0,2] },
 }
 
 def prepare_serach(s):
