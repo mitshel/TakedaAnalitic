@@ -1035,7 +1035,7 @@ LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	   and isnull(c1.LotSpec_ID,0) > 0
 where (s.Reg_ID < 100) and (s.StatusT_ID=4) --AND (s.ProdType_ID = 'L')
 {% if years_in %}and {{years_in}} {% endif %}
-{% if lpus_in %}and {{lpus_in}} {% endif %}
+{% if lpus_contract_in %}and {{lpus_contract_in}}{% endif %}
 {% if icontains %}and (w.Org_CustNm like '%{{ icontains }}%' or w.Org_CustINN like '%{{ icontains }}%'){% endif %}
 group by 
 rollup (w.Org_CustNm, w.Org_CustInn)

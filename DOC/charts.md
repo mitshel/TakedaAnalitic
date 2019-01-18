@@ -17,5 +17,7 @@ https://github.com/d3/d3/wiki/Gallery
 https://habr.com/post/246907/
 http://imaginea.github.io/uvCharts/
 
-!!!
-http://www.chartjs.org/samples/latest/
+!!! CHART JS - выбран
+- http://www.chartjs.org/samples/latest/
+- Вызов события по щелчку на графике с примерами: http://qaru.site/questions/188624/click-events-on-pie-charts-in-chartjs
+

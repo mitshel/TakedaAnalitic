@@ -39,7 +39,7 @@ having sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0))>0
 go
 -- 31644 записи 5:41 ,Без первого Join 2:39
 -- 33170 Без проверки ProdType 1:57
--- 33164 с s.StatusT_ID=4 5:57
+-- 33164 с s.StatusT_ID=4 5:57   Production 35752 - 42:50
 
 --insert into [dbo].[org_DATA]([cust_id],[PlanTYear],[summa])
 --select isnull(cust_id,0) as cust_id, isnull(year([DTExecuteEnd]),0) as [PlanTYear],sum(isnull(isnull([Ship_Sum],[ItemSum]),0)) as summa
