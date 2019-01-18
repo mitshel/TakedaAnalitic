@@ -70,7 +70,7 @@ from (
      ) subquery
 group by isnull(cust_id,0), isnull(PlanTYear,0)
 go
--- 41618 - Devel: 10:29 - Production:
+-- 41618 - Devel: 10:29 - Production: 45525 - 1:09:17
 
 CREATE NONCLUSTERED INDEX [idx_org_DATA_cust_id] ON [dbo].[org_DATA]
 (

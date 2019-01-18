@@ -866,7 +866,7 @@ where exists
 
 q_sales_year = """
 {% autoescape off %}
-select b.name as market_name, PlanTYear as iid, Sum(isnull(Order_Summa,0))/1000000 as product_cost_sum
+select b.name as market_name, PlanTYear as iid, Sum(isnull(Contract_Summa,0))/1000000 as product_cost_sum
 from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
@@ -896,7 +896,7 @@ group by b.name, PlanTYear
 
 q_sales_month = """
 {% autoescape off %}
-select b.name as market_name, month(ProcDt) as mon, Sum(isnull(Order_Summa,0))/1000000 as product_cost_sum, count(*) as product_count
+select b.name as market_name, month(ProcDt) as mon, Sum(isnull(Contract_Summa,0))/1000000 as product_cost_sum, count(*) as product_count
 from org_CACHE_{{ org_id }} s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_market b on s.market_id=b.id --and org_id={{ org_id }}
@@ -975,7 +975,7 @@ select 1 from db_lpu l
 q_passport_chart_years = """
 {% autoescape off %}
 select [PlanTYear] as [year], isnull(s.[{{ market_type_prefix }}summa],0)/1000 as [summa] from org_DATA s
-where 1=1
+where isnull(s.[{{ market_type_prefix }}summa],0)>0
 {% if years_in %}and {{years_in}} {% endif %}
 {% if lpus_in %}and {{lpus_in}} {% endif %}
 {{ order_by }}
