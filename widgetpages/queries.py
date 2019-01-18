@@ -1025,17 +1025,19 @@ select IIF(grouping(w.Org_CustNm)=1,'ИТОГО',isnull(w.Org_CustNm,' НЕТ Д
    as summa
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
 left join db_allOrg w on s.Winner_Id=w.cust_id
---LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c (nolock)
---	ON c.Lot_ID = s.Lot_ID
---	   and c.Contract_ID > 0
---	   and c.Lotspec_ID IS NULL
+{% if market_type_prefix == 'Contract_' %}
 LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	ON c1.LotSpec_ID = s.LotSpec_ID
 	   and c1.Contract_ID > 0
 	   and isnull(c1.LotSpec_ID,0) > 0
+{% endif %} 
 where (s.Reg_ID < 100) and (s.StatusT_ID=4) --AND (s.ProdType_ID = 'L')
 {% if years_in %}and {{years_in}} {% endif %}
-{% if lpus_contract_in %}and {{lpus_contract_in}}{% endif %}
+{% if market_type_prefix == 'Contract_' %}
+    {% if lpus_contract_in %}and {{lpus_contract_in}}{% endif %}  
+{% else %}
+   {% if lpus_in %}and {{lpus_in}}{% endif %} 
+{% endif %}      
 {% if icontains %}and (w.Org_CustNm like '%{{ icontains }}%' or w.Org_CustINN like '%{{ icontains }}%'){% endif %}
 group by 
 rollup (w.Org_CustNm, w.Org_CustInn)

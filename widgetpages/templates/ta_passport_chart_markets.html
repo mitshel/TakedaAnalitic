@@ -33,7 +33,7 @@
             tooltips: {
                 mode: 'nearest',
                 intersect: false,
-                callbacks: { label: function(tooltipItems, data) { return ' '+data.labels[tooltipItems.index]+': '+intWithSpaces(fixval(data.datasets[0].data[tooltipItems.index],1)) + ' тыс.руб.';;}}
+                callbacks: { label: function(tooltipItems, data) { return ' '+data.labels[tooltipItems.index]+': '+intWithSpaces(fixval(data.datasets[0].data[tooltipItems.index],1),' ') + ' тыс.руб.';;}}
             },
             hover: {
                 mode: 'nearest',

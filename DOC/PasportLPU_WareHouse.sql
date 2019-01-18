@@ -20,8 +20,11 @@ go
 --group by cust_id, year([DTExecuteEnd])
 --go
 
+--
+--  ВАРИАНТ 1
+--
 insert into [dbo].[org_DATA]([cust_id],[PlanTYear],[Order_Summa],[Contract_Summa])
-select isnull(c1.cust_id,0) as cust_id, isnull(s.PlanTYear,0) as PlanTYear,
+select isnull(isnull(c1.cust_id,s.cust_id),0) as cust_id, isnull(s.PlanTYear,0) as PlanTYear,
 sum(isnull(s.Order_Sum,0)) as Order_Summa,
 sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0)) as Contract_Summa
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
@@ -34,20 +37,40 @@ LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	   and c1.Contract_ID > 0
 	   and isnull(c1.LotSpec_ID,0) > 0
 where (s.Reg_ID < 100) and (s.StatusT_ID=4)--AND (s.ProdType_ID = 'L')
-group by isnull(c1.cust_id,0), isnull(s.PlanTYear,0)
+group by isnull(isnull(c1.cust_id,s.cust_id),0), isnull(s.PlanTYear,0)
 having sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0))>0
 go
 -- 31644 записи 5:41 ,Без первого Join 2:39
 -- 33170 Без проверки ProdType 1:57
 -- 33164 с s.StatusT_ID=4 5:57   Production 35752 - 42:50
 
---insert into [dbo].[org_DATA]([cust_id],[PlanTYear],[summa])
---select isnull(cust_id,0) as cust_id, isnull(year([DTExecuteEnd]),0) as [PlanTYear],sum(isnull(isnull([Ship_Sum],[ItemSum]),0)) as summa
---from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1
---where exists (select 1 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s where s.LotSpec_ID=c1.LotSpec_ID and (s.Reg_ID < 100) AND (s.ProdType_ID = 'L'))
---group by cust_id, year([DTExecuteEnd])
---go
--- 31635 записи 2:01
+
+--
+--  ВАРИАНТ 2
+--
+delete from [dbo].[org_DATA]
+insert into [dbo].[org_DATA]([cust_id],[PlanTYear],[Order_Summa],[Contract_Summa])
+select isnull(cust_id,0) as cust_id, isnull(PlanTYear,0) as PlanTYear, SUM(Order_Summa) as Order_Summa, SUM(Contract_Summa) as Contract_Summa
+from (
+		select s.cust_id, s.PlanTYear, sum(isnull(s.Order_Sum,0)) as Order_Summa, 0 as Contract_Summa
+		from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
+		where (s.Reg_ID < 100) and (s.StatusT_ID=4)
+		group by s.cust_id, s.PlanTYear
+		having sum(isnull(s.Order_Sum,0))>0
+		UNION
+		select c1.cust_id, PlanTYear, 0 as Order_Summa, sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0)) as Contract_Summa
+		from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
+		LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
+			ON c1.LotSpec_ID = s.LotSpec_ID
+			   and c1.Contract_ID > 0
+			   and isnull(c1.LotSpec_ID,0) > 0
+		where (s.Reg_ID < 100) and (s.StatusT_ID=4)
+		group by c1.cust_id, PlanTYear
+		having sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0))>0
+     ) subquery
+group by isnull(cust_id,0), isnull(PlanTYear,0)
+go
+-- 41618 - Devel: 10:29 - Production:
 
 CREATE NONCLUSTERED INDEX [idx_org_DATA_cust_id] ON [dbo].[org_DATA]
 (

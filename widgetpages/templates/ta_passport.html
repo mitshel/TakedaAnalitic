@@ -41,14 +41,14 @@
         return val;
     }
 
-    function floatWithSpaces(x) {
+    function floatWithSpaces(x, sp='&nbsp;') {
         var parts = x.toString().split(".");
-        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, sp);
         return parts.join(".");
     }
 
-    function intWithSpaces(x) {
-        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+    function intWithSpaces(x, sp='&nbsp;') {
+        return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, sp);
     }
 </script>
 <div class="container-fluid">
