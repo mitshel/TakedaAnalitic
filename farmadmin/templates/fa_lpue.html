@@ -117,7 +117,8 @@
     var tblLpuAll = $('#tblLpuAll').DataTable( {
         dom: '<"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
         select: { style: 'api' },
-        ordering:  false,
+        ordering:  true,
+        order: [[ 2, "asc" ]],
         scrollY: "500px",
         scrollX: false,
         scrollCollapse: true,
