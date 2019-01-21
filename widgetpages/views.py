@@ -90,11 +90,11 @@ class BudgetsAjaxTable(BaseDatatableYearView):
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
         sort_dir = self._querydict.get('order[0][dir]')
-        if sort_col<2:
+        if sort_col<3:
             qs = qs.order_by('t.name', 'gr desc','l.Org_CustNm')
         else:
             qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 't.name', 'gr desc', 'l.Org_CustNm')
-        print(sort_col, qs.query)
+
         return qs
 
 
