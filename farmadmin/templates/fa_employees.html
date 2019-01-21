@@ -33,7 +33,7 @@
 <script>
 var dsEmployee = [
     {% for row in object_list %}
-        [{{ row.id }}, '{{ row.name }}', '{{ row.parent.name }}', '{{ row.istarget }}','{{ row.region.count }}','{{ row.lpu.count }}', '{% for u in row.users.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
+        [{{ row.id }}, '{{ row.name }}', '{{ row.parent.name }}', '{{ row.istarget }}','{{ row.region_count }}','{{ row.lpu_count }}', '{% for u in row.users.all %}{{ u.username }}{% if not forloop.last %}, {% endif %}{% endfor %}']{% if not forloop.last %},{% endif %}
     {% endfor %}
 ];
 

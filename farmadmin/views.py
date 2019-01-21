@@ -3,7 +3,7 @@ import json
 from django.views.generic import TemplateView, ListView, UpdateView, CreateView, DeleteView, RedirectView, View
 from django.contrib.auth.models import User
 from django.urls import reverse_lazy, reverse
-from django.db.models import Q, F
+from django.db.models import Q, F, Count
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from django import forms
@@ -129,7 +129,7 @@ class EmployeesAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin
     permission_required = ('db.view_employee', )
 
     def get_queryset(self):
-        return Employee.objects.filter(org=self.org)
+        return Employee.objects.filter(org=self.org).annotate(lpu_count=Count('lpu'), region_count=Count('region')).prefetch_related('users').select_related('parent')
 
 class EmployeeUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
     template_name = 'fa_employee.html'
@@ -312,7 +312,7 @@ class MarketsAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, 
     permission_required = ('db.view_market', )
 
     def get_queryset(self):
-        return Market.objects.filter(org=self.org)
+        return Market.objects.filter(org=self.org).prefetch_related('market_innrs_set__innr','market_tmnrs_set__tradenr')
 
 class MarketUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
     """ TODO: Здесь в дальнейшем при сохранении нужно сделать проверку что добавляемые МНН и ТМ не были добавлены кем-нибудь еще, в течение времени когда выполнялась работа по изменению набора МНН и ТМ в браузере
@@ -426,7 +426,7 @@ class OrgsAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, Lis
         return context
 
     def get_queryset(self):
-        return Org.objects.all()
+        return Org.objects.all().prefetch_related('users')
 
 class OrgUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
     """ TODO: Нужно добавить проверку, того, что при отвязке какого-либо пользователя от организации проверять не привязан ли он к сотруднику этой организации, если так, то сначала предлагать выполнить отвязку от сотрудника
