@@ -68,13 +68,13 @@ class Command(BaseCommand):
 
         startTime0 = time.time()
         self.stdout.write('Create org_FORM_{} table...'.format(org.id))
-        RawModel('create_form.sql').filter(org_id=org.id, db_version = DB_VERSION).exec().close()
+        RawModel('create_form.sql').filter(org_id=org.id).exec().close()
         totalTime0 = int(time.time() - startTime0)
         self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime0 // 60, totalTime0 % 60))
 
         startTime0 = time.time()
         self.stdout.write('Create org_Order_{} table...'.format(org.id))
-        RawModel('create_Order.sql').filter(org_id=org.id).exec().close()
+        RawModel('create_Order.sql').filter(org_id=org.id, db_version = DB_VERSION).exec().close()
         totalTime0 = int(time.time() - startTime0)
         self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime0 // 60, totalTime0 % 60))
 
