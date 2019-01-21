@@ -73,7 +73,7 @@ var {{ flt.id }}_data = [
 
 var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                 //"dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-                "dom": 'r<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
+                "dom": 'r<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-12"p><"col-12"i>>',
                 buttons:[],
                 ordering:  true,
                 select: true,
@@ -95,6 +95,7 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                     "ajax": {
                         //"url": "{ % url 'widgetpages:jdata' flt.id %}",
                         "url": "{{ ajax_filters_tbl_url }}",
+                        "async" : true,
                         "type": "POST",
                         "data": function ( d ) {
                             d.filters_ajax_request = JSON.stringify(filters_ajax_request);

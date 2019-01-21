@@ -5,3 +5,5 @@ xlwt
 xlutils
 django-pyodbc-azure
 django-datatables-view
+django-debug-toolbar
+django-debug-toolbar-template-timings

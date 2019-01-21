@@ -20,8 +20,6 @@ Winner_Id,
 market_name,
 market_id,
 market_own,
-Order_Dosage,
-Order_Form,
 Order_Dosage_id,
 Order_Form_id
 into org_Order_{{org_id}} from org_Contract_{{org_id}}

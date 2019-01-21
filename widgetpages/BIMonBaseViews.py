@@ -30,20 +30,30 @@ fserv = 'serv'
 
 # select_market_type, default_market_type,  select_own, default_own,           select_prod_type, default_prod_type
 # 0|1                 1-Аукц|2-Контр        0|1         1-свой|2-чужой|3-все   0|1               1-МНН|2-ТМ
-serv_defaults = [0,3,0,1,0,2]
+selHide = 0
+selShow = 1
+selMrktTender   = 1
+selMrktContract = 2
+selOwnYes = 1
+selOwnNo = 2
+selOwnAll = 3
+selProdMNN = 1
+selProdTM = 2
+
+serv_defaults = [selHide,selMrktContract,   selHide,selOwnYes,   selHide,selProdTM]
 
 filters_all = [fempl, fmrkt, fyear, fstat, fbudg, fform, fdosg, finnr, ftrnr, fwinr, fcust]
 
 views_prop = {
-    'salesshedule'          : { 'filters' : filters_all, 'props': [0,2,1,3,0,2] },
-    'budgets'               : { 'filters' : filters_all, 'props': [1,2,1,1,0,2] },
-    'competitions_lpu'      : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
-    'competitions_market'   : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
-    'avg_price'             : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
-    'packages'              : { 'filters' : filters_all, 'props': [0,2,1,1,1,2] },
-    'parts'                 : { 'filters' : filters_all, 'props': [1,2,0,3,0,2] },
-    'sales_analysis'        : { 'filters' : filters_all, 'props': [1,2,1,1,1,2] },
-    'passport'              : { 'filters' : [fempl,fcust,fyear], 'props': [1,2,0,1,0,2] },
+    'salesshedule'          : { 'filters' : filters_all,            'props': [selHide,selMrktTender,     selShow,selOwnAll,   selHide,selProdTM] },
+    'budgets'               : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selHide,selProdTM] },
+    'competitions_lpu'      : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
+    'competitions_market'   : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
+    'avg_price'             : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
+    'packages'              : { 'filters' : filters_all,            'props': [selHide,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
+    'parts'                 : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selHide,selOwnAll,   selHide,selProdTM] },
+    'sales_analysis'        : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
+    'passport'              : { 'filters' : [fempl,fcust,fyear],    'props': [selShow,selMrktContract,   selHide,selOwnYes,   selHide,selProdTM] },
 }
 
 def prepare_serach(s):
@@ -157,6 +167,11 @@ class FiltersMixin():
 
         return flt_active
 
+    def apply_filters_default(self, qs):
+        market_type_prefix = 'Contract_'
+        qs = qs.filter(market_type_prefix = market_type_prefix)
+        return qs
+
     def apply_filters(self, qs, flt_active, org_id, targets):
         market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
         own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
@@ -187,10 +202,10 @@ class FiltersMixin():
            budgets_in=extra_in_strfilter('s.budgets_ID',flt_active.get(fbudg,'')) if fbudg in self.filters_list else None,
            lpus_in=extra_in_filter('s.Cust_ID',flt_active.get(fcust,'')) if fcust in self.filters_list else None,
            winrs_in=extra_in_filter('s.Winner_ID', flt_active.get(fwinr,'')) if fwinr in self.filters_list else None,
-           innrs_in = extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')) if finnr in self.filters_list else None,
-           trnrs_in = extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')) if ftrnr in self.filters_list else None,
-           dosage_in=extra_in_filter('s.Contract_Dosage_id', flt_active.get(fdosg, '')) if fdosg in self.filters_list else None,
-           form_in=extra_in_filter('s.Contract_Form_id', flt_active.get(fform, '')) if fform in self.filters_list else None,
+           innrs_in=extra_in_filter('s.{}InnNx'.format(market_type_prefix), flt_active.get(finnr,'')) if finnr in self.filters_list else None,
+           trnrs_in=extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')) if ftrnr in self.filters_list else None,
+           dosage_in=extra_in_filter('s.{}Dosage_id'.format(market_type_prefix), flt_active.get(fdosg, '')) if fdosg in self.filters_list else None,
+           form_in=extra_in_filter('s.{}Form_id'.format(market_type_prefix), flt_active.get(fform, '')) if fform in self.filters_list else None,
            market_type_prefix = market_type_prefix, own_select = own_select, product_type = product_type, org_id = org_id)
         return qs
 
@@ -218,7 +233,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         market_list_active = []
         if not flt_active.get(fmrkt):
             # Показываем все доступные рынки для сотрудника организации
-            market_enabled = RawModel(queries.q_markets).filter(fields="id as iid, name",org_id=org_id).order_by('name')
+            market_enabled = self.apply_filters_default(RawModel(queries.q_markets)).filter(fields="id as iid, name",org_id=org_id).order_by('name')
             # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
             # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
             market_active = self.apply_filters(RawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
@@ -242,7 +257,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         year_list_active = []
         if not flt_active.get(fyear):
             # Показываем все доступные Годы для сотрудника организации
-            year_enabled = RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid, PlanTYear as name",org_id=org_id).order_by('PlanTYear')
+            year_enabled = self.apply_filters_default(RawModel(queries.q_years_hs)).filter(fields="PlanTYear as iid, PlanTYear as name",org_id=org_id).order_by('PlanTYear')
             # Но активными будут выглядеть только Годы, доступные сотруднику (через ЛПУ)
             year_active = self.apply_filters(RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
             year_list_active = [e['iid'] for e in year_active.open().fetchall()]
@@ -264,7 +279,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         # Запрос по всему кэшу чтобы проверить статусы очень тяжел и занимает от 350 до 900 мс
         # Поэтому пока просто выводим все доступные статусы
         # впоследсвие можно предусмотреть кэширование информации по статусам или предподготовку специальной таблицы
-        status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name", org_id=org_id).order_by('name')
+        status_enabled = self.apply_filters_default(RawModel(queries.q_status)).filter(fields="id as iid, name", org_id=org_id).order_by('name')
         #status_list_active = []
         #if not flt_active.get(fstat):
         #    # Показываем все доступные статусы для сотрудника организации
@@ -300,7 +315,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         budgets_list_active = []
         if not flt_active.get(fbudg):
             # Показываем все доступные Бюджеты для сотрудника организации
-            budgets_enabled = RawModel(queries.q_budgets).filter(fields="id as iid, name",org_id=org_id).order_by('name')
+            budgets_enabled = self.apply_filters_default(RawModel(queries.q_budgets)).filter(fields="id as iid, name",org_id=org_id).order_by('name')
             # Но активными будут выглядеть только Бюджеты, доступные сотруднику (через ЛПУ)
             budgets_active = self.apply_filters(RawModel(queries.q_budgets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
             budgets_list_active = [e['iid'] for e in budgets_active.open().fetchall()]
@@ -472,6 +487,7 @@ class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
             self.orderable = 0
 
         rawmodel = self.apply_filters(rawmodel, flt_active, org_id, targets)
+        print(rawmodel.query)
         return rawmodel
 
     def filter_queryset(self, qs):
