@@ -261,19 +261,23 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 'data0': year_list_active}
 
     def filter_stat(self, flt_active=None, org_id=0, targets = []):
-        status_list_active = []
-        if not flt_active.get(fstat):
-            # Показываем все доступные статусы для сотрудника организации
-            status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name",org_id=org_id).order_by('name')
-            # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
-            # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
-            status_active = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
-            status_list_active = [e['iid'] for e in status_active.open().fetchall()]
-            status_active.close()
-        else:
-            # Показываем все доступные рынки
-            # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
-            status_enabled = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+        # Запрос по всему кэшу чтобы проверить статусы очень тяжел и занимает от 350 до 900 мс
+        # Поэтому пока просто выводим все доступные статусы
+        # впоследсвие можно предусмотреть кэширование информации по статусам или предподготовку специальной таблицы
+        status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name", org_id=org_id).order_by('name')
+        #status_list_active = []
+        #if not flt_active.get(fstat):
+        #    # Показываем все доступные статусы для сотрудника организации
+        #    status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name",org_id=org_id).order_by('name')
+        #    # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
+        #    # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
+        #    status_active = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+        #    status_list_active = [e['iid'] for e in status_active.open().fetchall()]
+        #    status_active.close()
+        #else:
+        #    # Показываем все доступные рынки
+        #    # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
+        #    status_enabled = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
         status_list = list(status_enabled.open().fetchall())
         status_enabled.close()
@@ -282,7 +286,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 'name': 'Статус торгов',
                 'icon':'check-square',
                 'data':  status_list,
-                'data0': status_list_active}
+                #'data0': status_list_active,
+                }
 
     def filter_budg(self, flt_active=None, org_id=0, targets = []):
         #fields =  "a.id as iid, name" if flt_active.get(fbudg) else "a.id as iid, name"
