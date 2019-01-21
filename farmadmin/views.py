@@ -70,10 +70,6 @@ class OrgBaseMixin(View):
 
         return org_id
 
-    def dispatch(self, request, *args, **kwargs):
-        self.init_dynamic_org()
-        return super().dispatch(request, *args, **kwargs)
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['org'] = self.org
@@ -82,6 +78,10 @@ class OrgBaseMixin(View):
 
 class OrgAdminMixin(OrgBaseMixin):
     SETUP_METHODS = bOrgSESSION | bOrgUSER
+
+    def dispatch(self, request, *args, **kwargs):
+        self.init_dynamic_org()
+        return super().dispatch(request, *args, **kwargs)
 
 class BreadCrumbMixin(View):
     breadcrumbs = []
