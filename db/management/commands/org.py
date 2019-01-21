@@ -47,17 +47,40 @@ class Command(BaseCommand):
         self.stdout.write('ReCreate database for "{}".'.format(org.name))
         Org_log.objects.create(org_id=org_id, description='{}. Start DB Recreating'.format(org.name))
         startTime = time.time()
+
+        startTime0 = time.time()
         self.stdout.write('Drop all tables...')
         RawModel('drop_org.sql').filter(org_id=org.id).exec().close()
-        self.stdout.write('Create org_CACHE_{} table...'.format(org.id))
-        RawModel('create_org.sql').filter(org_id=org.id).exec().close()
+        totalTime0 = int(time.time() - startTime0)
+        self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime0 // 60, totalTime0 % 60))
+
+        startTime0 = time.time()
+        self.stdout.write('Create org_Contract_{} table...'.format(org.id))
+        RawModel('create_Contract.sql').filter(org_id=org.id).exec().close()
+        totalTime0 = int(time.time() - startTime0)
+        self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime0 // 60, totalTime0 % 60))
+
+        startTime0 = time.time()
+        self.stdout.write('Create org_Order_{} table...'.format(org.id))
+        RawModel('create_Order.sql').filter(org_id=org.id).exec().close()
+        totalTime0 = int(time.time() - startTime0)
+        self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime0 // 60, totalTime0 % 60))
+
+        startTime0 = time.time()
         self.stdout.write('Create org_DOSAGE_{} table...'.format(org.id))
         RawModel('create_dosage.sql').filter(org_id=org.id).exec().close()
+        totalTime0 = int(time.time() - startTime0)
+        self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime0 // 60, totalTime0 % 60))
+
+        startTime0 = time.time()
         self.stdout.write('Create org_FORM_{} table...'.format(org.id))
         RawModel('create_form.sql').filter(org_id=org.id, db_version = DB_VERSION).exec().close()
+        totalTime0 = int(time.time() - startTime0)
+        self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime0 // 60, totalTime0 % 60))
+
         totalTime = int(time.time() - startTime)
-        self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime//60, totalTime%60))
-        Org_log.objects.create(org_id=org_id, description='{}. Finish DB Recreating. Elapsed time: {:0=2}:{:0=2}'.format(org.name, totalTime//60, totalTime%60))
+        self.stdout.write("\nTotal Elapsed time: {:0=2}:{:0=2}".format(totalTime//60, totalTime%60))
+        Org_log.objects.create(org_id=org_id, description='{}. Finish DB Recreating. Total Elapsed time: {:0=2}:{:0=2}'.format(org.name, totalTime//60, totalTime%60))
 
     def updateAll(self):
         for org in Org.objects.filter(sync_flag=True):

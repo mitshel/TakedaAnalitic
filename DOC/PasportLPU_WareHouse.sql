@@ -53,8 +53,7 @@ insert into [dbo].[org_DATA]([cust_id],[PlanTYear],[Order_Summa],[Contract_Summa
 select isnull(cust_id,0) as cust_id, isnull(PlanTYear,0) as PlanTYear, SUM(Order_Summa) as Order_Summa, SUM(Contract_Summa) as Contract_Summa
 from (
 		select s.cust_id, s.PlanTYear, sum(isnull(s.Order_Sum,0)) as Order_Summa, 0 as Contract_Summa
-		from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
-		where (s.Reg_ID < 100) and (s.StatusT_ID=4)
+		from ( select distinct Tender_ID, cust_id, PlanTYear, Order_Sum from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] where (Reg_ID < 100) and (StatusT_ID=4) ) s
 		group by s.cust_id, s.PlanTYear
 		having sum(isnull(s.Order_Sum,0))>0
 		UNION
@@ -71,6 +70,7 @@ from (
 group by isnull(cust_id,0), isnull(PlanTYear,0)
 go
 -- 41618 - Devel: 10:29 - Production: 45525 - 1:09:17
+-- 41618 - Devel: 10:53 - Production: 45525 - 1:09:17
 
 CREATE NONCLUSTERED INDEX [idx_org_DATA_cust_id] ON [dbo].[org_DATA]
 (

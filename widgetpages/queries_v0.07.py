@@ -1,7 +1,3 @@
-#
-# For Database Version 0.10
-#
-
 q_budgets_table = """
 {% autoescape off %}
 select t.name as name, CASE WHEN nn.cust_id is NULL THEN t.name ELSE l.Org_CustNm END as Nm, nn.*, 
