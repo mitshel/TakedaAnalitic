@@ -20,10 +20,13 @@ Winner_Id,
 market_name,
 market_id,
 market_own,
-Order_Dosage
+Order_Dosage,
+Order_Form,
+Order_Dosage_id,
+Order_Form_id
 into org_Order_{{org_id}} from org_Contract_{{org_id}}
 
-alter table org_TENDER_{{org_id}} add id bigint identity not null primary key
+alter table org_Order_{{org_id}} add id bigint identity not null primary key
 
 CREATE NONCLUSTERED INDEX [idxo_{{org_id}}_market_id] ON [dbo].[org_Order_{{org_id}}]
 (
@@ -66,7 +69,16 @@ CREATE NONCLUSTERED INDEX [idxo_{{org_id}}_Budgets_ID] ON [dbo].[org_Order_{{org
 	[Budgets_ID] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
 
-CREATE NONCLUSTERED INDEX [idxo_{{orgt_id}}_Order_Dosage] ON [dbo].[org_Order_{{org_id}}]
+CREATE NONCLUSTERED INDEX [idxo_{{orgt_id}}_Order_Dosage_id] ON [dbo].[org_Order_{{org_id}}]
 (
-	[Order_Dosage] ASC
+	[Order_Dosage_id] ASC
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+CREATE NONCLUSTERED INDEX [idxo_{{orgt_id}}_Order_Form_id] ON [dbo].[org_Order_{{org_id}}]
+(
+	[Order_Form_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, SORT_IN_TEMPDB = OFF, DROP_EXISTING = OFF, ONLINE = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+
+
+update db_org set sync_status=0, db_version='{{ db_version }}', last_sync_dt = GETUTCDATE() where id={{ org_id }}
+

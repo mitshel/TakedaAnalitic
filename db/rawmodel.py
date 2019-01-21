@@ -121,8 +121,9 @@ class RawModel(object):
         return self
 
     def exec(self):
-        self.open()
-        connection.commit()
+        self._cursor = connection.cursor()
+        self._cursor.execute(self.render())
+        self._columns = []
         return self
 
     def close(self):

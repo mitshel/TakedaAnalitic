@@ -342,6 +342,7 @@ class PassportView(FiltersView):
             lpu = Lpu.objects.get(cust_id=cust_id)
             sum_by_years = self.apply_filters(RawModel(queries.q_passport_chart_years).order_by('1','2'),flt_active, org_id, targets)
             sum_by_markets = self.apply_filters(RawModel(queries.q_passport_chart_markets).order_by('market_name'),flt_active, org_id, targets)
+            print(sum_by_markets.query)
 
             pivot_data['lpu_name'] = lpu.name
             pivot_data['lpu_shortname'] = lpu.shortname
@@ -363,7 +364,6 @@ class PassportWinnersAjaxTable(BaseDatatableYearView):
     def apply_filters(self,rawmodel, flt_active, org_id, targets):
         qs = super().apply_filters(rawmodel, flt_active, org_id, targets)
         qs = qs.filter(lpus_contract_in=extra_in_filter('c1.cust_id',flt_active.get(fcust,'')))
-        print(qs.query)
         return qs
 
     def ordering(self, qs):
