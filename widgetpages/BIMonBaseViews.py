@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, render_to_response
 from django.urls import reverse_lazy
 
 from widgetpages import queries
-from widgetpages.ajaxdatatabe import AjaxRawDatatableView
+from widgetpages.ajaxdatatabe import AjaxRawDatatableView, DatatableXlsMixin
 
 from db.rawmodel import RawModel
 from db.models import SYNC_STATUS_CHOICES, DB_READY, DB_RECREATE, DB_ERROR, DB_OFFLINE, DB_UPDATE
@@ -460,7 +460,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         return super().post(request, *args, **kwargs)
 
 
-class BaseDatatableYearView(OrgMixin, FiltersMixin, AjaxRawDatatableView):
+class BaseDatatableYearView(DatatableXlsMixin, OrgMixin, FiltersMixin, AjaxRawDatatableView):
     order_columns = ['name']
     #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
     #org_id = 1

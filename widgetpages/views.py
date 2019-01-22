@@ -4,7 +4,7 @@ from operator import attrgetter
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 
-from widgetpages.BIMonBaseViews import unique, extra_in_filter, OrgMixin, FiltersView, BaseDatatableYearView
+from widgetpages.BIMonBaseViews import unique, extra_in_filter, OrgMixin, FiltersView, BaseDatatableYearView, DatatableXlsMixin
 from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv, fbudg, fdosg, fform
 from widgetpages import queries
 
@@ -86,6 +86,7 @@ class BudgetsView(FiltersView):
 class BudgetsAjaxTable(BaseDatatableYearView):
     datatable_query = queries.q_budgets_table
     datatable_count_query = queries.q_budgets_table_count
+    fields_description = queries.fd_budgets_table
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -141,6 +142,7 @@ class Lpu_CompetitionsAjaxTable(BaseDatatableYearView):
     order_columns = ['Org_CustNm', 'name']
     datatable_query = queries.q_competitions_lpu
     empty_datatable_query = 'select null as Org_CustINN, null as Org_CustNm, null as name '
+    fields_description = queries.fd_competitions_lpu
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -154,6 +156,7 @@ class Lpu_CompetitionsAjaxTable(BaseDatatableYearView):
 class Market_CompetitionsAjaxTable(BaseDatatableYearView):
     order_columns = ['name']
     datatable_query = queries.q_competitions_market
+    fields_description = queries.fd_competitions_market
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -175,6 +178,7 @@ class AvgMarketView(CompetitionsView):
 class AvgAjaxTable(BaseDatatableYearView):
     order_columns = ['name']
     datatable_query = queries.q_avg_price
+    fields_description = queries.fd_avg_price
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -196,6 +200,7 @@ class PackagesView(CompetitionsView):
 class PackagesAjaxTable(BaseDatatableYearView):
     order_columns = ['name']
     datatable_query = queries.q_packages
+    fields_description = queries.fd_packages
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -251,6 +256,7 @@ class MPartsAjaxTable(BaseDatatableYearView):
 class LPartsAjaxTable(BaseDatatableYearView):
     datatable_query = queries.q_lparts
     datatable_count_query =  queries.q_lparts_count
+    fields_description = queries.fd_lparts
 
     def ordering(self, qs):
         sort_col = int(self._querydict.get('order[0][column]'))
@@ -283,10 +289,11 @@ class SalesAnlysisView(FiltersView):
 class SalesAnlysisAjaxTable(BaseDatatableYearView):
     datatable_query = queries.q_sales_analysis
     datatable_count_query = queries.q_sales_analysis_count
+    fields_description = queries.fd_sales_analysis
 
     def ordering(self, qs):
-        sort_col = int(self._querydict.get('order[0][column]'))
-        sort_dir = self._querydict.get('order[0][dir]')
+        sort_col = int(self._querydict.get('order[0][column]',0))
+        sort_dir = self._querydict.get('order[0][dir]','asc')
         qs = qs.order_by('[{0}] {1}'.format(self._columns[sort_col], sort_dir))
         return qs
 

@@ -41,9 +41,9 @@ isnull(c1.[Ship_Price],c1.[ItemPrice]) as Contract_Price,
 isnull(CAST(c1.[Ship_Count] as bigint),c1.[ItemCount]) as Contract_Count,
 isnull(c1.[Ship_Sum],c1.[ItemSum]) as Contract_Summa,
 
-isnull(t.Order_Dosage,'')+IIF(t.Order_PrimSize is Null, '', ' '+t.Order_PrimSize)+IIF(t.Order_BatchSize is Null,'',' №'+CAST(t.Order_BatchSize as varchar)) COLLATE database_default as Order_Dosage,
+isnull(RTRIM(LTRIM(t.Order_Dosage)),'')+IIF(t.Order_PrimSize is Null, '', ' '+RTRIM(LTRIM(t.Order_PrimSize)))+IIF(t.Order_BatchSize is Null,'',' №'+CAST(t.Order_BatchSize as varchar)) COLLATE database_default as Order_Dosage,
 t.Order_Form COLLATE database_default as Order_Form,
-isnull(c1.Ship_Dosage,'')+IIF(c1.Ship_Volume is Null, '', ' '+c1.Ship_Volume)+IIF(c1.Ship_BatchSize is Null,'',' №'+CAST(c1.Ship_BatchSize as varchar)) COLLATE database_default as Contract_Dosage,
+isnull(RTRIM(LTRIM(c1.Ship_Dosage)),'')+IIF(c1.Ship_Volume is Null, '', ' '+RTRIM(LTRIM(c1.Ship_Volume)))+IIF(c1.Ship_BatchSize is Null,'',' №'+CAST(c1.Ship_BatchSize as varchar)) COLLATE database_default as Contract_Dosage,
 c1.Ship_form COLLATE database_default as Contract_Form
 
 into org_Contract_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t

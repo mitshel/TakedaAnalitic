@@ -186,6 +186,7 @@ CSRF_USE_SESSIONS = True
 BI_AUTH = True
 BI_MAX_EMPLOYEE_LPU = 999
 BI_MAX_EMPLOYEE_LOGIN = 10
+BI_MAX_XLS_ROWS = 10000
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',

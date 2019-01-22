@@ -175,8 +175,37 @@ var ta_mparts_table = $('#ta_mparts_table').DataTable({
 
 var ta_lparts_table = $('#ta_lparts_table').DataTable({
                 "dom": '<"row"<f><l><B><r>><"row"<"col-12"t>><"row"<"col-12"p><"col-12"i>>',
-                //"dom": '<"row"<r><"col-12"t>>',
-                buttons: ['excel'],
+                buttons: [{
+                            text: 'Excel',
+                            className: 'btn-sm',
+                            action: function ( e, dt, node, config ) {
+                                var search_str = $('#ta_lparts_table_filter input').val();
+                                var order = dt.order();
+
+                                data = { 'csrfmiddlewaretoken' : '{{ csrf_token }}',
+                                          'filters_ajax_request' : JSON.stringify(make_request()),
+                                          'view_id' : '{{ view.id }}',
+                                          'org_id' : '{{ org_id }}',
+                                          'excel' : '1',
+                                          'search[value]': search_str,
+                                          'order[0][column]': order[0][0],
+                                          'order[0][dir]': order[0][1]
+                                };
+
+                                // Добавляем информацию о столбцах и порядке их следования, чтоюбы сработала сортировка
+                                var c = dt.settings().init().columnDefs;
+                                dt.columns().eq(0).each( function ( value, index ) {
+                                    data['columns['+index.toString()+'][name]'] = c[index].name;
+                                } );
+
+                                $.fileDownload('{% url 'widgetpages:jlparts' %}', {
+                                    preparingMessageHtml: "Мы готовим для Вас отчет, подождите пожалуйста...",
+                                    failMessageHtml: "Произошла ошибка генерации отчета. Попробуйте еще раз.",
+                                    httpMethod: "POST",
+                                    data: data
+                                });
+                            }
+                }],
                 select: true,
                 "lengthMenu": [[25, 50, 100, 250, 500, 1000], [25, 50, 100, 250, 500, 1000]],
                 "pageLength": 25,

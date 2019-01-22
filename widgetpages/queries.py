@@ -1,6 +1,12 @@
 #
 # For Database Version 0.10
 #
+fd_budgets_table =  {r'name':  {'title':'Бюджет', 'width':40},
+                     r'nm':   {'title': 'Заказчик', 'width': 100},
+                     r'cust_id': {'title': 'cust_id', 'width': 0, 'hide':1},
+                     r'id':   {'title': 'mnn/tm id', 'width': 0, 'hide':1},
+                     r'gr':   {'title': 'Итог', 'width': 5}
+}
 
 q_budgets_table = """
 {% autoescape off %}
@@ -125,13 +131,34 @@ left join db_Budgets b on a.Budgets_ID=b.id
 {% endautoescape %}  
 """
 
+fd_sales_analysis = {r'tenddt': {'title':'Дата аукциона', 'width':10},
+                     r'org_custinn': {'title': 'ИНН', 'width': 10},
+                     r'org_custnm': {'title': 'Заказчик', 'width': 100},
+                     r'order_tradename': {'title': 'ТМ по аукциону', 'width': 15},
+                     r'contract_tradename': {'title': 'ТМ по контракту', 'width': 15},
+                     r'Order_InnName': {'title': 'МНН по аукциону', 'width': 30},
+                     r'Contract_InnName': {'title': 'МНН по контракту', 'width': 30},
+                     r'Order_Dosage': {'title': 'Дозировка по аукциону', 'width': 20},
+                     r'Contract_Dosage': {'title': 'Дозировка по контракту', 'width': 20},
+                     r'Order_Count': {'title': 'Кол-во упаковок аукцион', 'width': 5},
+                     r'Contract_Count': {'title': 'Кол-во упаковок контракт', 'width': 5},
+                     r'Order_Price': {'title': 'Цена по аукциону', 'width': 8},
+                     r'Contract_Price': {'title': 'Цена по контракту', 'width': 8},
+                     r'Order_Summa': {'title': 'Сумма по аукциону', 'width': 10},
+                     r'Contract_Summa': {'title': 'Сумма по контракту', 'width': 10},
+                     r'status_name': {'title': 'Состояние аукциона', 'width': 20},
+                     r'SrcInf': {'title': 'URL Аукцион', 'width': 20},
+                     r'Contract_URL': {'title': 'URL Контракт', 'width': 20},
+                     r'Order_AVG_Summa': {'title': 'Средняя цена по аукциону', 'width': 20, 'hide':1 },
+}
+
 q_sales_analysis = """
 {% autoescape off %}
-select CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, t1.name as Order_TradeName, t2.name as Contract_TradeName, 
-       i1.name as Order_InnName, i2.name as Contract_InnName,
-       Order_Dosage, Contract_Dosage,
-       Order_Count, Contract_Count, Order_Price, Contract_Price, Order_Summa, 
-       Order_AVG_Price*Order_Count as Order_AVG_Summa, Contract_Summa,  u.name as status_name, SrcInf, Contract_URL
+select CAST(TendDt as date) as TendDt, l.Org_CustINN, l.Org_CustNm, 
+        i1.name as Order_InnName, t1.name as Order_TradeName,  Order_Dosage, Order_Count, Order_Price, Order_Summa, 
+        Order_AVG_Price*Order_Count as Order_AVG_Summa,
+        i2.name as Contract_InnName, t2.name as Contract_TradeName, Contract_Dosage, Contract_Count, Contract_Price, Contract_Summa,       
+        u.name as status_name, SrcInf, Contract_URL
 from [dbo].[org_Contract_{{org_id}}] s
 left join db_lpu l on s.cust_id = l.cust_id
 left join db_TradeNR t1 on s.Order_TradeNx = t1.id
@@ -277,6 +304,13 @@ select count(*) from db_market s where s.org_id = {{org_id}}
 {% endautoescape %} 
 """
 
+fd_lparts =  {r'name':   {'title': 'Заказчик', 'width': 100},
+              r'cust_id': {'title': 'cust_id', 'width': 0, 'hide':1},
+              r'(20\d.)-1':   {'title': '\g<1> весь рынок', 'width': 10 },
+              r'(20\d.)-2':   {'title': '\g<1> свой рынок', 'width': 10 },
+              r'(20\d.)-3':   {'title': '\g<1> %', 'width': 8 }
+}
+
 q_lparts = """
 {% autoescape off %}
 select CASE WHEN nn.cust_id is NULL THEN 'ИТОГО' ELSE l.Org_CustNm END as name, nn.* from 
@@ -377,6 +411,14 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_{{market_type_prefix }}{{or
 
 # Конкурентный анализ
 #
+fd_competitions_lpu =  {r'ext':  {'title':'ИНН', 'width':10},
+                        r'nm':   {'title': 'Заказчик', 'width': 100},
+                        r'name': {'title': 'МНН/ТМ', 'width': 30},
+                        r'id':   {'title': 'mnn/tm id', 'width': 0, 'hide':1},
+                        r'tradenx': {'title': 'mnn/tm id', 'width': 0, 'hide':1},
+                        r'gr':   {'title': 'Группа', 'width': 0, 'hide':1}
+}
+
 q_competitions_lpu = """
 {% autoescape off %}
 select l.Org_CustINN as ext, l.Org_CustNm as Nm, CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
@@ -410,6 +452,7 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
         group by s.cust_id, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
+        having sum(isnull({{ market_type_prefix }}Summa,0))>0
     ) m
     PIVOT
     (
@@ -427,9 +470,18 @@ where nn.id is not null
 {% endautoescape %}  
 """
 
+fd_competitions_market =  {r'ext':  {'title':'ИНН', 'width':10},
+                        r'nm':   {'title': 'Рынок', 'width': 20},
+                        r'name': {'title': 'МНН/ТМ', 'width': 30},
+                        r'id':   {'title': 'mnn/tm id', 'width': 0, 'hide':1},
+                        r'tradenx': {'title': 'mnn/tm id', 'width': 0, 'hide':1},
+                        r'gr':   {'title': 'Группа', 'width': 0, 'hide':1}
+}
+
 q_competitions_market = """
 {% autoescape off %}
-select CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
+--select CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
+select nn.id, nn.Nm, nn.tradeNx, CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.gr {% for y in years %},nn.[{{y}}]{% endfor %} from (
 select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, grouping(pvt.{{ market_type_prefix }}{{ product_type }}) as gr 
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
@@ -461,6 +513,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
      	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
+     	having sum(isnull({{ market_type_prefix }}Summa,0))>0
     ) m
     PIVOT
     (
@@ -476,6 +529,13 @@ where nn.id is not null and nn.Nm is not Null
 {{ order_by }}
 {% endautoescape %}  
 """
+
+fd_avg_price =  {r'id': {'title':'Дата аукциона', 'width':0, 'hide':1},
+                 r'nm': {'title': 'Рынок', 'width': 30},
+                 r'tradenx': {'title': 'mnn/tm id', 'width': 0, 'hide':1},
+                 r'name': {'title': 'МНН/ТМ по аукциону', 'width': 30},
+                 r'gr': {'title': 'Группа', 'width': 0, 'hide':1}
+}
 
 q_avg_price = """
 {% autoescape off %}
@@ -521,6 +581,13 @@ where pvt.market_id is not null and pvt.market_name is not Null and isnull(t.nam
 {{ order_by }}
 {% endautoescape %}  
 """
+
+fd_packages =  {r'id': {'title':'id', 'width':0, 'hide':1},
+                 r'nm': {'title': 'Рынок', 'width': 30},
+                 r'tradenx': {'title': 'mnn/tm id', 'width': 0, 'hide':1},
+                 r'name': {'title': 'МНН/ТМ по аукциону', 'width': 30},
+                 r'gr': {'title': 'Группа', 'width': 0, 'hide':1}
+}
 
 q_packages = """
 {% autoescape off %}
