@@ -367,6 +367,7 @@ class PassportView(FiltersView):
 class PassportWinnersAjaxTable(BaseDatatableYearView):
     order_columns = ['name']
     datatable_query = queries.q_passport_winners_table
+    fields_description = queries.fd_passport_winners_table
 
     def apply_filters(self,rawmodel, flt_active, org_id, targets):
         qs = super().apply_filters(rawmodel, flt_active, org_id, targets)

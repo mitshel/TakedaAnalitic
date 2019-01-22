@@ -1074,6 +1074,12 @@ having (grouping(WinnerOrgInn)=0 or grouping(WinnerOrg)=1)
 {% endautoescape %}
 """
 
+fd_passport_winners_table =  {r'name': {'title':'Победитель торгов', 'width':100},
+                             r'inn': {'title': 'ИНН', 'width': 10},
+                             r'summa': {'title': 'Сумма, руб', 'width': 15},
+                             r'gr': {'title': 'Группа', 'width': 0, 'hide':1}
+}
+
 q_passport_winners_table = """
 {% autoescape off %}
 select IIF(grouping(w.Org_CustNm)=1,'ИТОГО',isnull(w.Org_CustNm,' НЕТ ДАННЫХ')) as name, w.Org_CustInn as inn, grouping(w.Org_CustNm) as gr,
