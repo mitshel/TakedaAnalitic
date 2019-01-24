@@ -52,7 +52,7 @@ views_prop = {
     'avg_price'             : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
     'packages'              : { 'filters' : filters_all,            'props': [selHide,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
     'parts'                 : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selHide,selOwnAll,   selHide,selProdTM] },
-    'sales_analysis'        : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
+    'sales_analysis'        : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selHide,selProdTM] },
     'passport'              : { 'filters' : [fempl,fcust,fyear],    'props': [selShow,selMrktContract,   selHide,selOwnYes,   selHide,selProdTM] },
 }
 
