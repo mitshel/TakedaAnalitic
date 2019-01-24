@@ -111,7 +111,7 @@ class DatatableXlsMixin(object):
         except Exception as e:
             return self.handle_exception(e)
 
-    def WriteToExcel(self, data, view_id='report'):
+    def WriteToExcel(self, data, view_id='report', view_name=''):
         output = io.BytesIO()
         workbook = xlsxwriter.Workbook(output)
         worksheet_s = workbook.add_worksheet(view_id)
@@ -126,8 +126,14 @@ class DatatableXlsMixin(object):
             'valign': 'vcenter'
         })
 
-        title = workbook.add_format({
+        title0 = workbook.add_format({
             'font_size': 16,
+            'align': 'left',
+            'valign': 'vcenter'
+        })
+
+        title1 = workbook.add_format({
+            'font_size': 14,
             'align': 'left',
             'valign': 'vcenter'
         })
@@ -154,8 +160,9 @@ class DatatableXlsMixin(object):
             'border': 1
         })
 
-        worksheet_s.merge_range('A1:H1', 'BI Monitor', bi_title)
-        worksheet_s.merge_range('A2:H2', 'ID отчета: ' + view_id, title)
+        worksheet_s.merge_range('A1:H1', 'BI Monitor ({})'.format(self.org.name), bi_title)
+        worksheet_s.merge_range('A2:H2', 'Отчет: ' + view_name, title0)
+        worksheet_s.merge_range('A3:H3', 'ID отчета: ' + view_id, title1)
         hide_columns = []
 
         if len(data)>0:
@@ -174,17 +181,16 @@ class DatatableXlsMixin(object):
                         if not cont:
                             break
                 if not hide:
-                    worksheet_s.write(3, xls_col_n, title, header)
+                    worksheet_s.write(4, xls_col_n, title, header)
                     worksheet_s.set_column(xls_col_n,xls_col_n,width)
                     xls_col_n += 1
-                    #print('{} {}'.format(column, type(data[0][column])))
                 else:
                     hide_columns.append(idx_col)
 
             for idx_row, row in enumerate(data):
                  if idx_row > settings.BI_MAX_XLS_ROWS:
                      break
-                 rown = 4 + idx_row
+                 rown = 5 + idx_row
                  xls_col_n = 0
                  for idx_col, column in enumerate(columns):
                     if not idx_col in hide_columns:
@@ -225,11 +231,12 @@ class DatatableXlsMixin(object):
             return self.get(*args, **kwargs)
 
         view_id = self.request.POST.get('view_id', 'report')
+        view_name = self.request.POST.get('view_name', '')
         qs = self.get_xls_data(*args, **kwargs)
         data = qs.open().fetchall()
         qs.close()
 
-        xlsx_data = self.WriteToExcel(data, view_id)
+        xlsx_data = self.WriteToExcel(data, view_id, view_name)
         xlsx_file_name = '{}_{}_{}.xlsx'.format(view_id, self.request.user, datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         xlsx_file_path = os.path.join(settings.BI_TMP_FILES_DIR,xlsx_file_name)
         fw = open(xlsx_file_path, 'wb')

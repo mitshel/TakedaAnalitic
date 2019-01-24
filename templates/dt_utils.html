@@ -5,6 +5,7 @@ function download_datatable_excel(url, view_id, org_id, dt) {
         data = { 'csrfmiddlewaretoken' : '{{ csrf_token }}',
                   'filters_ajax_request' : JSON.stringify(make_request()),
                   'view_id' : view_id,
+                  'view_name' : '{{ view.name }}',
                   'org_id' : org_id,
                   'excel' : '1',
                   'search[value]': search_str,
