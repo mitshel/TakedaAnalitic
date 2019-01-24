@@ -1,0 +1,33 @@
+function download_datatable_excel(url, view_id, org_id, dt) {
+        var search_str = dt.search()
+        var order = dt.order();
+
+        data = { 'csrfmiddlewaretoken' : '{{ csrf_token }}',
+                  'filters_ajax_request' : JSON.stringify(make_request()),
+                  'view_id' : view_id,
+                  'org_id' : org_id,
+                  'excel' : '1',
+                  'search[value]': search_str,
+                  'order[0][column]': order[0][0],
+                  'order[0][dir]': order[0][1]
+        };
+
+        // Добавляем информацию о столбцах и порядке их следования, чтоюбы сработала сортировка
+        var c = dt.settings().init().columnDefs;
+        dt.columns().eq(0).each( function ( value, index ) {
+            data['columns['+index.toString()+'][name]'] = c[index].name;
+        } );
+
+        $.ajax({
+           type: "POST",
+           url: url,
+           data: data,
+           traditional: true,
+           //contentType: "application/json",
+           //dataType: "text",
+           success: function (data) {
+              var url = data.download_url;
+              window.location = url;
+           },
+        });
+}

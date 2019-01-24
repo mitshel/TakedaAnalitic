@@ -3,11 +3,14 @@ import io
 import datetime
 import decimal
 import re
+import os
+import json
 
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.utils.html import escape
 from django.http import HttpResponse
 from django.conf import settings
+from django.urls import reverse_lazy, reverse
 
 class AjaxRawDatatableView(BaseDatatableView):
     max_display_length = 1000
@@ -200,6 +203,23 @@ class DatatableXlsMixin(object):
         return xlsx_data
 
 
+    # def post(self, *args, **kwargs):
+    #     if not ('excel' in self.request.POST):
+    #         return self.get(*args, **kwargs)
+    #
+    #     view_id = self.request.POST.get('view_id', 'report')
+    #     qs = self.get_xls_data(*args, **kwargs)
+    #     data = qs.open().fetchall()
+    #     qs.close()
+    #
+    #     response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')  #application/vnd.ms-excel
+    #     response['Content-Disposition'] = 'attachment; filename={}.xlsx'.format(view_id)
+    #     response['Set-Cookie'] = 'fileDownload = true;  path = /'
+    #     xlsx_data = self.WriteToExcel(data, view_id)
+    #
+    #     response.write(xlsx_data)
+    #     return response
+
     def post(self, *args, **kwargs):
         if not ('excel' in self.request.POST):
             return self.get(*args, **kwargs)
@@ -209,9 +229,12 @@ class DatatableXlsMixin(object):
         data = qs.open().fetchall()
         qs.close()
 
-        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')  #application/vnd.ms-excel
-        response['Content-Disposition'] = 'attachment; filename={}.xlsx'.format(view_id)
-        response['Set-Cookie'] = 'fileDownload = true;  path = /'
         xlsx_data = self.WriteToExcel(data, view_id)
-        response.write(xlsx_data)
-        return response
+        xlsx_file_name = '{}_{}_{}.xlsx'.format(view_id, self.request.user, datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        xlsx_file_path = os.path.join(settings.BI_TMP_FILES_DIR,xlsx_file_name)
+        fw = open(xlsx_file_path, 'wb')
+        fw.write(xlsx_data)
+        fw.close()
+        response = {'download_url':reverse('widgetpages:download_xls', kwargs={'file_name':xlsx_file_name})}
+        dump = json.dumps(response)
+        return self.render_to_response(dump)

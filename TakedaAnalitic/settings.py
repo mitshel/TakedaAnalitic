@@ -187,6 +187,7 @@ BI_AUTH = True
 BI_MAX_EMPLOYEE_LPU = 999
 BI_MAX_EMPLOYEE_LOGIN = 10
 BI_MAX_XLS_ROWS = 10000
+BI_TMP_FILES_DIR = os.path.join(BASE_DIR,'tmp')
 
 DEBUG_TOOLBAR_PANELS = [
     'debug_toolbar.panels.versions.VersionsPanel',

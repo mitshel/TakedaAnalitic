@@ -1,8 +1,13 @@
 import datetime
+import os
+import codecs
 from operator import attrgetter
 
 from django.urls import reverse_lazy
 from django.views.generic import TemplateView
+from django.http import HttpResponse, Http404
+from django.conf import settings
+
 
 from widgetpages.BIMonBaseViews import unique, extra_in_filter, OrgMixin, FiltersView, BaseDatatableYearView, DatatableXlsMixin
 from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv, fbudg, fdosg, fform
@@ -10,6 +15,28 @@ from widgetpages import queries
 
 from db.rawmodel import RawModel
 from db.models import Lpu
+
+def DownloadAndRemoveFile(request, file_name, content_type):
+    file_path = os.path.join(settings.BI_TMP_FILES_DIR, file_name)
+    response = HttpResponse()
+    response["Content-Type"]='%s; name="%s"'%(content_type,file_name)
+    response["Content-Disposition"] = 'attachment; filename="%s"'%(file_name)
+    response["Content-Transfer-Encoding"]='binary'
+    file_size=os.path.getsize(file_path)
+    try:
+        fo=codecs.open(file_path, "rb")
+    except FileNotFoundError:
+        raise Http404
+    s=fo.read()
+    response["Content-Length"] = str(file_size)
+    response.write(s)
+    fo.close()
+    os.remove(file_path)
+    return response
+
+def DownloadXlsFile(request, file_name):
+    content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    return DownloadAndRemoveFile(request, file_name, content_type)
 
 class HomeView(OrgMixin, TemplateView):
     template_name = 'ta_hello.html'

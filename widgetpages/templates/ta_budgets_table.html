@@ -76,31 +76,7 @@ var ta_budgets_table = $('#ta_budgets_table').DataTable({
                             text: 'Excel',
                             className: 'btn-sm',
                             action: function ( e, dt, node, config ) {
-                                var search_str = $('#ta_budgets_table_filter input').val();
-                                var order = dt.order();
-
-                                data = { 'csrfmiddlewaretoken' : '{{ csrf_token }}',
-                                          'filters_ajax_request' : JSON.stringify(make_request()),
-                                          'view_id' : '{{ view.id }}',
-                                          'org_id' : '{{ org_id }}',
-                                          'excel' : '1',
-                                          'search[value]': search_str,
-                                          'order[0][column]': order[0][0],
-                                          'order[0][dir]': order[0][1]
-                                };
-
-                                // Добавляем информацию о столбцах и порядке их следования, чтоюбы сработала сортировка
-                                var c = dt.settings().init().columnDefs;
-                                dt.columns().eq(0).each( function ( value, index ) {
-                                    data['columns['+index.toString()+'][name]'] = c[index].name;
-                                } );
-
-                                $.fileDownload('{{ ajax_datatable_url }}', {
-                                    preparingMessageHtml: "<span style='text-align:center;'>Мы готовим для Вас отчет, подождите пожалуйста...</div>",
-                                    failMessageHtml: "<span style='text-align:center;'>Произошла ошибка генерации отчета. Попробуйте еще раз.</div>",
-                                    httpMethod: "POST",
-                                    data: data
-                                });
+                                    download_datatable_excel('{{ ajax_datatable_url }}', '{{ view.id }}', '{{ org_id }}', dt)
                             }
                 }],
                 select: true,
