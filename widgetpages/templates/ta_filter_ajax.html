@@ -81,7 +81,7 @@ function make_request() {
     return filters_ajax_request;
 }
 
-function query_data(src_id='', debounce_timeout = 0) {
+function query_data(src_id='', debounce_timeout = 500) {
     action_url = '{{ ajax_filters_url }}';
     make_request();
 
