@@ -109,6 +109,13 @@ if socket.gethostname() == 'dsgate' or socket.gethostname() == 'DESKTOP-1NT18VI'
             },
         },
     }
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+            'LOCATION': '127.0.0.1:11211',
+        }
+    }
 else:
     DATABASES = {
         'default': {
@@ -130,13 +137,12 @@ else:
         },
     }
 
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
-        'LOCATION': 'bimonitor-cache',
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'bimonitor-cache',
+        }
     }
-}
 
 # set this to False if you want to turn off pyodbc's connection pooling
 #DATABASE_CONNECTION_POOLING = False

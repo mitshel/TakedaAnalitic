@@ -8,3 +8,4 @@ django-datatables-view
 XlsxWriter
 django-debug-toolbar
 django-debug-toolbar-template-timings
+python-memcached
