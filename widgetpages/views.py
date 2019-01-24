@@ -13,7 +13,7 @@ from widgetpages.BIMonBaseViews import unique, extra_in_filter, OrgMixin, Filter
 from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv, fbudg, fdosg, fform
 from widgetpages import queries
 
-from db.rawmodel import RawModel
+from db.rawmodel import RawModel, CachedRawModel
 from db.models import Lpu
 
 def DownloadAndRemoveFile(request, file_name, content_type):
@@ -49,8 +49,8 @@ class SalessheduleView(FiltersView):
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         pivot_data = {}
-        hsy_active = self.apply_filters(RawModel(queries.q_sales_year).order_by('1', '2'),flt_active, org_id, targets)
-        hsm_active = self.apply_filters(RawModel(queries.q_sales_month).order_by('1', '2'),flt_active, org_id, targets)
+        hsy_active = self.apply_filters(CachedRawModel(queries.q_sales_year).order_by('1', '2'),flt_active, org_id, targets)
+        hsm_active = self.apply_filters(CachedRawModel(queries.q_sales_month).order_by('1', '2'),flt_active, org_id, targets)
 
         pivot_data['pivot1'] = list (hsy_active.open().fetchall())
         pivot_data['pivot2'] = list (hsm_active.open().fetchall())
@@ -71,7 +71,7 @@ class BudgetsView(FiltersView):
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
-        budgets = self.apply_filters(RawModel(queries.q_budgets_chart).order_by('3'),flt_active, org_id, targets)
+        budgets = self.apply_filters(CachedRawModel(queries.q_budgets_chart).order_by('3'),flt_active, org_id, targets)
         budgets_list = list (budgets.open().fetchall())
         budgets.close()
 
@@ -335,12 +335,12 @@ class PassportView(FiltersView):
     def filter_year(self, flt_active=None, org_id=0, targets = []):
         year_list_active = [0]
         if not flt_active.get(fyear):
-            year_enabled = RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid, [PlanTYear] as name",org_id=org_id).order_by('[PlanTYear]')
-            #year_active = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
+            year_enabled = CachedRawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid, [PlanTYear] as name",org_id=org_id).order_by('[PlanTYear]')
+            #year_active = self.apply_filters(CachedRawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
             #year_list_active = [e['iid'] for e in year_active.open().fetchall()]
             #year_active.close()
         else:
-            year_enabled = self.apply_filters(RawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
+            year_enabled = self.apply_filters(CachedRawModel(queries.q_years_passport).filter(fields="[PlanTYear] as iid"), flt_active, org_id, targets)
 
         year_list = list(year_enabled.open().fetchall())
         year_enabled.close()
@@ -375,8 +375,8 @@ class PassportView(FiltersView):
         # Если в фильтре есть какое то ЛПУ, То готовим данные для графика
         if cust_id:
             lpu = Lpu.objects.get(cust_id=cust_id)
-            sum_by_years = self.apply_filters(RawModel(queries.q_passport_chart_years).order_by('1','2'),flt_active, org_id, targets)
-            sum_by_markets = self.apply_filters(RawModel(queries.q_passport_chart_markets).order_by('market_name'),flt_active, org_id, targets)
+            sum_by_years = self.apply_filters(CachedRawModel(queries.q_passport_chart_years).order_by('1','2'),flt_active, org_id, targets)
+            sum_by_markets = self.apply_filters(CachedRawModel(queries.q_passport_chart_markets).order_by('market_name'),flt_active, org_id, targets)
 
             pivot_data['lpu_name'] = lpu.name
             pivot_data['lpu_shortname'] = lpu.shortname

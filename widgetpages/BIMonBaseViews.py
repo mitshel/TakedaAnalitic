@@ -8,7 +8,7 @@ from django.urls import reverse_lazy
 from widgetpages import queries
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView, DatatableXlsMixin
 
-from db.rawmodel import RawModel
+from db.rawmodel import RawModel, CachedRawModel
 from db.models import SYNC_STATUS_CHOICES, DB_READY, DB_RECREATE, DB_ERROR, DB_OFFLINE, DB_UPDATE
 from farmadmin.views import OrgBaseMixin, bOrgUSER, bOrgSESSION, bOrgPOST
 
@@ -136,7 +136,7 @@ class FiltersMixin():
         return {'list':[e['iid'] for e in targets], 'select': 0}
 
     def get_initial_targets(self):
-        initial_employee = RawModel(queries.q_employees).filter(fields = 'id as iid, name', username=self.request.user.username).order_by('name')
+        initial_employee = CachedRawModel(queries.q_employees).filter(fields = 'id as iid, name', username=self.request.user.username).order_by('name')
         initial_targets=list(initial_employee.open().fetchall())
         initial_employee.close()
         return initial_targets
@@ -233,16 +233,16 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         market_list_active = []
         if not flt_active.get(fmrkt):
             # Показываем все доступные рынки для сотрудника организации
-            market_enabled = self.apply_filters_default(RawModel(queries.q_markets)).filter(fields="id as iid, name",org_id=org_id).order_by('name')
+            market_enabled = self.apply_filters_default(CachedRawModel(queries.q_markets)).filter(fields="id as iid, name",org_id=org_id).order_by('name')
             # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
             # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
-            market_active = self.apply_filters(RawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+            market_active = self.apply_filters(CachedRawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
             market_list_active = [e['iid'] for e in market_active.open().fetchall()]
             market_active.close()
         else:
             # Показываем все доступные рынки
             # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
-            market_enabled = self.apply_filters(RawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+            market_enabled = self.apply_filters(CachedRawModel(queries.q_markets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
         market_list = list(market_enabled.open().fetchall())
         market_enabled.close()
@@ -257,14 +257,14 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         year_list_active = []
         if not flt_active.get(fyear):
             # Показываем все доступные Годы для сотрудника организации
-            year_enabled = self.apply_filters_default(RawModel(queries.q_years_hs)).filter(fields="PlanTYear as iid, PlanTYear as name",org_id=org_id).order_by('PlanTYear')
+            year_enabled = self.apply_filters_default(CachedRawModel(queries.q_years_hs)).filter(fields="PlanTYear as iid, PlanTYear as name",org_id=org_id).order_by('PlanTYear')
             # Но активными будут выглядеть только Годы, доступные сотруднику (через ЛПУ)
-            year_active = self.apply_filters(RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
+            year_active = self.apply_filters(CachedRawModel(queries.q_years_hs).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
             year_list_active = [e['iid'] for e in year_active.open().fetchall()]
             year_active.close()
         else:
             # Показываем все доступные Годы
-            year_enabled = self.apply_filters(RawModel(queries.q_years_hs).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
+            year_enabled = self.apply_filters(CachedRawModel(queries.q_years_hs).filter(fields="PlanTYear as iid"), flt_active, org_id, targets)
 
         year_list = list(year_enabled.open().fetchall())
         year_enabled.close()
@@ -279,20 +279,20 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         # Запрос по всему кэшу чтобы проверить статусы очень тяжел и занимает от 350 до 900 мс
         # Поэтому пока просто выводим все доступные статусы
         # впоследсвие можно предусмотреть кэширование информации по статусам или предподготовку специальной таблицы
-        status_enabled = self.apply_filters_default(RawModel(queries.q_status)).filter(fields="id as iid, name", org_id=org_id).order_by('name')
+        status_enabled = self.apply_filters_default(CachedRawModel(queries.q_status)).filter(fields="id as iid, name", org_id=org_id).order_by('name')
         #status_list_active = []
         #if not flt_active.get(fstat):
         #    # Показываем все доступные статусы для сотрудника организации
-        #    status_enabled = RawModel(queries.q_status).filter(fields="id as iid, name",org_id=org_id).order_by('name')
+        #    status_enabled = CachedRawModel(queries.q_status).filter(fields="id as iid, name",org_id=org_id).order_by('name')
         #    # Но активными будут выглядеть только рынки, доступные сотруднику (через ЛПУ)
         #    # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
-        #    status_active = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+        #    status_active = self.apply_filters(CachedRawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
         #    status_list_active = [e['iid'] for e in status_active.open().fetchall()]
         #    status_active.close()
         #else:
         #    # Показываем все доступные рынки
         #    # Использование q_markets_hs вместо q_markets дает задержку около 1-2 секунд
-        #    status_enabled = self.apply_filters(RawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+        #    status_enabled = self.apply_filters(CachedRawModel(queries.q_status_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
         status_list = list(status_enabled.open().fetchall())
         status_enabled.close()
@@ -306,8 +306,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
 
     def filter_budg(self, flt_active=None, org_id=0, targets = []):
         #fields =  "a.id as iid, name" if flt_active.get(fbudg) else "a.id as iid, name"
-        #budgets_enabled = RawModel(queries.q_budgets).filter(fields=fields).order_by('name')
-        # budgets_enabled = self.apply_filters(RawModel(queries.q_budgets_hs),flt_active, org_id, targets).filter(fields=fields ).order_by('name')
+        #budgets_enabled = CachedRawModel(queries.q_budgets).filter(fields=fields).order_by('name')
+        # budgets_enabled = self.apply_filters(CachedRawModel(queries.q_budgets_hs),flt_active, org_id, targets).filter(fields=fields ).order_by('name')
 
         #budgets_list = list(budgets_enabled.open().fetchall())
         #budgets_enabled.close()
@@ -315,14 +315,14 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         budgets_list_active = []
         if not flt_active.get(fbudg):
             # Показываем все доступные Бюджеты для сотрудника организации
-            budgets_enabled = self.apply_filters_default(RawModel(queries.q_budgets)).filter(fields="id as iid, name",org_id=org_id).order_by('name')
+            budgets_enabled = self.apply_filters_default(CachedRawModel(queries.q_budgets)).filter(fields="id as iid, name",org_id=org_id).order_by('name')
             # Но активными будут выглядеть только Бюджеты, доступные сотруднику (через ЛПУ)
-            budgets_active = self.apply_filters(RawModel(queries.q_budgets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+            budgets_active = self.apply_filters(CachedRawModel(queries.q_budgets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
             budgets_list_active = [e['iid'] for e in budgets_active.open().fetchall()]
             budgets_active.close()
         else:
             # Показываем все доступные бюджеты
-            budgets_enabled = self.apply_filters(RawModel(queries.q_budgets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
+            budgets_enabled = self.apply_filters(CachedRawModel(queries.q_budgets_hs).filter(fields="a.id as iid"), flt_active, org_id, targets)
 
         budgets_list = list(budgets_enabled.open().fetchall())
         budgets_enabled.close()
@@ -475,15 +475,15 @@ class BaseDatatableYearView(DatatableXlsMixin, OrgMixin, FiltersMixin, AjaxRawDa
         flt_active = self.filters_active(org_id, targets)
 
         if not flt_active.get(fyear):
-            years_active = RawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid",org_id=org_id, \
+            years_active = CachedRawModel(queries.q_years_hs_empl).filter(fields="PlanTYear as iid",org_id=org_id, \
                                                                    employee_in=extra_in_filter('e.employee_id', flt_active[fempl]))
             flt_active[fyear] = {'list':[e['iid'] for e in years_active.open().fetchall()], 'select':0}
             years_active.close()
 
         if flt_active[fyear]['list']:
-            rawmodel = RawModel(self.datatable_query, self.datatable_count_query)
+            rawmodel = CachedRawModel(self.datatable_query, self.datatable_count_query)
         else:
-            rawmodel = RawModel(self.empty_datatable_query)
+            rawmodel = CachedRawModel(self.empty_datatable_query)
             self.orderable = 0
 
         rawmodel = self.apply_filters(rawmodel, flt_active, org_id, targets)

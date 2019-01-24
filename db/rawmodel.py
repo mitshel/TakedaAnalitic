@@ -1,5 +1,8 @@
+import hashlib
+
 from django.template import Context, Template, loader
 from django.db import connection
+from django.core.cache import cache
 
 class RawModel(object):
     _columns = []
@@ -134,8 +137,76 @@ class RawModel(object):
         return self
 
     def fetchall(self):
-        "Return all rows from a cursor as a dict"
         return [
             dict(zip(self._columns, row))
             for row in self._cursor.fetchall()
         ]
+
+
+class CachedRawModel(RawModel):
+    cache_default_timeout = 24*60*60
+    _cached_data = None
+
+    def get_query_hash(self, query):
+        org_id_str = str(self._filter_data.get('org_id', 0))
+        hash = org_id_str + '_' + hashlib.md5(query.encode('utf-8')).hexdigest()
+        return hash
+
+    def save_to_cache(self, query_hash, data):
+        cache.set(query_hash, data, self.cache_default_timeout)
+
+    def fetch_from_cache(self, query_hash):
+        data = cache.get(query_hash, None)
+        return data
+
+    def open(self):
+        query = self.render()
+        self._query_hash = self.get_query_hash(query)
+        self._cached_data = self.fetch_from_cache(self._query_hash)
+
+        if self._cached_data:
+            self._columns = self._cached_data['columns']
+        else:
+            self._cursor = connection.cursor()
+            self._cursor.execute(query)
+            self._columns = [col[0] for col in self._cursor.description] if self._cursor.description else None
+        return self
+
+    def fetchall(self):
+        if self._cached_data:
+            return self._cached_data['rows']
+        else:
+            rows = super().fetchall()
+            self.save_to_cache(self._query_hash, {'columns':self._columns, 'rows':rows})
+            return rows
+
+    def close(self):
+        if self._cached_data:
+            self._cached_data = []
+        else:
+            self._cursor.close()
+        self._cursor = None
+        self._count = None
+        self._columns = []
+        return self
+
+    def count(self):
+        if self._count:
+            return self._count
+
+        sql = self.count_query
+        query_hash = self.get_query_hash(sql)
+        count = self.fetch_from_cache(query_hash)
+
+        if count:
+            self._count = count
+        else:
+            with connection.cursor() as cursor:
+                cursor.execute(sql)
+                row = cursor.fetchone()
+            self._count = row[0]
+            self.save_to_cache(query_hash,self._count)
+
+        return self._count
+
+

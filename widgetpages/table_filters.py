@@ -5,34 +5,34 @@ from widgetpages.BIMonBaseViews import extra_in_filter, OrgMixin, FiltersMixin
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 from widgetpages import queries
 
-from db.rawmodel import RawModel
+from db.rawmodel import RawModel, CachedRawModel
 
 class FilterListJson(OrgMixin, FiltersMixin, AjaxRawDatatableView):
     columns = ['name', 'ext', 'iid']
     order_columns = ['name']
 
     def initial_dosg(self, org_id=0):
-        dosg_enabled = RawModel(queries.q_dosage_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
+        dosg_enabled = CachedRawModel(queries.q_dosage_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
         return dosg_enabled
 
     def initial_form(self, org_id=0):
-        form_enabled = RawModel(queries.q_form_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
+        form_enabled = CachedRawModel(queries.q_form_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
         return form_enabled
 
     def initial_innr(self, org_id=0):
-        innr_enabled = RawModel(queries.q_innr_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
+        innr_enabled = CachedRawModel(queries.q_innr_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
         return innr_enabled
 
     def initial_trnr(self, org_id=0):
-        trnr_enabled = RawModel(queries.q_tradenr_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
+        trnr_enabled = CachedRawModel(queries.q_tradenr_hs).filter(fields='a.id as iid, a.name', org_id=org_id)
         return trnr_enabled
 
     def initial_winr(self, org_id=0):
-        winr_enabled = RawModel(queries.q_winner_hs).filter(fields='a.id as iid, a.inn as ext, a.name', org_id=org_id)
+        winr_enabled = CachedRawModel(queries.q_winner_hs).filter(fields='a.id as iid, a.inn as ext, a.name', org_id=org_id)
         return winr_enabled
 
     def initial_cust(self, org_id=0):
-        lpu_enabled = RawModel(queries.q_lpu_hs).filter(fields='a.cust_id as iid, a.Org_CustInn as ext, a.Org_CustNm as name', org_id=org_id)
+        lpu_enabled = CachedRawModel(queries.q_lpu_hs).filter(fields='a.cust_id as iid, a.Org_CustInn as ext, a.Org_CustNm as name', org_id=org_id)
         return lpu_enabled
 
     def addfilters(self, qs, flt_active, org_id, targets):
@@ -86,5 +86,5 @@ class FilterListJson(OrgMixin, FiltersMixin, AjaxRawDatatableView):
 
 class PassportFilterListJson(FilterListJson):
     def initial_cust(self, org_id=0):
-        lpu_enabled = RawModel(queries.q_lpu_passport).filter(fields='l.cust_id as iid, l.Org_CustInn as ext, l.Org_CustNm as name').order_by('l.Org_CustNm')
+        lpu_enabled = CachedRawModel(queries.q_lpu_passport).filter(fields='l.cust_id as iid, l.Org_CustInn as ext, l.Org_CustNm as name').order_by('l.Org_CustNm')
         return lpu_enabled

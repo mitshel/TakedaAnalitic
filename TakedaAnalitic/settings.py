@@ -131,7 +131,12 @@ else:
     }
 
 
-
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'bimonitor-cache',
+    }
+}
 
 # set this to False if you want to turn off pyodbc's connection pooling
 #DATABASE_CONNECTION_POOLING = False
