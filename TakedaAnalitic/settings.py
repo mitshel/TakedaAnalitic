@@ -94,22 +94,22 @@ WSGI_APPLICATION = 'TakedaAnalitic.wsgi.application'
 #    }
 #}
 
-if socket.gethostname() == 'dsgate' or socket.gethostname() == 'DESKTOP-1NT18VI':
-    DATABASES = {
-        'default': {
-            'ENGINE': 'sql_server.pyodbc',
-            'NAME': DBNAME,
-            'USER': DBUSER,
-            'PASSWORD': DBPASSWORD,
-            'HOST': DBHOST,
-            'PORT': '',
+DATABASES = {
+    'default': {
+        'ENGINE': 'sql_server.pyodbc',
+        'NAME': DBNAME,
+        'USER': DBUSER,
+        'PASSWORD': DBPASSWORD,
+        'HOST': DBHOST,
+        'PORT': '',
 
-            'OPTIONS': {
-                'driver': 'ODBC Driver 13 for SQL Server',
-            },
+        'OPTIONS': {
+            'driver': 'ODBC Driver 13 for SQL Server',
         },
-    }
+    },
+}
 
+if socket.gethostname() == 'dsgate':
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
@@ -117,26 +117,6 @@ if socket.gethostname() == 'dsgate' or socket.gethostname() == 'DESKTOP-1NT18VI'
         }
     }
 else:
-    DATABASES = {
-        'default': {
-            # 'ENGINE': 'sql_server.pyodbc',
-            # 'NAME': 'BIMonitor',
-            # 'USER': 'cursor',
-            # 'PASSWORD': 'cursor2018',
-            # 'HOST': 'DESKTOP-VUDOG20\SQLEXPRESS',
-            'ENGINE': 'sql_server.pyodbc',
-            'NAME': DBNAME,
-            'USER': DBUSER,
-            'PASSWORD': DBPASSWORD,
-            'HOST': DBHOST,
-            'PORT': '',
-
-            'OPTIONS': {
-                'driver': 'ODBC Driver 11 for SQL Server',
-            },
-        },
-    }
-
     CACHES = {
         'default': {
             'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',

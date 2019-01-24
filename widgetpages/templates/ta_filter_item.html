@@ -95,7 +95,7 @@ var tbl_{{ flt.id }} = $('#tbl_{{ flt.id }}').DataTable({
                     "ajax": {
                         //"url": "{ % url 'widgetpages:jdata' flt.id %}",
                         "url": "{{ ajax_filters_tbl_url }}",
-                        "async" : true,
+                        //"async" : true,
                         "type": "POST",
                         "data": function ( d ) {
                             d.filters_ajax_request = JSON.stringify(filters_ajax_request);
