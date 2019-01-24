@@ -174,10 +174,12 @@ class CachedRawModel(RawModel):
 
     def fetchall(self):
         if self._cached_data:
+            #print('Fetch from CACHE')
             return self._cached_data['rows']
         else:
             rows = super().fetchall()
             self.save_to_cache(self._query_hash, {'columns':self._columns, 'rows':rows})
+            #print('Fetch from DBMS')
             return rows
 
     def close(self):
@@ -198,14 +200,16 @@ class CachedRawModel(RawModel):
         query_hash = self.get_query_hash(sql)
         count = self.fetch_from_cache(query_hash)
 
-        if count:
+        if count != None:
             self._count = count
+            #print('Count from CACHE')
         else:
             with connection.cursor() as cursor:
                 cursor.execute(sql)
                 row = cursor.fetchone()
             self._count = row[0]
             self.save_to_cache(query_hash,self._count)
+            #print('Count from DBMS {}'.format(sql))
 
         return self._count
 
