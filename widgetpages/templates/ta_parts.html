@@ -178,7 +178,7 @@ var ta_lparts_table = $('#ta_lparts_table').DataTable({
                             text: 'Excel',
                             className: 'btn-sm',
                             action: function ( e, dt, node, config ) {
-                                    download_datatable_excel('{% url 'widgetpages:jlparts' %}}', '{{ view.id }}', '{{ org_id }}', dt)
+                                    download_datatable_excel('{% url 'widgetpages:jlparts' %}', '{{ view.id }}', '{{ org_id }}', dt)
                             }
                 }],
                 select: true,
