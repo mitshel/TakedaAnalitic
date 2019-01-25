@@ -40,7 +40,7 @@ class Command(BaseCommand):
     def clear_cache(self, org_id):
         if settings.CACHES['default']['BACKEND']=='django_redis.cache.RedisCache':
             self.stdout.write('Clear cache for org {}'.format(org_id))
-            cache.delete_pattern("bimonitor:{}:".format(org_id))
+            cache.delete_pattern("bimonitor:{}:*".format(org_id))
         else:
             self.stdout.write('Clear all cache')
             cache.clear()
