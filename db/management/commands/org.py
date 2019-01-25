@@ -37,12 +37,10 @@ class Command(BaseCommand):
         for o in Org.objects.all():
             print('{:<30} {:>6}'.format(o.name, o.id))
 
-    def clear_cache(self, prefix):
+    def clear_cache(self, org_id):
         if settings.CACHES['default']['BACKEND']=='django_redis.cache.RedisCache':
-            #prefix = "{}:{}:*".format(settings.CACHES['default']['KEY_PREFIX'], org_id)
-            #prefix = "{}_*".format(org_id)
-            self.stdout.write('Clear cache for prefix: {}'.format(prefix))
-            n = cache.delete_pattern(prefix)
+            self.stdout.write('Clear cache for org_id: {}'.format(org_id))
+            n = cache.delete_pattern("*", version = org_id)
             self.stdout.write('{} keys deleted'.format(n))
         else:
             self.stdout.write('Clear all cache')
