@@ -205,3 +205,6 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_COLLAPSED': True,
     'SQL_WARNING_THRESHOLD': 100,  # milliseconds
 }
+
+
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
