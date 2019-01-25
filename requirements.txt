@@ -10,3 +10,4 @@ django-debug-toolbar
 django-debug-toolbar-template-timings
 python-memcached
 redis
+django-redis

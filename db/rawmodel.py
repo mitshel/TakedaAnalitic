@@ -153,10 +153,12 @@ class CachedRawModel(RawModel):
         return hash
 
     def save_to_cache(self, query_hash, data):
-        cache.set(query_hash, data, self.cache_default_timeout)
+        org_id = self._filter_data.get('org_id', 0)
+        cache.set(query_hash, data, self.cache_default_timeout, version=org_id)
 
     def fetch_from_cache(self, query_hash):
-        data = cache.get(query_hash, None)
+        org_id = self._filter_data.get('org_id', 0)
+        data = cache.get(query_hash, None, version=org_id)
         return data
 
     def open(self):
