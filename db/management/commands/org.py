@@ -50,6 +50,8 @@ class Command(BaseCommand):
     def create_tables(self, org_id):
         if not org_id:
             return
+        if isinstance(org_id, str):
+            org_id = int(org_id)
         org=Org.objects.get(id=org_id)
 
         if org.sync_status != DB_READY:
@@ -93,6 +95,8 @@ class Command(BaseCommand):
         RawModel('create_Order.sql').filter(org_id=org.id, db_version = DB_VERSION).exec().close()
         totalTime0 = int(time.time() - startTime0)
         self.stdout.write("Elapsed time: {:0=2}:{:0=2}".format(totalTime0 // 60, totalTime0 % 60))
+
+        self.clear_cache(org_id)
 
         totalTime = int(time.time() - startTime)
         self.stdout.write("\nTotal Elapsed time: {:0=2}:{:0=2}".format(totalTime//60, totalTime%60))
