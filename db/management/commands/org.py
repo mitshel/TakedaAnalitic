@@ -2,13 +2,15 @@ import time
 from django.core.management.base import BaseCommand
 from db.models import Org, Org_log, DB_RECREATE, DB_READY, DB_VERSION
 from db.rawmodel import RawModel
+from django.core.cache import cache
+from django.conf import settings
 
 
 class Command(BaseCommand):
     help = 'Organization manipulation'
 
     def add_arguments(self, parser):
-        parser.add_argument('command', action="store", nargs='*', help='Use [ list | create | updateall ]')
+        parser.add_argument('command', action="store", nargs='*', help='Use [ list | create | updateall | clear_cache ]')
         parser.add_argument('--verbose',action='store_true', dest='verbose', default=False, help='Set verbosity level for books collection scan.')
         parser.add_argument('--nogenres',action='store_true', dest='nogenres', default=False, help='Not install genres fom fixtures.')
 
@@ -22,6 +24,10 @@ class Command(BaseCommand):
             self.stdout.write('Create organization database.')
             org_id = options['command'][1] if len(options['command'])>1 else None
             self.create_tables(org_id)
+        elif action == 'clear_cache':
+            self.stdout.write('Clear organization cache.')
+            org_id = options['command'][1] if len(options['command'])>1 else None
+            self.clear_cache(org_id)
         elif action == 'updateall':
             self.stdout.write('Recreate all organization database.')
             self.updateAll()
@@ -30,6 +36,15 @@ class Command(BaseCommand):
         print('{:<30} {:>6}'.format('Name', 'ID'))
         for o in Org.objects.all():
             print('{:<30} {:>6}'.format(o.name, o.id))
+
+    def clear_cache(self, org_id):
+        if settings.CACHES['default']['BACKEND']=='django_redis.cache.RedisCache':
+            self.stdout.write('Clear cache for org {}'.format(org_id))
+            cache.delete_pattern("bimonitor:{}:".format(org_id))
+        else:
+            self.stdout.write('Clear all cache')
+            cache.clear()
+
 
     def create_tables(self, org_id):
         if not org_id:
