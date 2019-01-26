@@ -10,6 +10,7 @@ from django import forms
 from django.http import JsonResponse
 
 from db.models import Org, Employee, Market, Lpu, InNR, TradeNR, Market_Innrs, Market_Tmnrs, SYNC_STATUS_CHOICES, Org_log, Region
+from db.cache import clear_cache
 
 bOrgPOST = 4
 bOrgSESSION = 2
@@ -204,6 +205,10 @@ class EmployeeUpdateUserAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadC
         return context
 
     def get_success_url(self):
+        """ Чистим кэш организации 0, т.к. запросы по таргетов  в фильтр идут без привязки к организации а только по логину
+            т.е. эти запросы попадют в кэш с ID организации = 0
+        """
+        clear_cache(0)
         return reverse('farmadmin:success')
 
 class EmployeeUpdateRegAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):

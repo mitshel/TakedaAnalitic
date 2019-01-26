@@ -2,9 +2,7 @@ import time
 from django.core.management.base import BaseCommand
 from db.models import Org, Org_log, DB_RECREATE, DB_READY, DB_VERSION
 from db.rawmodel import RawModel
-from django.core.cache import cache
-from django.conf import settings
-
+from db.cache import clear_cache
 
 class Command(BaseCommand):
     help = 'Organization manipulation'
@@ -38,14 +36,9 @@ class Command(BaseCommand):
             print('{:<30} {:>6}'.format(o.name, o.id))
 
     def clear_cache(self, org_id):
-        if settings.CACHES['default']['BACKEND']=='django_redis.cache.RedisCache':
-            self.stdout.write('Clear cache for org_id: {}'.format(org_id))
-            n = cache.delete_pattern("*", version = org_id)
-            self.stdout.write('{} keys deleted'.format(n))
-        else:
-            self.stdout.write('Clear all cache')
-            cache.clear()
-
+        self.stdout.write('Clear cache for org_id: {}'.format(org_id))
+        n = clear_cache(org_id)
+        self.stdout.write('{} keys deleted'.format(n))
 
     def create_tables(self, org_id):
         if not org_id:
