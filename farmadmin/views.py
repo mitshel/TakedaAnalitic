@@ -130,7 +130,7 @@ class EmployeesAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin
     permission_required = ('db.view_employee', )
 
     def get_queryset(self):
-        return Employee.objects.filter(org=self.org).annotate(lpu_count=Count('lpu'), region_count=Count('region')).prefetch_related('users').select_related('parent')
+        return Employee.objects.filter(org=self.org).annotate(lpu_count=Count('lpu', distinct=True), region_count=Count('region', distinct=True)).prefetch_related('users').select_related('parent')
 
 class EmployeeUpdateAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
     template_name = 'fa_employee.html'

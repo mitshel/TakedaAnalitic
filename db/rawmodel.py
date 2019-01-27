@@ -142,7 +142,6 @@ class RawModel(object):
             for row in self._cursor.fetchall()
         ]
 
-
 class CachedRawModel(RawModel):
     cache_default_timeout = 24*60*60
     _cached_data = None
