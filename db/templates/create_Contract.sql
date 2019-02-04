@@ -46,7 +46,7 @@ t.Order_Form COLLATE database_default as Order_Form,
 isnull(RTRIM(LTRIM(c1.Ship_Dosage)),'')+IIF(c1.Ship_Volume is Null, '', ' '+RTRIM(LTRIM(c1.Ship_Volume)))+IIF(c1.Ship_BatchSize is Null,'',' №'+CAST(c1.Ship_BatchSize as varchar)) COLLATE database_default as Contract_Dosage,
 c1.Ship_form COLLATE database_default as Contract_Form
 
-into org_Contract_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
+into org_Contract_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t (nolock)
 
 LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c (nolock)
 	ON c.Lot_ID = t.Lot_ID
@@ -59,17 +59,17 @@ LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 
 --Markets
 left join (select ji.innr_id, ji.market_id, ji.own, jm.name as market_name
-           from db_market_innrs ji
-		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) cmnn on c1.IntlName_ID=cmnn.innr_id
+           from db_market_innrs ji (nolock)
+		       left join db_market jm (nolock) on ji.market_id=jm.id where jm.org_id={{ org_id }}) cmnn on c1.IntlName_ID=cmnn.innr_id
 left join (select ji.innr_id, ji.market_id, ji.own, jm.name as market_name
-           from db_market_innrs ji
-		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) omnn on t.InnNx=omnn.innr_id
+           from db_market_innrs ji (nolock)
+		       left join db_market jm (nolock) on ji.market_id=jm.id where jm.org_id={{ org_id }}) omnn on t.InnNx=omnn.innr_id
 left join (select ji.tradenr_id, ji.market_id, ji.own, jm.name as market_name
-           from db_market_tmnrs ji
-		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) ctm on c1.TradeName_ID=ctm.tradenr_id
+           from db_market_tmnrs ji (nolock)
+		       left join db_market jm (nolock) on ji.market_id=jm.id where jm.org_id={{ org_id }}) ctm on c1.TradeName_ID=ctm.tradenr_id
 left join (select ji.tradenr_id, ji.market_id, ji.own, jm.name as market_name
-           from db_market_tmnrs ji
-		   left join db_market jm on ji.market_id=jm.id where jm.org_id={{ org_id }}) otm on t.TradeNx=otm.tradenr_id
+           from db_market_tmnrs ji (nolock)
+		       left join db_market jm (nolock) on ji.market_id=jm.id where jm.org_id={{ org_id }}) otm on t.TradeNx=otm.tradenr_id
 
 
 where (t.Reg_ID < 100) AND (t.ProdType_ID = 'L') and (cmnn.market_id is not null or omnn.market_id is not null or ctm.market_id is not null or otm.market_id is not null)

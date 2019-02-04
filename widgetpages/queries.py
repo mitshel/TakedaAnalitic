@@ -1059,7 +1059,7 @@ q_passport_winners_table0 = """
 {% autoescape off %}
 select IIF(grouping(s.WinnerOrg)=1,'ИТОГО',isnull(s.WinnerOrg,' НЕТ ДАННЫХ')) as name, s.WinnerOrgInn as inn, grouping(s.WinnerOrg) as gr,
 sum(isnull(isnull(s.[Ship_Sum],s.[ItemSum]),0)) as summa
-from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] s
+from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] s (nolock)
 where exists (select 1 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] c where s.LotSpec_ID=c.LotSpec_ID and (c.Reg_ID < 100) AND (c.ProdType_ID = 'L'))
 where 1=1
 {% if years %}and isnull(year([DTExecuteEnd]),0) in ({% for y in years %}{{y}}{% if not forloop.last %},{% endif %}{%endfor%}) {% endif %}
@@ -1085,7 +1085,7 @@ q_passport_winners_table = """
 select IIF(grouping(w.Org_CustNm)=1,'ИТОГО',isnull(w.Org_CustNm,' НЕТ ДАННЫХ')) as name, w.Org_CustInn as inn, grouping(w.Org_CustNm) as gr,
 {% if market_type_prefix == 'Contract_' %}
    sum(isnull(isnull(c1.[Ship_Sum],c1.[ItemSum]),0)) as summa
-   from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s
+   from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] s (nolock)
    LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c1 (nolock)
 	    ON c1.LotSpec_ID = s.LotSpec_ID and c1.Contract_ID > 0  and isnull(c1.LotSpec_ID,0) > 0
 {% else %}

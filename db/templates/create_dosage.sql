@@ -14,9 +14,9 @@ PRIMARY KEY CLUSTERED
 insert into [dbo].[org_DOSAGE_{{org_id}}](name)
 select distinct name from
 (
-  select distinct isnull(RTRIM(LTRIM(Contract_Dosage)),'') as name from org_Contract_{{org_id}}
+  select distinct isnull(RTRIM(LTRIM(Contract_Dosage)),'') as name from org_Contract_{{org_id}} (nolock)
   union
-  select distinct isnull(RTRIM(LTRIM(Order_Dosage)),'') as name from org_Contract_{{org_id}}
+  select distinct isnull(RTRIM(LTRIM(Order_Dosage)),'') as name from org_Contract_{{org_id}} (nolock)
 ) subquery
 
 CREATE NONCLUSTERED INDEX [idxd_{{org_id}}_dosage_name] ON [dbo].[org_DOSAGE_{{org_id}}]

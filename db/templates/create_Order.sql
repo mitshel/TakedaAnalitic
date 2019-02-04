@@ -22,7 +22,7 @@ market_id,
 market_own,
 Order_Dosage_id,
 Order_Form_id
-into org_Order_{{org_id}} from org_Contract_{{org_id}}
+into org_Order_{{org_id}} from org_Contract_{{org_id}} (nolock)
 
 alter table org_Order_{{org_id}} add id bigint identity not null primary key
 

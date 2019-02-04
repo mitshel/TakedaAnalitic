@@ -12,7 +12,7 @@ PRIMARY KEY CLUSTERED
 )WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 ) ON [PRIMARY]
 
-insert into [dbo].[org_FORM_{{org_id}}](name) select distinct isnull(RTRIM(LTRIM(Contract_Form)),'') from org_Contract_{{org_id}}
+insert into [dbo].[org_FORM_{{org_id}}](name) select distinct isnull(RTRIM(LTRIM(Contract_Form)),'') from org_Contract_{{org_id}} (nolock)
 
 CREATE NONCLUSTERED INDEX [idxf_{{org_id}}form_name] ON [dbo].[org_FORM_{{org_id}}]
 (

@@ -279,7 +279,7 @@ go
 -- Добавляем новые ЛПУ, которые есть в кэше, но нет даже в спрвочнике ORG
 --
 insert into db_lpu(cust_id,Org_CustNm, regcode)
-select DISTINCT cust_id, cast(cust_id as varchar)+' #expected in Org from Contract' as Org_CustNm, 0 as regcode
+select DISTINCT cust_id, cast(cust_id as varchar)+' #expected in Org from Tender' as Org_CustNm, 0 as regcode
 from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE]
 where cust_id not in (select cust_id from  db_lpu)
 go
