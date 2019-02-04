@@ -993,8 +993,8 @@ where 1=1
 
 q_years_passport = """
 {% autoescape off %}
-select {{ fields }} from db_years a
-where exists ( select 1 from org_DATA s
+select {{ fields }} from db_years a (nolock)
+where exists ( select 1 from org_DATA s (nolock)
                where s.PlanTYear=a.PlanTYear           
                {% if lpus_in %}and {{lpus_in}} {% endif %} 
                {% if market_type_prefix %}and s.{{ market_type_prefix }}summa>0 {% endif %}     
@@ -1005,13 +1005,13 @@ where exists ( select 1 from org_DATA s
 
 q_lpu_passport = """
 {% autoescape off %}
-select DISTINCT {{ fields }} from db_lpu l
-where exists (select 1 from org_DATA s where s.cust_id=l.cust_id)
+select DISTINCT {{ fields }} from db_lpu l (nolock)
+where exists (select 1 from org_DATA s (nolock) where s.cust_id=l.cust_id)
     {% if no_target %} 
-        and exists (select top 1 1 from db_region_employee r where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
-        {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e where e.lpu_id=l.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
+        and exists (select top 1 1 from db_region_employee r (nolock) where r.region_id=l.regcode and r.employee_id in ({{all_targets}}) ) 
+        {% if disabled_targets %} and not exists (select top 1 1 from db_lpu_employee e (nolock) where e.lpu_id=l.cust_id and e.employee_id in ({{disabled_targets}}) ) {% endif %}
     {% else %}
-        {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e where e.lpu_id=l.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
+        {% if enabled_targets %} and exists (select top 1 1 from db_lpu_employee e (nolock) where e.lpu_id=l.cust_id and e.employee_id in ({{enabled_targets}}) ) {% endif %}
     {% endif %}
 {% if name__icontains %} and ( l.Org_CustNm like '%{{ name__icontains }}%' or l.Org_CustInn like '%{{ name__icontains }}%' ) {% endif %}
 {{ order_by }}
@@ -1090,7 +1090,7 @@ select IIF(grouping(w.Org_CustNm)=1,'ИТОГО',isnull(w.Org_CustNm,' НЕТ Д
 	    ON c1.LotSpec_ID = s.LotSpec_ID and c1.Contract_ID > 0  and isnull(c1.LotSpec_ID,0) > 0
 {% else %}
    sum(isnull(s.Order_Sum,0)) as summa
-   from (select DISTINCT Tender_ID, cust_id, PlanTYear, Winner_Id, Reg_ID, StatusT_ID, Order_Sum from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE]) s
+   from (select DISTINCT Tender_ID, cust_id, PlanTYear, Winner_Id, Reg_ID, StatusT_ID, Order_Sum from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] (nolock)) s
 {% endif %}   
 left join db_allOrg w on s.Winner_Id=w.cust_id
 where (s.Reg_ID < 100) and (s.StatusT_ID=4) --AND (s.ProdType_ID = 'L')
