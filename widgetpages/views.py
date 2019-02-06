@@ -121,7 +121,8 @@ class BudgetsAjaxTable(BaseDatatableYearView):
         if sort_col<3:
             qs = qs.order_by('t.name', 'gr desc','l.Org_CustNm')
         else:
-            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 't.name', 'gr desc', 'l.Org_CustNm')
+            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir),
+                             '[{0}] {1}'.format(self._columns[sort_col], sort_dir), 'gr desc', 'l.Org_CustNm')
 
         return qs
 
@@ -177,7 +178,8 @@ class Lpu_CompetitionsAjaxTable(BaseDatatableYearView):
         if sort_col<=3:
             qs = qs.order_by('l.Org_CustNm', 'gr','t.name')
         else:
-            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'l.Org_CustNm', 'gr','t.name')
+            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir),
+                             'gr','[{0}] {1}'.format(self._columns[sort_col], sort_dir), 't.name')
         return qs
 
 class Market_CompetitionsAjaxTable(BaseDatatableYearView):
@@ -191,9 +193,8 @@ class Market_CompetitionsAjaxTable(BaseDatatableYearView):
         if sort_col<=3:
             qs = qs.order_by('nn.id', 'gr','t.name')
         else:
-            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'nn.id', 'gr','t.name')
-
-        print(qs.query)
+            qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir),
+                             'gr','[{0}] {1}'.format(self._columns[sort_col], sort_dir),'t.name')
 
         return qs
 
