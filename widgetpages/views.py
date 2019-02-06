@@ -193,6 +193,8 @@ class Market_CompetitionsAjaxTable(BaseDatatableYearView):
         else:
             qs = qs.order_by('sum([{0}]) over (PARTITION BY nn.id, nn.gr) {1}'.format(self._columns[sort_col], sort_dir), 'nn.id', 'gr','t.name')
 
+        print(qs.query)
+
         return qs
 
 class AvgMarketView(CompetitionsView):
