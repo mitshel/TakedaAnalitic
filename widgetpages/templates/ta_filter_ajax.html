@@ -64,6 +64,7 @@ function make_request() {
     market_type = $('#serv_market').val();
     own_type = $('#serv_own').val();
     prod_type = $('#serv_prod').val();
+    sku_type = $('#serv_sku').val();
 
     if ($('#empl-all').hasClass('active')) empl_all = 1; else empl_all = 0;
 
@@ -74,6 +75,7 @@ function make_request() {
                             'market_type': market_type,
                             'own_type': own_type,
                             'prod_type': prod_type,
+                            'sku_type': sku_type,
                             'empl_all': empl_all,
                             'view_id': '{{ view.id }}'
     }

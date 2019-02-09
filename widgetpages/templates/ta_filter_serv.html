@@ -41,6 +41,12 @@
                       <option {% if view.default_prod_type == 2 %}selected{% endif %} value="2">Торговая марка</option>
               </select>
           {% endif %}
+          {% if view.select_sku %}
+              <select class="form-control form-control-sm" id="serv_sku" autocomplete="off">
+                      <option {% if view.default_sku == 0 %}selected{% endif %} value="0">Не показывыть фасовку</option>
+                      <option {% if view.default_sku == 1 %}selected{% endif %} value="1">Показывать фасовку</option>
+              </select>
+          {% endif %}
           </div></div>
       </div>
     </div>

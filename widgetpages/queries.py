@@ -534,16 +534,21 @@ fd_avg_price =  {r'id': {'title':'Дата аукциона', 'width':0, 'hide':
                  r'nm': {'title': 'Рынок', 'width': 30},
                  r'tradenx': {'title': 'mnn/tm id', 'width': 0, 'hide':1},
                  r'name': {'title': 'МНН/ТМ по аукциону', 'width': 30},
+                 r'dosage_name': {'title': 'Дозировка+Фасовка', 'width': 30},
                  r'gr': {'title': 'Группа', 'width': 0, 'hide':1}
 }
 
 q_avg_price = """
 {% autoescape off %}
-select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, isnull(t.name,'') as name, 0 as gr 
+select pvt.market_id as id, pvt.market_name as Nm, 
+    {% if sku_select %}ds.name as dosage_name,{% endif %} 
+    pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, isnull(t.name,'') as name, 0 as gr 
     {% for y in years %},[{{y}}]{% endfor %}
     from
     (
-        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
+        select distinct s.market_id, s.market_name, 
+        {% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %} 
+        isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         avg({{ market_type_prefix }}Price) as {{ market_type_prefix }}AVG
         from [dbo].[org_{{ market_type_prefix }}{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
@@ -568,7 +573,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                     
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
-     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
+     	group by s.market_id, s.market_name,{% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %} isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
     ) m
     PIVOT
     (
@@ -576,6 +581,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
 left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on pvt.{{ market_type_prefix }}{{ product_type }} = t.id
+{% if sku_select %}left join org_DOSAGE_{{ org_id }} ds on pvt.{{ market_type_prefix }}Dosage_id = ds.id{% endif %}
 where pvt.market_id is not null and pvt.market_name is not Null and isnull(t.name,'')<>''
 --order by pvt.market_name
 {{ order_by }}
@@ -586,16 +592,21 @@ fd_packages =  {r'id': {'title':'id', 'width':0, 'hide':1},
                  r'nm': {'title': 'Рынок', 'width': 30},
                  r'tradenx': {'title': 'mnn/tm id', 'width': 0, 'hide':1},
                  r'name': {'title': 'МНН/ТМ по аукциону', 'width': 30},
+                 r'dosage_name': {'title': 'Дозировка+Фасовка', 'width': 30},
                  r'gr': {'title': 'Группа', 'width': 0, 'hide':1}
 }
 
 q_packages = """
 {% autoescape off %}
-select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, isnull(t.name,'') as name, 0 as gr 
+select pvt.market_id as id, pvt.market_name as Nm, 
+    {% if sku_select %}ds.name as dosage_name,{% endif %} 
+    pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, isnull(t.name,'') as name, 0 as gr 
     {% for y in years %},[{{y}}]{% endfor %}
     from
     (
-        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
+        select distinct s.market_id, s.market_name, 
+        {% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %} 
+        isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         sum(isnull({{ market_type_prefix }}Count,0)) as {{ market_type_prefix }}Count
         from [dbo].[org_{{ market_type_prefix }}{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
@@ -620,7 +631,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                   
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
-     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
+     	group by s.market_id, s.market_name,{% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %} isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
     ) m
     PIVOT
     (
@@ -628,6 +639,7 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
 left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on pvt.{{ market_type_prefix }}{{ product_type }} = t.id
+{% if sku_select %}left join org_DOSAGE_{{ org_id }} ds on pvt.{{ market_type_prefix }}Dosage_id = ds.id{% endif %}
 where pvt.market_id is not null and pvt.market_name is not Null and isnull(t.name,'')<>''
 --order by pvt.market_name
 {{ order_by }}

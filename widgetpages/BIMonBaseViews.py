@@ -39,21 +39,23 @@ selOwnNo = 2
 selOwnAll = 3
 selProdMNN = 1
 selProdTM = 2
+selSKUHide = 0
+selSKUShow = 1
 
-serv_defaults = [selHide,selMrktContract,   selHide,selOwnYes,   selHide,selProdTM]
+serv_defaults = [selHide,selMrktContract,  selHide,selOwnYes,   selHide,selProdTM,   selHide,selSKUHide]
 
 filters_all = [fempl, fmrkt, fyear, fstat, fbudg, fform, fdosg, finnr, ftrnr, fwinr, fcust]
 
 views_prop = {
-    'salesshedule'          : { 'filters' : filters_all,            'props': [selHide,selMrktTender,     selShow,selOwnAll,   selHide,selProdTM] },
-    'budgets'               : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selHide,selProdTM] },
-    'competitions_lpu'      : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
-    'competitions_market'   : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
-    'avg_price'             : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
-    'packages'              : { 'filters' : filters_all,            'props': [selHide,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM] },
-    'parts'                 : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selHide,selOwnAll,   selHide,selProdTM] },
-    'sales_analysis'        : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selHide,selProdTM] },
-    'passport'              : { 'filters' : [fempl,fcust,fyear],    'props': [selShow,selMrktContract,   selHide,selOwnYes,   selHide,selProdTM] },
+    'salesshedule'          : { 'filters' : filters_all,            'props': [selHide,selMrktTender,     selShow,selOwnAll,   selHide,selProdTM,  selHide,selSKUHide] },
+    'budgets'               : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selHide,selProdTM,  selHide,selSKUHide] },
+    'competitions_lpu'      : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selHide,selSKUHide] },
+    'competitions_market'   : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selHide,selSKUHide] },
+    'avg_price'             : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selShow,selSKUHide] },
+    'packages'              : { 'filters' : filters_all,            'props': [selHide,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selShow,selSKUHide] },
+    'parts'                 : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selHide,selOwnAll,   selHide,selProdTM,  selHide,selSKUHide] },
+    'sales_analysis'        : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selHide,selProdTM,  selHide,selSKUHide] },
+    'passport'              : { 'filters' : [fempl,fcust,fyear],    'props': [selShow,selMrktContract,   selHide,selOwnYes,   selHide,selProdTM,  selHide,selSKUHide] },
 }
 
 def prepare_serach(s):
@@ -120,6 +122,8 @@ class FiltersMixin():
             self.default_own = serv_props[3]
             self.select_prod_type = serv_props[4]
             self.default_prod_type = serv_props[5]
+            self.select_sku = serv_props[6]
+            self.default_sku = serv_props[7]
         else:
             self.filters_list = filters_all
             self.select_market_type = serv_defaults[0]
@@ -128,6 +132,8 @@ class FiltersMixin():
             self.default_own = serv_defaults[3]
             self.select_prod_type = serv_defaults[4]
             self.default_prod_type = serv_defaults[5]
+            self.select_sku = serv_defaults[6]
+            self.default_sku = serv_defaults[7]
 
     def fempa_selected(self, flt_active, fname):
         return flt_active[fname]['select'] if flt_active else 0
@@ -159,11 +165,12 @@ class FiltersMixin():
             flt_active[fempa] = {'list': [], 'select': int(flt.get('empl_all', '0'))}
             flt_active[fserv] = {'market': int(flt.get('market_type',str(self.default_market_type))), \
                                  'own': int(flt.get('own_type', str(self.default_own))), \
-                                 'prod': int(flt.get('prod_type',str(self.default_prod_type)))}
+                                 'prod': int(flt.get('prod_type',str(self.default_prod_type))), \
+                                 'sku': int(flt.get('sku_type', str(self.default_sku)))}
         else:
             flt_active[fempl] = self.targets_in_filter(targets)
             flt_active[fempa] = {'list': [], 'select': 0}
-            flt_active[fserv] = {'market': self.default_market_type, 'own': self.default_own, 'prod': self.default_prod_type}
+            flt_active[fserv] = {'market': self.default_market_type, 'own': self.default_own, 'prod': self.default_prod_type, 'sku': self.default_sku}
 
         return flt_active
 
@@ -175,6 +182,7 @@ class FiltersMixin():
     def apply_filters(self, qs, flt_active, org_id, targets):
         market_type_prefix = 'Order_' if flt_active[fserv]['market'] == 1 else 'Contract_'
         own_select = 'market_own=1' if flt_active[fserv]['own'] == 1 else ('market_own=0' if flt_active[fserv]['own'] == 2 else '')
+        sku_select = 1 if flt_active[fserv]['sku'] == 1 else 0
         product_type = 'InnNx' if flt_active[fserv]['prod'] == 1 else 'TradeNx'
 
         if fempl in self.filters_list:
@@ -206,9 +214,8 @@ class FiltersMixin():
            trnrs_in=extra_in_filter('s.{}TradeNx'.format(market_type_prefix), flt_active.get(ftrnr,'')) if ftrnr in self.filters_list else None,
            dosage_in=extra_in_filter('s.{}Dosage_id'.format(market_type_prefix), flt_active.get(fdosg, '')) if fdosg in self.filters_list else None,
            form_in=extra_in_filter('s.{}Form_id'.format(market_type_prefix), flt_active.get(fform, '')) if fform in self.filters_list else None,
-           market_type_prefix = market_type_prefix, own_select = own_select, product_type = product_type, org_id = org_id)
+           market_type_prefix = market_type_prefix, own_select = own_select, product_type = product_type, sku_select=sku_select, org_id = org_id)
         return qs
-
 
 class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     template_name = 'ta_competitions.html'
@@ -415,6 +422,19 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         return {}
 
+    def view_info(self):
+        return {'id': self.view_id, 'name': self.view_name,
+               ###
+               'select_market_type': self.select_market_type,
+               'select_own': self.select_own,
+               'select_prod_type': self.select_prod_type,
+               'select_sku': self.select_sku,
+               ###
+               'default_market_type' : self.default_market_type,
+               'default_own':  self.default_own,
+               'default_prod_type' : self.default_prod_type,
+               'default_sku': self.default_sku}
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         org_id = self.init_dynamic_org()
@@ -432,9 +452,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
         context['filters'] = filters
         context['data'] = data
         context['org_id'] = org_id
-        context['view'] = {'id': self.view_id, 'name': self.view_name,
-                           'select_market_type': self.select_market_type, 'select_own': self.select_own,  'select_prod_type': self.select_prod_type,
-                           'default_market_type' : self.default_market_type, 'default_own':  self.default_own, 'default_prod_type' : self.default_prod_type }
+        context['view'] = self.view_info()
+
         context['ajax_filters_url'] = self.ajax_filters_url
         context['ajax_filters_tbl_url'] = self.ajax_filters_tbl_url
         context['ajax_datatable_url'] = self.ajax_datatable_url
@@ -451,9 +470,7 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
                 response = {'filters': self.get_filters_dict(filters),
                             'data': data,
                             'org_id': org_id,
-                            'view': {'id' : self.view_id, 'name': self.view_name },
-                            #'ajax_filters_url': self.ajax_filters_url,
-                            #'ajax_filters_tbl_url': self.ajax_filters_tbl_url,
+                            'view': self.view_info(),
                             'ajax_datatable_url': self.ajax_datatable_url}
                 return JsonResponse(response)
 
@@ -462,8 +479,8 @@ class FiltersView(OrgMixin, FiltersMixin, TemplateView):
 
 class BaseDatatableYearView(DatatableXlsMixin, OrgMixin, FiltersMixin, AjaxRawDatatableView):
     order_columns = ['name']
-    #filters_list = [fempl, fmrkt, fyear, fstat, fbudg, fdosg, fform, finnr, ftrnr, fwinr, fcust]
-    #org_id = 1
+    view_id = 'blank'
+    view_name = 'blank'
     datatable_query = None
     datatable_count_query = None
     empty_datatable_query = 'select null as name'
@@ -487,6 +504,7 @@ class BaseDatatableYearView(DatatableXlsMixin, OrgMixin, FiltersMixin, AjaxRawDa
             self.orderable = 0
 
         rawmodel = self.apply_filters(rawmodel, flt_active, org_id, targets)
+        print(rawmodel.query)
         return rawmodel
 
     def filter_queryset(self, qs):

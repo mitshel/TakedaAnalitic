@@ -239,7 +239,6 @@ class PackagesAjaxTable(BaseDatatableYearView):
             qs = qs.order_by('Nm', 'TradeNx')
         else:
             qs = qs.order_by('Nm', '[{}] {}'.format(self._columns[sort_col], sort_dir))
-
         return qs
 
 class PartsView(FiltersView):

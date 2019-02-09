@@ -31,6 +31,7 @@
                 <th>ИНН</th>
                 <th>ЛПУ</th>
                 <th>Торговая марка/МНН</th>
+                <th>Дозировка + Фасовка</th>
                 {% for y in data.year %}<th class="dt-right">{{ y }}</th>{% endfor %}
             </tr>
         </thead>
@@ -54,10 +55,12 @@
                 }
             };
         });
+
+        ta_competitions_table.columns(3).visible($('#serv_sku').val()==1, false);
     }
 
     function ChartsUpdate1(data, src_id) {
-        UpdateColumns()
+        UpdateColumns();
         ta_competitions_table.ajax.reload( null, true );
         //ta_competitions_table.columns.adjust().draw( true );
     }
@@ -105,8 +108,9 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                     { "name": "ext", "targets": 0 , "visible": false, "searchable": true },
                     { "name": "Nm", "targets": 1, "visible": false, "searchable": true },
                     { "name": "name", "targets": 2, "visible": true, "searchable": false },
+                    { "name": "dosage_name", "targets": 3, "visible": true, "searchable": false },
                     {% for y in data.year %}
-                    { "name": "{{ y }}", "targets": {{ forloop.counter0|add:3 }}, "visible": true, "searchable": false,
+                    { "name": "{{ y }}", "targets": {{ forloop.counter0|add:4 }}, "visible": true, "searchable": false,
                       "className": "dt-right", "orderSequence": ["desc","asc"],
                       render: function ( data, type, row ) { return intWithSpaces ( fixval(data,1) ); } }{% if not forloop.last %},{% endif %}{% endfor %}
                 ],
