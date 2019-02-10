@@ -182,7 +182,7 @@ class EmployeeUpdateBaseAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadC
         return context
 
     def get_success_url(self):
-        clear_cache(0)
+        clear_cache(self.org_id)
         return reverse('farmadmin:employees')
 
 class EmployeeUpdateLpuAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
@@ -193,6 +193,7 @@ class EmployeeUpdateLpuAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCr
     permission_required = ('db.change_employee',)
 
     def get_success_url(self):
+        clear_cache(self.org_id)
         return reverse('farmadmin:success')
 
 class EmployeeUpdateUserAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, UpdateView):
@@ -242,6 +243,7 @@ class EmployeeUpdateRegAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCr
         return redirect_url
 
     def get_success_url(self):
+        clear_cache(self.org_id)
         return reverse('farmadmin:success')
 
 class EmployeeQueryRegAdminView(PermissionRequiredMixin, View):
@@ -282,7 +284,7 @@ class EmployeeCreateBaseAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadC
         return context
 
     def get_success_url(self):
-        clear_cache(0)
+        clear_cache(self.org_id)
         return reverse('farmadmin:employees')
 
 class EmployeeDeleteAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumbMixin, DeleteView):
@@ -291,7 +293,7 @@ class EmployeeDeleteAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadCrumb
     permission_required = ('db.delete_employee',)
 
     def get_success_url(self):
-        clear_cache(0)
+        clear_cache(self.org_id)
         return reverse('farmadmin:success')
 
 # Загрузка полной таблицы со всеми учреждениями
