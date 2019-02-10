@@ -469,7 +469,7 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
     ) as pvt
 group by
 rollup (pvt.cust_id, pvt.{{ market_type_prefix }}{{ product_type }} {% if sku_select %},{{ market_type_prefix }}Dosage_id{% endif %})
-{% if sku_select %}having grouping(pvt.{{ market_type_prefix }}Dosage_id)=0{% endif %}
+{% if sku_select %}having grouping(pvt.{{ market_type_prefix }}Dosage_id)=0 or grouping(pvt.{{ market_type_prefix }}{{ product_type }})<>0 {% endif %}
 ) nn    
 left join db_lpu l on nn.id = l.cust_id
 left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on nn.TradeNx = t.id
@@ -542,7 +542,7 @@ select pvt.market_id as id, pvt.market_name as Nm,
     ) as pvt
 group by
 rollup (pvt.market_id, pvt.market_name, pvt.{{ market_type_prefix }}{{ product_type }} {% if sku_select %},{{ market_type_prefix }}Dosage_id{% endif %})
-{% if sku_select %}having grouping(pvt.{{ market_type_prefix }}Dosage_id)=0{% endif %}
+{% if sku_select %}having grouping(pvt.{{ market_type_prefix }}Dosage_id)=0 or grouping(pvt.{{ market_type_prefix }}{{ product_type }})<>0 {% endif %}
 ) nn    
 left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on nn.TradeNx = t.id
 {% if sku_select %}left join org_DOSAGE_{{ org_id }} ds on nn.{{ market_type_prefix }}Dosage_id = ds.id{% endif %}
