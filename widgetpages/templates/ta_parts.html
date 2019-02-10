@@ -35,7 +35,7 @@
 		<table class="table table-sm table-hover table-striped display w-100 datatable table-bordered" width="100%" id="ta_mparts_table">
         <thead class="thead-light">
             <tr>
-                <th rowspan="2" class="th-name">Рынок</th>
+                <th rowspan="2" class="th-name">Рынок (тыс.руб)</th>
                 {% for y in data.year %}
                     <th colspan="3" class="dt-center th-year">{{ y }}</th>
                 {% endfor %}
@@ -50,7 +50,7 @@
 		<table class="table table-sm table-hover table-striped display w-100 datatable table-bordered" width="100%" id="ta_lparts_table">
         <thead class="thead-light position-sticky sticky-top">
             <tr>
-                <th rowspan="2" class="th-name">ЛПУ</th>
+                <th rowspan="2" class="th-name">ЛПУ (тыс.руб)</th>
                 {% for y in data.year %}
                     <th colspan="3" class="dt-center th-year">{{ y }}</th>
                 {% endfor %}

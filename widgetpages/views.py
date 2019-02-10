@@ -131,7 +131,7 @@ class CompetitionsView(FiltersView):
     template_name = 'ta_competitions.html'
     ajax_filters_url = reverse_lazy('widgetpages:competitions')
     view_id = 'competitions'
-    view_name = 'Конкурентный анализ(тыс.руб.)'
+    view_name = 'Конкурентный анализ'
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}
@@ -143,7 +143,7 @@ class CompetitionsView(FiltersView):
 
         current_year = datetime.datetime.now().year
         try:
-            sort_col = years_active.index(current_year)+3
+            sort_col = years_active.index(current_year)+4
             sort_dir = 'desc'
         except:
             sort_col = 2
@@ -158,13 +158,13 @@ class CompetitionsLpuView(CompetitionsView):
     ajax_filters_url = reverse_lazy('widgetpages:competitions_lpu')
     ajax_datatable_url = reverse_lazy('widgetpages:jcompetitions_lpu')
     view_id = 'competitions_lpu'
-    view_name = 'Конкурентный анализ по ЛПУ (тыс.руб.)'
+    view_name = 'Конкурентный анализ по ЛПУ'
 
 class CompetitionsMarketView(CompetitionsView):
     ajax_filters_url = reverse_lazy('widgetpages:competitions_market')
     ajax_datatable_url = reverse_lazy('widgetpages:jcompetitions_market')
     view_id = 'competitions_market'
-    view_name = 'Конкурентный анализ по рынкам (тыс.руб.)'
+    view_name = 'Конкурентный анализ по рынкам'
 
 class Lpu_CompetitionsAjaxTable(BaseDatatableYearView):
     order_columns = ['Org_CustNm', 'name']
@@ -245,7 +245,7 @@ class PartsView(FiltersView):
     template_name = 'ta_parts.html'
     ajax_filters_url = reverse_lazy('widgetpages:parts')
     view_id = 'parts'
-    view_name = 'Доля (тыс.руб.)'
+    view_name = 'Доля'
 
     def data(self, flt=None, flt_active=None, org_id=0, targets = []):
         data = {}

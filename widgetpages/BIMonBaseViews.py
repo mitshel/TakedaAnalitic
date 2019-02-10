@@ -49,8 +49,8 @@ filters_all = [fempl, fmrkt, fyear, fstat, fbudg, fform, fdosg, finnr, ftrnr, fw
 views_prop = {
     'salesshedule'          : { 'filters' : filters_all,            'props': [selHide,selMrktTender,     selShow,selOwnAll,   selHide,selProdTM,  selHide,selSKUHide] },
     'budgets'               : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selHide,selProdTM,  selHide,selSKUHide] },
-    'competitions_lpu'      : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selHide,selSKUHide] },
-    'competitions_market'   : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selHide,selSKUHide] },
+    'competitions_lpu'      : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selShow,selSKUHide] },
+    'competitions_market'   : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selShow,selSKUHide] },
     'avg_price'             : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selShow,selSKUHide] },
     'packages'              : { 'filters' : filters_all,            'props': [selHide,selMrktContract,   selShow,selOwnYes,   selShow,selProdTM,  selShow,selSKUHide] },
     'parts'                 : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selHide,selOwnAll,   selHide,selProdTM,  selHide,selSKUHide] },

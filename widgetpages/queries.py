@@ -414,6 +414,7 @@ select COUNT_BIG(DISTINCT s.cust_id) from [dbo].[org_{{market_type_prefix }}{{or
 fd_competitions_lpu =  {r'ext':  {'title':'ИНН', 'width':10},
                         r'nm':   {'title': 'Заказчик', 'width': 100},
                         r'name': {'title': 'МНН/ТМ', 'width': 30},
+                        r'dosage_name': {'title': 'Дозировка+Фасовка', 'width': 30},
                         r'id':   {'title': 'mnn/tm id', 'width': 0, 'hide':1},
                         r'tradenx': {'title': 'mnn/tm id', 'width': 0, 'hide':1},
                         r'gr':   {'title': 'Группа', 'width': 0, 'hide':1}
@@ -421,12 +422,18 @@ fd_competitions_lpu =  {r'ext':  {'title':'ИНН', 'width':10},
 
 q_competitions_lpu = """
 {% autoescape off %}
-select l.Org_CustINN as ext, l.Org_CustNm as Nm, CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
-select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, grouping(pvt.{{ market_type_prefix }}{{ product_type }}) as gr
+select l.Org_CustINN as ext, l.Org_CustNm as Nm, 
+{% if sku_select %}ds.name as dosage_name,{% endif %}
+CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
+select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, 
+    {% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %}
+     grouping(pvt.{{ market_type_prefix }}{{ product_type }}) as gr
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select distinct s.cust_id, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
+        select distinct s.cust_id, 
+        {% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %} 
+        isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         sum(isnull({{ market_type_prefix }}Summa,0)) as {{ market_type_prefix }}Summa
         from [dbo].[org_{{ market_type_prefix }}{{org_id}}] s with (nolock)
         left join db_lpu l on s.cust_id = l.cust_id
@@ -443,15 +450,16 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
         {% if status_in %}and {{status_in}} {% endif %}        
         {% if budgets_in %}and {{budgets_in}} {% endif %}
         {% if dosage_in %}and {{dosage_in}} {% endif %}
-        {% if form_in %}and {{form_in}} {% endif %}        
-        {% if lpus_in %}and {{lpus_in}} {% endif %}    
+        {% if form_in %}and {{form_in}} {% endif %}           
         {% if innrs_in %}and {{innrs_in}} {% endif %}
         {% if trnrs_in %}and {{trnrs_in}} {% endif %}
         {% if winrs_in %}and {{winrs_in}} {% endif %}
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and l.Org_CustNm like '%{{ icontains }}%' {% endif %}
-        group by s.cust_id, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
+        group by s.cust_id,
+                 {% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %} 
+                 isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
         having sum(isnull({{ market_type_prefix }}Summa,0))>0
     ) m
     PIVOT
@@ -460,10 +468,12 @@ select pvt.cust_id as id, pvt.{{ market_type_prefix }}{{ product_type }} as trad
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
 group by
-rollup (pvt.cust_id, pvt.{{ market_type_prefix }}{{ product_type }})
+rollup (pvt.cust_id, pvt.{{ market_type_prefix }}{{ product_type }} {% if sku_select %},{{ market_type_prefix }}Dosage_id{% endif %})
+{% if sku_select %}having grouping(pvt.{{ market_type_prefix }}Dosage_id)=0{% endif %}
 ) nn    
 left join db_lpu l on nn.id = l.cust_id
 left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on nn.TradeNx = t.id
+{% if sku_select %}left join org_DOSAGE_{{ org_id }} ds on nn.{{ market_type_prefix }}Dosage_id = ds.id{% endif %}
 where nn.id is not null
 --order by sum([2018]) over (PARTITION BY nn.id, nn.gr) desc, l.Org_CustNm, gr, t.name
 {{ order_by }}
@@ -473,6 +483,7 @@ where nn.id is not null
 fd_competitions_market =  {r'ext':  {'title':'ИНН', 'width':10},
                         r'nm':   {'title': 'Рынок', 'width': 20},
                         r'name': {'title': 'МНН/ТМ', 'width': 30},
+                        r'dosage_name': {'title': 'Дозировка+Фасовка', 'width': 30},
                         r'id':   {'title': 'mnn/tm id', 'width': 0, 'hide':1},
                         r'tradenx': {'title': 'mnn/tm id', 'width': 0, 'hide':1},
                         r'gr':   {'title': 'Группа', 'width': 0, 'hide':1}
@@ -480,13 +491,20 @@ fd_competitions_market =  {r'ext':  {'title':'ИНН', 'width':10},
 
 q_competitions_market = """
 {% autoescape off %}
---select CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.* from (
-select nn.id, nn.Nm, nn.tradeNx, CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.gr {% for y in years %},nn.[{{y}}]{% endfor %} from (
-select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, grouping(pvt.{{ market_type_prefix }}{{ product_type }}) as gr 
+select nn.id, nn.Nm, nn.tradeNx, 
+{% if sku_select %}ds.name as dosage_name,{% endif %}
+CASE WHEN tradeNX is NULL THEN 'ИТОГО' ELSE t.name END as name, nn.gr 
+{% for y in years %},nn.[{{y}}]{% endfor %} from (
+select pvt.market_id as id, pvt.market_name as Nm, 
+    pvt.{{ market_type_prefix }}{{ product_type }} as tradeNx, 
+    {% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %}
+    grouping(pvt.{{ market_type_prefix }}{{ product_type }}) as gr 
     {% for y in years %},sum([{{y}}]) as [{{y}}]{% endfor %}
     from
     (
-        select distinct s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
+        select distinct s.market_id, s.market_name, 
+        {% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %} 
+        isnull({{ market_type_prefix }}{{ product_type }}, -2) as {{ market_type_prefix }}{{ product_type }}, PlanTYear, 
         sum(isnull({{ market_type_prefix }}Summa,0)) as {{ market_type_prefix }}Summa
         from [dbo].[org_{{ market_type_prefix }}{{org_id}}] s
         left join db_lpu l on s.cust_id = l.cust_id
@@ -512,7 +530,9 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
         {% if lpus_in %}and {{lpus_in}} {% endif %} 
         {% if own_select %}and {{own_select}} {% endif %}                                    
         {% if icontains %}and s.market_name like '%{{ icontains }}%' {% endif %}
-     	group by s.market_id, s.market_name, isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
+     	group by s.market_id, s.market_name, 
+     	         {% if sku_select %}{{ market_type_prefix }}Dosage_id,{% endif %} 
+     	         isnull({{ market_type_prefix }}{{ product_type }}, -2), PlanTYear
      	having sum(isnull({{ market_type_prefix }}Summa,0))>0
     ) m
     PIVOT
@@ -521,9 +541,11 @@ select pvt.market_id as id, pvt.market_name as Nm, pvt.{{ market_type_prefix }}{
     for PlanTYear in ({% for y in years %}[{{y}}]{% if not forloop.last %},{% endif %}{% endfor %})
     ) as pvt
 group by
-rollup (pvt.market_id, pvt.market_name, pvt.{{ market_type_prefix }}{{ product_type }})
+rollup (pvt.market_id, pvt.market_name, pvt.{{ market_type_prefix }}{{ product_type }} {% if sku_select %},{{ market_type_prefix }}Dosage_id{% endif %})
+{% if sku_select %}having grouping(pvt.{{ market_type_prefix }}Dosage_id)=0{% endif %}
 ) nn    
 left join {% if product_type == 'TradeNx' %}db_TradeNR{% else %}db_InNr{% endif %} t on nn.TradeNx = t.id
+{% if sku_select %}left join org_DOSAGE_{{ org_id }} ds on nn.{{ market_type_prefix }}Dosage_id = ds.id{% endif %}
 where nn.id is not null and nn.Nm is not Null
 --order by sum([2018]) over (PARTITION BY nn.id, nn.gr) desc, l.Org_CustNm, gr, t.name
 {{ order_by }}
