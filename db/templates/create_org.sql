@@ -50,7 +50,7 @@ isnull(t.Order_Dosage,'')+IIF(t.Order_BatchSize is Null,'',' №'+CAST(t.Order_B
 isnull(c1.Ship_Dosage,'')+IIF(c1.Ship_Volume is Null, '', ' '+c1.Ship_Volume)+IIF(c1.Ship_BatchSize is Null,'',' №'+CAST(c1.Ship_BatchSize as varchar)) COLLATE database_default as Contract_Dosage,
 c1.Ship_form COLLATE database_default as Contract_Form
 
-into org_Contrac_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t
+into org_Contrac_{{org_id}} from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE] t (nolock)
 
 LEFT JOIN [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contract] c (nolock)
 	ON c.Lot_ID = t.Lot_ID
