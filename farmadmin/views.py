@@ -182,6 +182,7 @@ class EmployeeUpdateBaseAdminView(PermissionRequiredMixin, OrgAdminMixin, BreadC
         return context
 
     def get_success_url(self):
+        clear_cache(0)
         clear_cache(self.org_id)
         return reverse('farmadmin:employees')
 
