@@ -3,5 +3,16 @@
 {% load i18n %}
 
 {% block main-content %}
-
+<div class="container">
+{%  regroup cache_fields|dictsort:"group" by group as fieldgroups_list  %}
+    {%  for group in fieldgroups_list %}
+    <h4>{{ group.grouper }}</h4>
+    <br>
+    <ul>
+        {%  for field in group.list %}
+            <li>{{ field.title }}</li>
+        {% endfor %}
+    </ul>
+    {% endfor %}
+</div>
 {% endblock %}
