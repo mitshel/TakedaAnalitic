@@ -27,6 +27,7 @@ urlpatterns = [
     path('login/', loginView, name='login'),
     path('logout/', logoutView, name='logout'),
     path('page/', include(('widgetpages.urls', 'widgetpages'), namespace='widgetpages')),
+    path('data/', include(('dataloader.urls', 'dataloader'), namespace='data')),
     path('fadmin/', include(('farmadmin.urls', 'farmadmin'), namespace='farmadmin')),
     # path('proto/', include(('protocols.urls', 'protocols'), namespace='protocols')),
     path('admin/', admin.site.urls, name='admin'),
