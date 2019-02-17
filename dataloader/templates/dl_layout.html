@@ -123,6 +123,48 @@ div.dataTables_wrapper div.dataTables_processing {
    z-index:1029;
 }
 
+#heading_serv.card-header {
+    background-color: #0a76bf;
+
+}
+
+#divSidenav .card-header {
+    background-color: #0a76bf;
+}
+
+#divSidenav .btn-link {
+    color: #ffffff;
+}
+
+#divSidenav .btn-outline-primary:hover {
+    border-width: 3px;
+}
+
+#divSidenav .btn-outline-primary:not(.active):hover {
+    border-width: 3px;
+}
+
+#divSidenav .btn-outline-primary:not(.active) {
+    color: #62bbd9;
+    background-color: #0a76bf;
+    border-color: #62bbd9;
+    border-width: 1px;
+}
+
+#divSidenav .btn-outline-primary {
+    color: #ffffff;
+    background-color: #62bbd9;
+    border-color: #fff;
+    border-width: 1px;
+}
+
+#divSidenav .card {
+    border-color: #0000ff;
+    border-width: 1px;
+    color: #ffffff;
+
+}
+
 </style>
 
 <script type="text/javascript">
@@ -132,8 +174,8 @@ div.dataTables_wrapper div.dataTables_processing {
     {% include "dt_utils.html" %}
 
     function openNav() {
-        document.getElementById("mySidenav").style.width = "350px";
-        if (window.matchMedia('(max-width: 767px)').matches) {   //767px
+        document.getElementById("dataSidenav").style.width = "350px";
+        if (window.matchMedia('(max-width: 2000px)').matches) {   //767px
             document.getElementById("page-content").style.marginLeft = "0";
         } else {
             document.getElementById("page-content").style.marginLeft = "350px";
@@ -143,7 +185,7 @@ div.dataTables_wrapper div.dataTables_processing {
 
     /* Set the width of the side navigation to 0 and the left margin of the page content to 0 */
     function closeNav() {
-        document.getElementById("mySidenav").style.width = "0";
+        document.getElementById("dataSidenav").style.width = "0";
         document.getElementById("page-content").style.marginLeft = "0";
         $('#open-button').css("display","block");
     }
@@ -155,8 +197,8 @@ div.dataTables_wrapper div.dataTables_processing {
 
         <button class="menu-button" id="open-button" onclick="openNav()"></button>
 
-        <div id="mySidenav" class="sidenav">
-                 <div style="padding-left:5px;">
+        <div id="dataSidenav" class="sidenav">
+                 <div id="divSidenav" style="padding-left:5px;">
                      {% block filter %}
                          {% include 'ta_filter_styles.html' %}
                          {% include 'ta_filter_serv.html' %}
