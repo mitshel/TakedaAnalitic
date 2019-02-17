@@ -1,18 +1,45 @@
-{% extends "ta_main.html" %}
+{% extends "dl_layout.html" %}
 {% load staticfiles %}
 {% load i18n %}
 
-{% block main-content %}
-<div class="container">
+{% block page %}
+<style>
+/* Button */
+ .btn-df {
+ font-size: 12px;
+ padding: 2px 5px;
+ border-radius: 20px;
+ font-weight: bold;
+ letter-spacing: 1px;
+ text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.14);
+ text-transform: uppercase;
+ box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.2);
+}
+</style>
+
+<div class="card-columns">
 {%  regroup cache_fields|dictsort:"group" by group as fieldgroups_list  %}
     {%  for group in fieldgroups_list %}
-    <h4>{{ group.grouper }}</h4>
-    <br>
-    <ul>
-        {%  for field in group.list %}
-            <li>{{ field.title }}</li>
-        {% endfor %}
-    </ul>
+    <div class="card ml-1 mr-1">
+        <h5 class="card-header pt-1 pb-1" style="background-color: #ddddff;">{{ group.grouper }}</h5>
+        <div class="card-body p-0">
+            <ul class="list-group list-group-flush p-0">
+                {%  for field in group.list %}
+                    <li class="list-group-item pt-1 pb-1">
+                          <div class="row">
+                          <div class="col-8">
+                            {{ field.title }}
+                          </div>
+                          <div class="col-4 text-right">
+                              <button type="button" id="{{ field.name }}_check" class="btn btn-df btn-outline-primary active"  data-toggle="button" aria-pressed="true" autocomplete="off" title="Выгружать"><i class="fa fa-check"></i></button>
+                              <button type="button" id="{{ field.name }}_filter" class="btn btn-df btn-outline-primary" title="Закрыть"><i class="fa fa-filter"></i></button>
+                          </div>
+                          </div>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
     {% endfor %}
 </div>
 {% endblock %}

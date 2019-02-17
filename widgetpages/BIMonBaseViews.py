@@ -56,6 +56,7 @@ views_prop = {
     'parts'                 : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selHide,selOwnAll,   selHide,selProdTM,  selHide,selSKUHide] },
     'sales_analysis'        : { 'filters' : filters_all,            'props': [selShow,selMrktContract,   selShow,selOwnYes,   selHide,selProdTM,  selHide,selSKUHide] },
     'passport'              : { 'filters' : [fempl,fcust,fyear],    'props': [selShow,selMrktContract,   selHide,selOwnYes,   selHide,selProdTM,  selHide,selSKUHide] },
+    'download_data'         : { 'filters' : [fempl,fmrkt],          'props': [selHide,selMrktContract,   selHide,selOwnYes,   selHide,selProdTM,  selHide,selSKUHide] },
 }
 
 def prepare_serach(s):
