@@ -61,17 +61,18 @@
 .menu-button {
 	position: fixed;
 	z-index: 1000;
-	margin: 0;
+	margin: 0 -1em;
 	padding: 0;
-	width: 0.7em;
+	width: 2em;
 	height: 2em;
-	border: none;
-	text-indent: 2em;
+	border: white;
+    border-radius: 35px;
+	text-indent: 0.4em;
 	font-size: 1.5em;
-	color: transparent;
+	color: white;
     {#color: #8085e9;#}
 	{#background: transparent;#}
-    background-color: #8085e9;
+    background-color: #0a76bf;
 	-webkit-transition: -webkit-transform 0.3s;
 	transition: transform 0.3s;
 }
@@ -82,7 +83,7 @@
 	right: 0.5em;
 	bottom: 0.5em;
 	left: 0.5em;
-	background: linear-gradient(#373a47 20%, transparent 20%, transparent 40%, #373a47 40%, #373a47 60%, transparent 60%, transparent 80%, #373a47 80%);
+	{#background: linear-gradient(#373a47 20%, transparent 20%, transparent 40%, #373a47 40%, #373a47 60%, transparent 60%, transparent 80%, #373a47 80%);#}
 	content: '';
 }
 
@@ -156,7 +157,7 @@ div.dataTables_wrapper div.dataTables_processing {
     });
 </script>
 
-        <button class="menu-button" id="open-button" onclick="openNav()"></button>
+        <button class="menu-button" id="open-button" onclick="openNav()"><i class="fa fa-chevron-right"></i></button>
 
         <div id="mySidenav" class="sidenav">
                  <div style="padding-left:5px;">
@@ -172,7 +173,7 @@ div.dataTables_wrapper div.dataTables_processing {
         </div>
 
          <div id="page-content" style="padding:0;">
-            <div class="col-12 ml-2 mr-2 pt-2 pb-2 page-header">
+            <div class="col-12 mr-2 pt-2 pb-2 page-header" id="widget-title" style="margin-left:0.5em">
                 <h5><b>{{ view.name }}</b></h5>
             </div>
              <div style="padding-left:0.5rem; padding-right:0; padding-top: 3rem;">
