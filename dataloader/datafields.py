@@ -10,12 +10,12 @@ cache_unknown  = 0
 cache_tender   = 1
 cache_contract = 2
 
-gr_Tender   = '1. Извещение'
-gr_Spec     = '2. Спецификация'
-gr_Lot      = '3. Лот'
-gr_Winner   = '4. Победитель'
-gr_Contract = '5. Контракт'
-gr_Order    = '6. Заказ'
+gr_Tender   = {'name': 'Извещение',  'id': 1}
+gr_Spec     = {'name': 'Спецификация',  'id': 2}
+gr_Lot      = {'name': 'Лот',  'id': 3}
+gr_Winner   = {'name': 'Победитель',  'id': 4}
+gr_Contract = {'name': 'Контракт',  'id': 5}
+gr_Order    = {'name': 'Заказ',  'id': 6}
 
 cache_metadata = [
 #    'fname' : {'title' : 'fieldtitle', 'type' : ft_fk, 'fk' : 'foreignkey_ref', 'cache' : cache_tender, 'group' : gr_1},

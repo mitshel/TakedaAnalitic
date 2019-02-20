@@ -15,30 +15,79 @@
  text-transform: uppercase;
  box-shadow: 0 4px 9px 0 rgba(0, 0, 0, 0.2);
 }
+
+.lh-1 {
+    font-size: 0.9em;
+    line-height: 1.2 !important;
+    padding-top: 0.2em;
+    padding-bottom: 0.1em;
+}
+
+.input-group-xs > .form-control,
+.input-group-xs > .input-group-text,
+.input-group-xs > .input-group-prepend> .form-control,
+.input-group-xs > .input-group-prepend > .btn,
+.input-group-xs > .input-group-prepend > .dropdown-menu > .dropdown-item
+{
+  height: 22px;
+  padding: 2px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 1px;
+}
+
+.input-group-xs > .input-group-prepend> .form-control {
+    font-weight: bold;
+}
 </style>
 
 <div class="card-columns">
-{%  regroup cache_fields|dictsort:"group" by group as fieldgroups_list  %}
+{%  regroup cache_fields|dictsort:"group.id" by group as fieldgroups_list  %}
     {%  for group in fieldgroups_list %}
+    <div class="accordion" id="group_{{ group.grouper.id }}">
     <div class="card ml-1 mr-1">
-        <h5 class="card-header pt-1 pb-1" style="background-color: #ddddff;">{{ group.grouper }}</h5>
+        <h5 class="card-header pt-1 pb-1" style="background-color: #ddddff;">{{ group.grouper.name }}</h5>
         <div class="card-body p-0">
             <ul class="list-group list-group-flush p-0">
                 {%  for field in group.list %}
-                    <li class="list-group-item pt-1 pb-1">
+                    <li class="list-group-item lh-1">
                           <div class="row">
-                          <div class="col-8">
-                            {{ field.title }}
+                          <div class="col-9 text-left pl-0">
+                                <a class="collapsed" id="{{ field.name }}_title" data-toggle="collapse" data-target="#{{ field.name }}_data" aria-expanded="true" aria-controls="{{ field.name }}_data">
+                                  {{ field.title }}
+                                </a>
                           </div>
-                          <div class="col-4 text-right">
+                          <div class="col-3 text-right pr-0">
+                              <div class="btn-group" role="group" aria-label="{{ field.name }}_bg">
                               <button type="button" id="{{ field.name }}_check" class="btn btn-df btn-outline-primary active"  data-toggle="button" aria-pressed="true" autocomplete="off" title="Выгружать"><i class="fa fa-check"></i></button>
-                              <button type="button" id="{{ field.name }}_filter" class="btn btn-df btn-outline-primary" title="Закрыть"><i class="fa fa-filter"></i></button>
+                              <button type="button" id="{{ field.name }}_filter" class="btn btn-df btn-outline-primary" data-toggle="button" aria-pressed="true" autocomplete="off" title="Фильтр по полю"><i class="fa fa-filter"></i></button>
+                              </div>
                           </div>
                           </div>
+                        <div id="{{ field.name }}_data" class="collapse" aria-labelledby="group_{{ group.grouper.id }}" data-parent="#group_{{ group.grouper.id }}">
+                            <div class="row p-1 pr-5">
+                            <div class="input-group input-group-xs">
+                              <div class="input-group-prepend">
+                                <select class="form-control">
+                                  <option> &#x3d; </option>
+                                  <option> &#x2260; </option>
+                                  <option> &#x3c; </option>
+                                  <option> &#x22DC; </option>
+                                  <option> &#x3e; </option>
+                                  <option> &#x22DD; </option>
+                                </select>
+                              </div>
+                              <input type="text" class="form-control">
+                              <span class="input-group-text"> - </span>
+                              <input type="text" class="form-control">
+                            </div>
+                            </div>
+                        </div>
                     </li>
                 {% endfor %}
             </ul>
         </div>
+    </div>
     </div>
     {% endfor %}
 </div>
