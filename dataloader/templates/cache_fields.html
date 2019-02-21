@@ -130,8 +130,13 @@
                                     </button>
                                 </div>
                               </div>
-                              <input type="text" class="form-control" id="input-{{ field.name }}">
-                              {% if field.type == 3 %}
+
+                              {% if field.type == 1 %}
+                                <input type="number" class="form-control" id="input-{{ field.name }}" onkeypress="return isInteger(event)">
+                              {% elif field.type == 2 %}
+                                <input type="text" class="form-control" id="input-{{ field.name }}" pattern="[0-9]+([\.,][0-9]+)?" onkeypress="return isDecimal(event)">
+                              {% elif field.type == 3 %}
+                                <input type="text" class="form-control" id="input-{{ field.name }}" pattern="\d{1,2}.\d{1,2}.\d{4}">
                                 <script>
                                     $( function() {
                                         $( "#input-{{ field.name }}" ).datepicker({
@@ -142,6 +147,8 @@
                                         });
                                     } );
                                 </script>
+                              {% else %}
+                                 <input type="text" class="form-control" id="input-{{ field.name }}">
                               {% endif %}
                             </div>
                             </div>
@@ -221,6 +228,20 @@ $(".dx-g-bs4-filter-selector-item").click(function() {
 $( function() {
     $( "#datepicker" ).datepicker();
 } );
+
+function isInteger(evt) {
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode > 31  && (charCode < 48 || charCode > 57))
+    return false;
+    return true;
+};
+
+function isDecimal(evt) {
+    var charCode = (evt.which) ? evt.which : evt.keyCode;
+    if (charCode != 46 && charCode > 31 && (charCode < 48 || charCode > 57))
+    return false;
+    return true;
+}
 
 </script>
 
