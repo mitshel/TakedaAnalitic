@@ -50,10 +50,11 @@
 
 }
 .d-block {
-
     display: block !important;
-
 }
+
+.ui-datepicker { font-size: 9pt !important; }
+
 </style>
 
 <div class="card-columns">
@@ -129,7 +130,19 @@
                                     </button>
                                 </div>
                               </div>
-                              <input type="text" class="form-control">
+                              <input type="text" class="form-control" id="input-{{ field.name }}">
+                              {% if field.type == 3 %}
+                                <script>
+                                    $( function() {
+                                        $( "#input-{{ field.name }}" ).datepicker({
+                                            language: 'ru',
+                                            dateFormat: "dd.mm.yy",
+                                            monthNames : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+	                                        dayNamesMin : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
+                                        });
+                                    } );
+                                </script>
+                              {% endif %}
                             </div>
                             </div>
                             {% endif %}
@@ -204,6 +217,11 @@ $(".dx-g-bs4-filter-selector-item").click(function() {
     var pic = $(this).find("svg")[0].outerHTML;
     $( '#'+$(this).attr('parent') ).html(pic);
 });
+
+$( function() {
+    $( "#datepicker" ).datepicker();
+} );
+
 </script>
 
 {% endblock %}
