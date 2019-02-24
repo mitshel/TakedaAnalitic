@@ -17,6 +17,9 @@ gr_Winner   = {'name': 'Победитель',  'id': 4}
 gr_Contract = {'name': 'Контракт',  'id': 5}
 gr_Order    = {'name': 'Заказ',  'id': 6}
 
+fk_mnn      = 'db_innr'
+fk_tm       = 'db_tmnr'
+
 cache_metadata = [
 #    'fname' : {'title' : 'fieldtitle', 'type' : ft_fk, 'fk' : 'foreignkey_ref', 'cache' : cache_tender, 'group' : gr_1},
 { 'name': 'PublDt', 'title' : 'Дата публикации', 'type' : ft_date, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1},
@@ -84,8 +87,8 @@ cache_metadata = [
 { 'name': 'FourthOrgInfo', 'title' : 'Сведения о четвертом участнике лота', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1},
 { 'name': 'PriceFourth', 'title' : 'Цена четвертого участника лота', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1},
 { 'name': 'LotSpec_Pos', 'title' : 'Позиция в спецификации', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1},
-{ 'name': 'Innr', 'title' : 'МНН', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1},
-{ 'name': 'TradeNmR', 'title' : 'ТН', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1},
+{ 'name': 'Innr', 'title' : 'МНН', 'type' : ft_fk, 'fk' : fk_mnn, 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1},
+{ 'name': 'TradeNmR', 'title' : 'ТН', 'type' : ft_fk, 'fk' : fk_tm, 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1},
 { 'name': 'ProdNm', 'title' : 'Наименование позиции в спецификации', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1},
 { 'name': 'Form', 'title' : 'Характеристика товара', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1},
 { 'name': 'ShortName', 'title' : 'Единица измерения', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1},
