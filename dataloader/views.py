@@ -29,10 +29,14 @@ class FkFieldView(View):
     def get(self, request, *args, **kwargs):
         search_text = kwargs.get('search_text', '')
         if kwargs['fk_name'] == fk_mnn :
-            data = InNR.objects.filter(name__contains=search_text).order_by('name').values('id','name')
+            data = InNR.objects.order_by('name').values('id','name').annotate(text=F('name'))
+            if search_text!='undefined':
+                data = data.filter(name__contains=search_text)
         if kwargs['fk_name'] == fk_tm :
-            data = TradeNR.objects.filter(name__contains=search_text).order_by('name').values('id','name')
-        response = dict({'items':list(data)})
+            data = TradeNR.objects.order_by('name').values('id','name').annotate(text=F('name'))
+            if search_text!='undefined':
+                data = data.filter(name__contains=search_text)
+        response = dict({'results':list(data)})
         # response = json.dumps([{'value':item['id'], 'caption':item['name']} for item in data])
         print(search_text,' > ',response)
         return JsonResponse(response)

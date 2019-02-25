@@ -15,12 +15,20 @@
     <script type="text/javascript" src="{% static "bootstrap/js/bootstrap.bundle.min.js" %}"></script>
     <script type="text/javascript" src="{% static "dataTables/datatables.min.js" %}"></script>
     <script type="text/javascript" src="{% static "jquery-ui/jquery-ui-1.12.1.min.js" %}"></script>
-    <script type="text/javascript" src="{% static "jquery/jquery.fileDownload.js" %}"></script>
 
-    <!-- for chosen-select Use in dataloader -->
-    <link rel="stylesheet" type="text/css"  href="{% static "chosen/docsupport/prism.css" %}">
-    <link rel="stylesheet" type="text/css"  href="{% static "chosen/chosen.css" %}">
-    <script type="text/javascript" src="{% static "chosen/chosen.jquery.min.js" %}"></script>
+    <!--
+    <script type="text/javascript" src="{ % static "jquery/jquery.fileDownload.js" %}"></script>
+    -->
+
+    <!-- for chosen-select Use in dataloader
+    <link rel="stylesheet" type="text/css"  href="{ % static "chosen/docsupport/prism.css" %}">
+    <link rel="stylesheet" type="text/css"  href="{ % static "chosen/chosen.css" %}">
+    <script type="text/javascript" src="{ % static "chosen/chosen.jquery.min.js" %}"></script>
+    -->
+
+    <!-- for select2 Use in dataloader -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
     <style type="text/css">
         table.table-hover tbody tr td:hover {

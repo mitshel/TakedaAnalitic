@@ -28,9 +28,11 @@
 .input-group-xs > .input-group-prepend .btn,
 .input-group-xs > .input-group-prepend .dropdown-item,
 .input-group-xs > .input-group-prepend > .dropdown-menu > .dropdown-item,
-.input-group-xs > .input-group-prepend > .popover
+.input-group-xs > .input-group-prepend > .popover,
+.input-group-xs > select2,
+span.select2-selection__rendered
 {
-  height: 22px;
+  height: 22px; !important;
   padding: 2px 5px;
   font-size: 12px;
   line-height: 1.5;
@@ -54,20 +56,38 @@
 
 .ui-datepicker { font-size: 9pt !important; }
 
-.chosen-container { width: 100% !important; }
-.chosen-container-multi .chosen-choices li.search-choice {
-    margin: 0px 0px 0px 3px;
-    padding: 1px 20px 0px 3px;
+.input-group-xs > .select-2-container { width: 100% !important; }
+li.select2-selection__choice {
+    margin: 0px 0px 0px 3px; !important;
+    padding: 1px 20px 0px 3px; !important;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+    margin: 2px 0px 0px 2px; !important;
+    padding: 0 2px;
     font-size: 10px;
 }
-.chosen-container-multi .chosen-choices li.search-choice .search-choice-close { top: 2px; }
-.chosen-container-multi .chosen-choices li.search-field input[type="text"] { height: 14px; }
-.chosen-container-multi .chosen-choices
+.select2-container .select2-search--inline .select2-search__field {
+    font-size: 12px;
+    padding: 0px 5px 0px 5px;
+}
+.select2-container--default .select2-selection--multiple .select2-selection__rendered {
+    margin: 0;
+    padding: 0 0px;
+    width: 100%;
+}
+.input-group-xs .select2-results,
+ul.select2-results__options
 {
   padding: 2px 5px;
   font-size: 12px;
   line-height: 1.5;
   border-radius: 1px;
+}
+
+.input-group-xs .select2-results, ul.select2-results__options {
+    font-size: 10px;
+    line-height: 1;
 }
 
 </style>
@@ -222,25 +242,16 @@
 
                           {% if field.type == 5 %}
                              <div class="input-group input-group-xs">
-                                <select data-placeholder="Выбор..." class="form-control chosen-select" multiple="" id="input_{{ field.name }}" tabindex="-1" style="display: none;">
+                                <select data-placeholder="Выбор..." class="form-control select-2" name="states[]" multiple="multiple" id="input_{{ field.name }}" >
                                 </select>
                              </div>
                               <script>
-                                    $("#input_{{ field.name }}").chosen();
-                                    $('#input_{{ field.name }}_chosen .chosen-choices input').autocomplete({
-                                      source: function( request, response ) {
-                                        $.ajax({
-                                          url: "{% url 'data:fk' field.fk %}"+request.term,
-                                          dataType: "json",
-                                          beforeSend: function(){$('#input_{{ field.name }}').empty();},
-                                          success: function( data ) {
-                                            response( $.map( data.items, function( item ) {
-                                              $('#input_{{ field.name }}').append('<option value="'+item.id+'">' + item.name + '</option>');
-                                            }));
-                                            $("#input_{{ field.name }}").trigger("chosen:updated");
-                                          }
-                                        });
-                                      }
+                                    $('#input_{{ field.name }}').select2({
+                                      ajax: {
+                                        url: function (params) { return "{% url 'data:fk' field.fk %}"+params.term; },
+                                        dataType: 'json'
+                                      },
+                                      width: "100%"
                                     });
                               </script>
                           {% endif %}
