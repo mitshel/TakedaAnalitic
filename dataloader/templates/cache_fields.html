@@ -29,6 +29,8 @@
 .input-group-xs > .input-group-prepend .dropdown-item,
 .input-group-xs > .input-group-prepend > .dropdown-menu > .dropdown-item,
 .input-group-xs > .input-group-prepend > .popover,
+.input-group-xs > .input-group-append select,
+.input-group-xs > .input-group-append option,
 .input-group-xs > select2,
 span.select2-selection__rendered
 {
@@ -119,7 +121,7 @@ ul.select2-results__options
                             <div class="row p-1 pr-5">
 
                             {% if field.type == 1 or  field.type == 2 or  field.type == 3 %}
-                            <div class="input-group input-group-xs">
+                            <div class="input-group input-group-xs" id="input-group-{{ field.name }}">
                               <div class="input-group-prepend">
                                 <button class="btn btn-outline-secondary dropdown-toggle" id="selector-btn-{{ field.name }}" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                         <svg viewBox="0 0 32 32" class="d-block dx-g-bs4-filter-selector-icon">
@@ -185,11 +187,18 @@ ul.select2-results__options
                               {% else %}
                                  <input type="text" class="form-control" id="input-{{ field.name }}">
                               {% endif %}
+                                  <div class="input-group-append">
+                                        <select class="form-control  add-select" autocomplete="off" id="add-{{ field.name }}">
+                                            <option value="0"></option>
+                                            <option value="1">И</option>
+                                            <option value="2">ИЛИ</option>
+                                        </select>
+                                  </div>
                             </div>
                             {% endif %}
 
                             {% if field.type == 4 %}
-                            <div class="input-group input-group-xs">
+                            <div class="input-group input-group-xs" id="input-group-{{ field.name }}">
                               <div class="input-group-prepend">
                                 <button class="btn btn-outline-secondary dropdown-toggle" id="selector-btn-{{ field.name }}" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <svg viewBox="0 0 32 32" class="d-block dx-g-bs4-filter-selector-icon">
@@ -236,14 +245,28 @@ ul.select2-results__options
                                     </button>
                               </div>
                               </div>
-                              <input type="text" class="form-control">
+                              <input type="text" class="form-control  add-select">
+                              <div class="input-group-append">
+                                    <select class="form-control" autocomplete="off" id="add-{{ field.name }}">
+                                        <option value="0"></option>
+                                        <option value="1">И</option>
+                                        <option value="2">ИЛИ</option>
+                                    </select>
+                              </div>
                             </div>
                           {% endif %}
 
                           {% if field.type == 5 %}
-                             <div class="input-group input-group-xs">
+                             <div class="input-group input-group-xs" id="input-group-{{ field.name }}">
                                 <select data-placeholder="Выбор..." class="form-control select-2" name="states[]" multiple="multiple" id="input_{{ field.name }}" >
                                 </select>
+                                  <div class="input-group-append">
+                                        <select class="form-control add-select" autocomplete="off" id="add-{{ field.name }}">
+                                            <option value="0"></option>
+                                            <option value="1">И</option>
+                                            <option value="2">ИЛИ</option>
+                                        </select>
+                                  </div>
                              </div>
                               <script>
                                     $('#input_{{ field.name }}').select2({
@@ -255,7 +278,32 @@ ul.select2-results__options
                                     });
                               </script>
                           {% endif %}
+                            <script>
+                            $(function()
+                            {
+                                $(document).on('change', '#add-{{ field.name }}', function(e)
+                                {
+                                    e.preventDefault();
 
+                                    var controlForm = $('#{{ field.name }}_data'),
+                                        currentEntry = $('#input-group-{{ field.name }}'),
+                                        newEntry = $(currentEntry.clone()).appendTo(controlForm);
+
+                                    //newEntry.find('input').val('');
+                                    //controlForm.find('.entry:not(:last) .btn-add')
+                                    //    .removeClass('btn-add').addClass('btn-remove')
+                                    //    .removeClass('btn-success').addClass('btn-danger')
+                                    //    .html('<span class="glyphicon glyphicon-minus"></span>');
+                                });
+                                //.on('click', '.btn-remove', function(e)
+                                //{
+                                //    $(this).parents('.entry:first').remove();
+
+                                //   e.preventDefault();
+                                //    return false;
+                                //});
+                            });
+                            </script>
                         </div>
                         </div>
                     </li>
