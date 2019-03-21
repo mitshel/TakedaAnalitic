@@ -258,13 +258,6 @@ ul.select2-results__options
                              <div class="input-group input-group-xs" id="input-group-{{ field.name }}-0">
                                 <select data-placeholder="Выбор..." class="form-control select-2" name="states[]" multiple="multiple" id="input-{{ field.name }}-0" >
                                 </select>
-                                  <div class="input-group-append">
-                                        <select class="form-control add-select" autocomplete="off" id="add-{{ field.name }}">
-                                            <option value="0"></option>
-                                            <option value="1">И</option>
-                                            <option value="2">ИЛИ</option>
-                                        </select>
-                                  </div>
                              </div>
                               <script>
                                     $('#input-{{ field.name }}-0').select2({
@@ -327,7 +320,12 @@ ul.select2-results__options
 </div>
 
 <script>
-$(".dx-g-bs4-filter-selector-item").click(function() {
+//$(".dx-g-bs4-filter-selector-item").click(function() {
+//    var pic = $(this).find("svg")[0].outerHTML;
+//    $( '#'+$(this).attr('parent') ).html(pic);
+//});
+
+$(document).on('click', '.dx-g-bs4-filter-selector-item', function(event) {
     var pic = $(this).find("svg")[0].outerHTML;
     $( '#'+$(this).attr('parent') ).html(pic);
 });
