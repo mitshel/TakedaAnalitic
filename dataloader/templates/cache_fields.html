@@ -92,6 +92,10 @@ ul.select2-results__options
 
 </style>
 
+<script>
+    var flt_counts = {};
+</script>
+
 <div class="card-columns">
 {%  regroup cache_fields|dictsort:"group.id" by group as fieldgroups_list  %}
     {%  for group in fieldgroups_list %}
@@ -272,26 +276,31 @@ ul.select2-results__options
                             <script>
                             $(function()
                             {
+                                flt_counts['{{ field.name }}'] = 1;
                                 $(document).on('change', '#add-{{ field.name }}', function(e)
                                 {
                                     e.preventDefault();
+                                    idx = flt_counts['{{ field.name }}']
 
                                     var controlForm = $('#{{ field.name }}_row'),
                                         currentEntry = $('#input-group-{{ field.name }}-0'),
                                         newEntry = $(currentEntry.clone()).appendTo(controlForm);
 
                                     newEntry.attr('id','input-group-{{ field.name }}-1');
-                                    newEntry.find('#selector-btn-{{ field.name }}-0').attr('id','selector-btn-{{ field.name }}-1');
-                                    newEntry.find('button.dx-g-bs4-filter-selector-item').attr('parent','selector-btn-{{ field.name }}-1');
+                                    newEntry.find('#selector-btn-{{ field.name }}-0').attr('id','selector-btn-{{ field.name }}-'+idx);
+                                    newEntry.find('button.dx-g-bs4-filter-selector-item').attr('parent','selector-btn-{{ field.name }}-'+idx);
 
                                     date_input = newEntry.find('#input-{{ field.name }}-0');
-                                    date_input.attr('id','input-{{ field.name }}-1');
+                                    date_input.attr('id','input-{{ field.name }}-'+idx);
                                     date_input.datepicker({
                                         language: 'ru',
                                         dateFormat: "dd.mm.yy",
                                         monthNames : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
                                         dayNamesMin : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
                                     });
+
+                                    flt_counts['{{ field.name }}'] += 1;
+
                                     //newEntry.find('input').val('');
                                     //controlForm.find('.entry:not(:last) .btn-add')
                                     //    .removeClass('btn-add').addClass('btn-remove')
