@@ -171,11 +171,11 @@ ul.select2-results__options
                               </div>
 
                               {% if field.type == 1 %}
-                                <input type="number" class="form-control" id="input-{{ field.name }}-0" onkeypress="return isInteger(event)">
+                                <input type="number" class="form-control" autocomplete="off" id="input-{{ field.name }}-0" onkeypress="return isInteger(event)">
                               {% elif field.type == 2 %}
-                                <input type="text" class="form-control" id="input-{{ field.name }}-0" pattern="[0-9]+([\.,][0-9]+)?" onkeypress="return isDecimal(event)">
+                                <input type="text" class="form-control" autocomplete="off" id="input-{{ field.name }}-0" pattern="[0-9]+([\.,][0-9]+)?" onkeypress="return isDecimal(event)">
                               {% elif field.type == 3 %}
-                                <input type="text" class="form-control date-control" id="input-{{ field.name }}-0" pattern="\d{1,2}.\d{1,2}.\d{4}">
+                                <input type="text" class="form-control date-control" autocomplete="off" id="input-{{ field.name }}-0" pattern="\d{1,2}.\d{1,2}.\d{4}">
                                 <script>
                                     //$( function() {
                                     //    $( "#input-{{ field.name }}-0" ).datepicker({
@@ -190,7 +190,7 @@ ul.select2-results__options
                                  <input type="text" class="form-control" id="input-{{ field.name }}-0">
                               {% endif %}
                                   <div class="input-group-append">
-                                        <select class="form-control  add-select" autocomplete="off" id="add-{{ field.name }}">
+                                        <select class="form-control add-select add-{{ field.name }}" autocomplete="off" id="add-{{ field.name }}-0" idx="0">
                                             <option value="0"></option>
                                             <option value="1">И</option>
                                             <option value="2">ИЛИ</option>
@@ -248,8 +248,8 @@ ul.select2-results__options
                               </div>
                               </div>
                               <input type="text" class="form-control  add-select">
-                              <div class="input-group-append">
-                                    <select class="form-control" autocomplete="off" id="add-{{ field.name }}">
+                              <div class="input-group-append" id="input-{{ field.name }}-0">
+                                    <select class="form-control add-{{ field.name }}" autocomplete="off" id="add-{{ field.name }}-0" idx="0">
                                         <option value="0"></option>
                                         <option value="1">И</option>
                                         <option value="2">ИЛИ</option>
@@ -277,24 +277,41 @@ ul.select2-results__options
                             $(function()
                             {
                                 flt_counts['{{ field.name }}'] = 1;
-                                $(document).on('change', '#add-{{ field.name }}', function(e)
+                                $(document).on('change', '.add-{{ field.name }}', function(e)
                                 {
-                                    e.preventDefault();
-                                    idx = flt_counts['{{ field.name }}']
+                                    if ($(this).val()!=="0") {
+                                        e.preventDefault();
+                                        idx = flt_counts['{{ field.name }}'] - 1;
+                                        if ($(this).attr('id') === 'add-{{ field.name }}-' + idx) {
+                                            idx += 1;
+                                            var controlForm = $('#{{ field.name }}_row'),
+                                                currentEntry = $('#input-group-{{ field.name }}-0'),
+                                                newEntry = $(currentEntry.clone()).appendTo(controlForm);
 
-                                    var controlForm = $('#{{ field.name }}_row'),
-                                        currentEntry = $('#input-group-{{ field.name }}-0'),
-                                        newEntry = $(currentEntry.clone()).appendTo(controlForm);
+                                            newEntry.attr('id', 'input-group-{{ field.name }}-' + idx);
+                                            newEntry.find('#selector-btn-{{ field.name }}-0').attr('id', 'selector-btn-{{ field.name }}-' + idx);
+                                            newEntry.find('#add-{{ field.name }}-0').attr('id', 'add-{{ field.name }}-' + idx).attr('idx',idx);
+                                            newEntry.find('#input-{{ field.name }}-0').attr('id', 'input-{{ field.name }}-' + idx);
+                                            newEntry.find('button.dx-g-bs4-filter-selector-item').attr('parent', 'selector-btn-{{ field.name }}-' + idx);
 
-                                    newEntry.attr('id','input-group-{{ field.name }}-1');
-                                    newEntry.find('#selector-btn-{{ field.name }}-0').attr('id','selector-btn-{{ field.name }}-'+idx);
-                                    newEntry.find('button.dx-g-bs4-filter-selector-item').attr('parent','selector-btn-{{ field.name }}-'+idx);
+                                            date_input = newEntry.find('#input-{{ field.name }}-0');
+                                            date_input.attr('id', 'input-{{ field.name }}-' + idx);
+                                            date_input.removeClass('hasDatepicker')
 
-                                    date_input = newEntry.find('#input-{{ field.name }}-0');
-                                    date_input.attr('id','input-{{ field.name }}-'+idx);
-                                    date_input.removeClass('hasDatepicker')
+                                            flt_counts['{{ field.name }}'] += 1;
+                                        }
+                                    } else {
+                                        idx = +$(this).attr('idx') + 1;
+                                        cnt = flt_counts['{{ field.name }}'];
+                                        flt_counts['{{ field.name }}'] = idx;
+                                        for (var i = idx; i < cnt; i++) {
+                                            ig = '#input-group-{{ field.name }}-' + i;
+                                            $(ig).remove();
+                                        }
+                                        e.preventDefault();
+                                        return false;
+                                    }
 
-                                    flt_counts['{{ field.name }}'] += 1;
 
                                     //newEntry.find('input').val('');
                                     //controlForm.find('.entry:not(:last) .btn-add')
