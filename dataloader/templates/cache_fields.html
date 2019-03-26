@@ -62,6 +62,10 @@ li.select2-selection__choice {
     padding: 1px 20px 0px 3px; !important;
 }
 
+.select2-container--default .select2-selection--multiple {
+    min-height: 22px; !important;
+}
+
 .select2-container--default .select2-selection--multiple .select2-selection__choice {
     margin: 2px 0px 0px 2px; !important;
     padding: 0 2px;
@@ -171,11 +175,11 @@ ul.select2-results__options
                               </div>
 
                               {% if field.type == 1 %}
-                                <input type="number" class="form-control" autocomplete="off" id="input-{{ field.name }}-0" onkeypress="return isInteger(event)">
+                                <input type="number" class="form-control data-input" autocomplete="off" id="input-{{ field.name }}-0" onkeypress="return isInteger(event)" field_name="{{ field.name }}">
                               {% elif field.type == 2 %}
-                                <input type="text" class="form-control" autocomplete="off" id="input-{{ field.name }}-0" pattern="[0-9]+([\.,][0-9]+)?" onkeypress="return isDecimal(event)">
+                                <input type="text" class="form-control data-input" autocomplete="off" id="input-{{ field.name }}-0" pattern="[0-9]+([\.,][0-9]+)?" onkeypress="return isDecimal(event)" field_name="{{ field.name }}">
                               {% elif field.type == 3 %}
-                                <input type="text" class="form-control date-control" autocomplete="off" id="input-{{ field.name }}-0" pattern="\d{1,2}.\d{1,2}.\d{4}">
+                                <input type="text" class="form-control date-control data-input" autocomplete="off" id="input-{{ field.name }}-0" pattern="\d{1,2}.\d{1,2}.\d{4}" field_name="{{ field.name }}">
                                 <script>
                                     //$( function() {
                                     //    $( "#input-{{ field.name }}-0" ).datepicker({
@@ -187,7 +191,7 @@ ul.select2-results__options
                                     //} );
                                 </script>
                               {% else %}
-                                 <input type="text" class="form-control" id="input-{{ field.name }}-0">
+                                 <input type="text" class="form-control data-input" id="input-{{ field.name }}-0" field_name="{{ field.name }}">
                               {% endif %}
                                   <div class="input-group-append">
                                         <select class="form-control add-select add-{{ field.name }}" autocomplete="off" id="add-{{ field.name }}-0" idx="0">
@@ -247,9 +251,9 @@ ul.select2-results__options
                                     </button>
                               </div>
                               </div>
-                              <input type="text" class="form-control  add-select">
+                              <input type="text" class="form-control data-input" id="input-{{ field.name }}-0" field_name="{{ field.name }}">
                               <div class="input-group-append" id="input-{{ field.name }}-0">
-                                    <select class="form-control add-{{ field.name }}" autocomplete="off" id="add-{{ field.name }}-0" idx="0">
+                                    <select class="form-control add-select add-{{ field.name }}" autocomplete="off" id="add-{{ field.name }}-0" idx="0">
                                         <option value="0"></option>
                                         <option value="1">И</option>
                                         <option value="2">ИЛИ</option>
@@ -260,7 +264,7 @@ ul.select2-results__options
 
                           {% if field.type == 5 %}
                              <div class="input-group input-group-xs" id="input-group-{{ field.name }}-0">
-                                <select data-placeholder="Выбор..." class="form-control select-2" name="states[]" multiple="multiple" id="input-{{ field.name }}-0" >
+                                <select data-placeholder="Выбор..." class="form-control select-2 data-input" name="states[]" multiple="multiple" id="input-{{ field.name }}-0" field_name="{{ field.name }}">
                                 </select>
                              </div>
                               <script>
@@ -277,6 +281,7 @@ ul.select2-results__options
                             $(function()
                             {
                                 flt_counts['{{ field.name }}'] = 1;
+
                                 $(document).on('change', '.add-{{ field.name }}', function(e)
                                 {
                                     if ($(this).val()!=="0") {
@@ -286,17 +291,16 @@ ul.select2-results__options
                                             idx += 1;
                                             var controlForm = $('#{{ field.name }}_row'),
                                                 currentEntry = $('#input-group-{{ field.name }}-0'),
-                                                newEntry = $(currentEntry.clone()).appendTo(controlForm);
+                                                newEntry = $(currentEntry.clone());
 
                                             newEntry.attr('id', 'input-group-{{ field.name }}-' + idx);
                                             newEntry.find('#selector-btn-{{ field.name }}-0').attr('id', 'selector-btn-{{ field.name }}-' + idx);
                                             newEntry.find('#add-{{ field.name }}-0').attr('id', 'add-{{ field.name }}-' + idx).attr('idx',idx);
                                             newEntry.find('#input-{{ field.name }}-0').attr('id', 'input-{{ field.name }}-' + idx);
                                             newEntry.find('button.dx-g-bs4-filter-selector-item').attr('parent', 'selector-btn-{{ field.name }}-' + idx);
-
-                                            date_input = newEntry.find('#input-{{ field.name }}-0');
-                                            date_input.attr('id', 'input-{{ field.name }}-' + idx);
-                                            date_input.removeClass('hasDatepicker')
+                                            newEntry.find('#input-{{ field.name }}-0').attr('id', 'input-{{ field.name }}-' + idx);
+                                            newEntry.find('.data-input').removeClass('hasDatepicker').val('');
+                                            newEntry.appendTo(controlForm);
 
                                             flt_counts['{{ field.name }}'] += 1;
                                         }
@@ -341,10 +345,20 @@ ul.select2-results__options
 </div>
 
 <script>
-//$(".dx-g-bs4-filter-selector-item").click(function() {
-//    var pic = $(this).find("svg")[0].outerHTML;
-//    $( '#'+$(this).attr('parent') ).html(pic);
-//});
+$(document).on('change', '.data-input', function(event) {
+  var field_name = $(this).attr('field_name');
+  var cnt = flt_counts[field_name];
+  var valid_flag = 1;
+  for (var i=0; i<cnt; i++ ) {
+      input_data = $('#input-' + field_name + '-' + i ).val();
+      if (input_data=='' || input_data==null ) { valid_flag = 0; break; };
+  }
+  if (valid_flag) {
+      $('#' + field_name + '_filter').addClass('active');
+  } else {
+      $('#' + field_name + '_filter').removeClass('active');
+  }
+});
 
 $(document).on('click', '.dx-g-bs4-filter-selector-item', function(event) {
     var pic = $(this).find("svg")[0].outerHTML;
