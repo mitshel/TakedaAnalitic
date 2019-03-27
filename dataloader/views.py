@@ -40,3 +40,22 @@ class FkFieldView(View):
         # response = json.dumps([{'value':item['id'], 'caption':item['name']} for item in data])
         print(search_text,' > ',response)
         return JsonResponse(response)
+
+class DownloadView(View):
+
+
+    def post(self, *args, **kwargs):
+        # qs = self.get_xls_data(*args, **kwargs)
+        # data = qs.open().fetchall()
+        # qs.close()
+
+        # xlsx_data = self.WriteToExcel(data, view_id, view_name)
+        # xlsx_file_name = '{}_{}_{}.xlsx'.format(view_id, self.request.user, datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        # xlsx_file_path = os.path.join(settings.BI_TMP_FILES_DIR,xlsx_file_name)
+        # fw = open(xlsx_file_path, 'wb')
+        # fw.write(xlsx_data)
+        # fw.close()
+        # response = {'download_url':reverse('widgetpages:download_xls', kwargs={'file_name':xlsx_file_name})}
+        # dump = json.dumps(response)
+        # return self.render_to_response(dump)
+        pass
