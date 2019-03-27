@@ -170,6 +170,8 @@ div.dataTables_wrapper div.dataTables_processing {
 
 <script type="text/javascript">
     var filters_ajax_request = {'view_id': '{{ view.id }}'};
+    var flt_counts = {};
+    var all_fields = [{% for c in cache_fields %}'{{ c.name }}'{% if not forloop.last %},{% endif %}{% endfor %}];
 
     {% include "dt_language.html" %}
     {% include "dt_utils.html" %}

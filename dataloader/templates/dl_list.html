@@ -1,11 +1,43 @@
-     <div class="row">
-     <div class="col-12">
-         <h5 class="card ml-1 mr-1">
+ <div class="row">
+ <div class="col-12">
+     <div class="card ml-1 mr-1">
          <h6 class="card-header pt-1 pb-1" style="background-color: #ddddff;"><b>УПРАВЛЕНИЕ ЗАГРУЗКАМИ</b></h6>
          <div class="card-body p-1">
-             <a class="btn btn-primary" href="#" role="button"><i class="fa fa-table"></i> Загрузить данные</a>
+             <a class="btn btn-primary" href="#" role="button" id="data_load_button"><i class="fa fa-table"></i> Загрузить данные</a>
             <a class="btn btn-primary" href="#" role="button"><i class="fa fa-check"></i> Сохранить фильтр</a>
             <a class="btn btn-danger" href="#" role="button"><i class="fa fa-times"></i> Сбросить фильтр</a>
          </div>
      </div>
-     </div>
+ </div>
+ </div>
+
+ <script>
+    $(document).on('click', '#data_load_button', function(event) {
+        var query_dict = {};
+        for (var idx in all_fields) {
+            f = all_fields[idx];
+            if ($('#' + f + '_filter').hasClass('active')) {
+               var cnt = 0;
+               var filters = [];
+               if (f in flt_counts) {
+                   cnt = flt_counts[f];
+               };
+
+               for (var i=0; i<cnt; i++) {
+                   var element = [];
+                   op_id = 'selector-btn-' + f + '-' + i;
+                   inp_id = 'input-' + f + '-' + i;
+                   add_id = 'add-' + f + '-' + i;
+
+                   if ($('#'+op_id)) element.push($('#'+op_id).attr("action"));
+                   if ($('#'+inp_id)) element.push($('#'+inp_id).val());
+                   if ($('#'+add_id)) element.push($('#'+add_id).val());
+
+                   filters.push(element);
+               }
+               query_dict[f] = filters;
+            }
+        }
+        console.log(query_dict)
+    });
+ </script>
