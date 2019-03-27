@@ -14,8 +14,10 @@
  <script>
     $(document).on('click', '#data_load_button', function(event) {
         var query_dict = {};
+        var fields_arr = [];
         for (var idx in all_fields) {
             f = all_fields[idx];
+            if ($('#' + f + '_check').hasClass('active')) fields_arr.push(f);
             if ($('#' + f + '_filter').hasClass('active')) {
                var cnt = 0;
                var filters = [];
@@ -38,6 +40,7 @@
                query_dict[f] = filters;
             }
         }
-        console.log(query_dict)
+        console.log(query_dict);
+        console.log(fields_arr);
     });
  </script>
