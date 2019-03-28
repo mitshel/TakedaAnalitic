@@ -102,9 +102,11 @@ go
 --
 insert into db_allOrg
 select DISTINCT Org_ID as cust_id, INN as Org_CustINN, OrgNm as Org_CustNm, OrgNmS as shortname, Addr1, Addr2, isnull(regcode,0) as regcode
-from [VM1-12\CURSORMAIN].[Cursor].[dbo].[org]
+from [VM1-12\CURSORMAIN].[Cursor].[dbo].[org] a
+where not exists (select 1 from db_allOrg b where b.cust_id=a.org_id)
 go
 -- (затронуто строк: 19172)
+-- 28.03.2019 (затронуто строк: 4889)
 
 
 --
@@ -175,7 +177,7 @@ or innNx in (select IntlName_ID from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Con
 and innNX not in (select id from  db_innR)
 go
 -- (затронуто строк: 2731)
-
+-- 28.03.2019 (затронуто строк: 46)
 
 --
 -- Создание и наполнение таблицы ТМ db_tradenr
@@ -214,6 +216,7 @@ and TradeNmNx not in (select id from  db_tradeNR)
 go
 
 -- (затронуто строк: 8911)
+-- 28.03.2019 (затронуто строк: 250)
 
 
 --
@@ -275,6 +278,8 @@ or Org_ID in (select cust_id from [Cursor_rpt_LK].[dbo].[ComplexRpt_CACHE_Contra
 and Org_ID not in (select cust_id from  db_lpu)
 go
 -- (затронуто строк: 19172)
+-- 28.03.2019 (затронуто строк: 1688)
+
 
 -- Добавляем новые ЛПУ, которые есть в кэше, но нет даже в спрвочнике ORG
 --
@@ -342,6 +347,7 @@ and Org_ID not in (select id from  db_WinnerOrg)
 go
 
 -- (затронуто строк: 14063)
+-- 28.03.2019 (затронуто строк: 268)
 
 
 --
