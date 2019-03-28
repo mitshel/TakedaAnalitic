@@ -72,7 +72,7 @@ left join (select ji.tradenr_id, ji.market_id, ji.own, jm.name as market_name
 		       left join db_market jm (nolock) on ji.market_id=jm.id where jm.org_id={{ org_id }}) otm on t.TradeNx=otm.tradenr_id
 
 
-where (t.Reg_ID < 100) AND (t.ProdType_ID = 'L') and (cmnn.market_id is not null or omnn.market_id is not null or ctm.market_id is not null or otm.market_id is not null)
+where (t.Reg_ID < 100) AND ((t.ProdType_ID = 'L') or (t.ProdType_ID = 'Q')) and (cmnn.market_id is not null or omnn.market_id is not null or ctm.market_id is not null or otm.market_id is not null)
 
 alter table org_Contract_{{org_id}} add id bigint identity not null primary key
 
