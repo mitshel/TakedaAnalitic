@@ -43,21 +43,21 @@
         console.log(query_dict);
         console.log(fields_arr);
 
-        $.ajax({
-           type: "POST",
-           url: url,
-            data: {
-                'filters' : JSON.stringify(query_dict),
-                'fields' : JSON.stringify(fields_arr),
-                'csrfmiddlewaretoken' : '{{ csrf_token }}'
-            },
-           traditional: true,
+        //$.ajax({
+        //   type: "POST",
+        //   url: url,
+        //    data: {
+        //        'filters' : JSON.stringify(query_dict),
+        //        'fields' : JSON.stringify(fields_arr),
+        //        'csrfmiddlewaretoken' : '{{ csrf_token }}'
+        //    },
+        //   traditional: true,
            //contentType: "application/json",
            //dataType: "text",
-           success: function (data) {
-              var url = data.download_url;
-              window.location = url;
-           },
-        });
+        //   success: function (data) {
+        //      var url = data.download_url;
+        //      window.location = url;
+        //   },
+        //});
     });
  </script>

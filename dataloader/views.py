@@ -42,8 +42,6 @@ class FkFieldView(View):
         return JsonResponse(response)
 
 class DownloadView(View):
-
-
     def post(self, *args, **kwargs):
         # qs = self.get_xls_data(*args, **kwargs)
         # data = qs.open().fetchall()
