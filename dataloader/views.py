@@ -15,6 +15,7 @@ from django.utils.cache import add_never_cache_headers
 
 from .datafields import cache_metadata, get_fieldmeta
 from .datafields import fk_mnn, fk_tm
+from .datafields import ft_unknown, ft_none, ft_integer, ft_numeric, ft_date, ft_string, ft_fk
 from . import queries
 
 from db.models import InNR, TradeNR
@@ -51,6 +52,9 @@ class FkFieldView(View):
         return JsonResponse(response)
 
 class DownloadView(View):
+    oper1map = {1:"=",2:"<>",3:">",4:">=",5:"<",6:"<="}
+    oper2map = {1: "like '%{}%'", 2: "not like '%{}%'", 3: "like '{}%'", 4: "like '%{}'", 5: "= '{}'", 6: "<> '{}'"}
+    logicmap = {0:"",1:"and",2:"or"}
 
     def render_to_response(self, context):
         """ Returns a JSON response containing 'context' as payload
@@ -65,6 +69,50 @@ class DownloadView(View):
                                 **httpresponse_kwargs)
         add_never_cache_headers(response)
         return response
+
+    def create_filter_date(self, field_name, f):
+        filter = ''
+        for row in f:
+            filter += "( {} {} CONVERT(DATETIME,'{}',104) ) {} ".format(field_name, self.oper1map[int(row[0])], row[1], self.logicmap[int(row[2])])
+
+        return '( {} )'.format(filter)
+
+    def create_filter_number(self, field_name, f):
+        filter = ''
+        for row in f:
+            filter += "( {} {} {} ) {} ".format(field_name, self.oper1map[int(row[0])], row[1], self.logicmap[int(row[2])])
+
+        return '( {} )'.format(filter)
+
+    def create_filter_string(self, field_name, f):
+        filter = ''
+        for row in f:
+            filter += "( {} {} ) {} ".format(field_name, self.oper2map[int(row[0])].format(row[1]), self.logicmap[int(row[2])])
+
+        return '( {} )'.format(filter)
+
+    def create_filter_fk(self, field_name, f):
+        filter = "{} in ({})".format(field_name, ','.join(f[0][1]))
+        return '( {} )'.format(filter)
+
+    def create_filter(self, flt):
+        filter = []
+        for column in flt.keys():
+            field_info = get_fieldmeta(column)
+            if field_info['type'] == ft_date:
+                filter.append(self.create_filter_date(column, flt[column]))
+
+            if (field_info['type'] == ft_integer) or (field_info['type'] == ft_numeric):
+                filter.append(self.create_filter_number(column, flt[column]))
+
+            if field_info['type'] == ft_string:
+                filter.append(self.create_filter_string(column, flt[column]))
+
+            if field_info['type'] == ft_fk:
+                filter.append(self.create_filter_fk(column, flt[column]))
+
+        return ' and '.join(filter)
+
 
     def WriteToExcel(self, fields, filters):
         output = io.BytesIO()
@@ -101,9 +149,10 @@ class DownloadView(View):
             'border': 1
         })
 
-        worksheet_s.merge_range('A1:H1', 'BI Monitor ({})'.format('Takeda'), bi_title)
+        worksheet_s.merge_range('A1:H1', 'BI Monitor ({})'.format('Выгрузка данных'), bi_title)
 
         fld = json.loads(fields) if fields else []
+        flt = json.loads(filters) if filters else []
         if fld:
             xls_col_n = 0
             for idx_col, column in enumerate(fld):
@@ -114,7 +163,8 @@ class DownloadView(View):
                 worksheet_s.set_column(xls_col_n, xls_col_n, width)
                 xls_col_n += 1
 
-            qs = CachedRawModel(queries.q_dl_table).filter(fields = ', '.join(fld))
+            qs = CachedRawModel(queries.q_dl_table).filter(fields = ', '.join(fld), rows = settings.BI_MAX_DOWNLOAD_ROWS).filter(filters = self.create_filter(flt))
+            print(qs.query)
             data = qs.open().fetchall()
             for idx_row, row in enumerate(data):
                 if idx_row > settings.BI_MAX_XLS_ROWS:
