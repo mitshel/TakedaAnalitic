@@ -101,7 +101,19 @@ ul.select2-results__options
     {%  for group in fieldgroups_list %}
     <div class="accordion" id="group_{{ group.grouper.id }}">
     <div class="card ml-1 mr-1">
-        <h5 class="card-header pt-1 pb-1" style="background-color: #ddddff;">{{ group.grouper.name }}</h5>
+
+      <div class="row card-header mr-0 ml-0 p-1" style="background-color: #ddddff;">
+        <div class="col-8 text-left pl-0 ml-0">
+            <h5>{{ group.grouper.name }}</h5>
+        </div>
+        <div class="col-4 text-right pr-0 mr-0">
+              <div class="btn-group" role="group" aria-label="{{ group.grouper.id }}_bg">
+              <button type="button" id="{{ group.grouper.id }}_gcheck" class="btn btn-df btn-outline-primary active"  data-group="{{ group.grouper.id }}" data-type="gcheck" data-toggle="button" aria-pressed="true" autocomplete="off" title="Уст/снять выгрузки"><i class="fa fa-check"></i></button>
+              <button type="button" id="{{ group.grouper.id }}_gfilter" class="btn btn-df btn-outline-primary" data-group="{{ group.grouper.id }}" data-type="gfilter" data-toggle="button" aria-pressed="true" autocomplete="off" title="Уст/снять фильтры"><i class="fa fa-filter"></i></button>
+              </div>
+        </div>
+      </div>
+
         <div class="card-body p-0">
             <ul class="list-group list-group-flush p-0">
                 {%  for field in group.list %}
@@ -114,8 +126,8 @@ ul.select2-results__options
                           </div>
                           <div class="col-3 text-right pr-0">
                               <div class="btn-group" role="group" aria-label="{{ field.name }}_bg">
-                              <button type="button" id="{{ field.name }}_check" class="btn btn-df btn-outline-primary active"  data-toggle="button" aria-pressed="true" autocomplete="off" title="Выгружать"><i class="fa fa-check"></i></button>
-                              <button type="button" id="{{ field.name }}_filter" class="btn btn-df btn-outline-primary" data-toggle="button" aria-pressed="true" autocomplete="off" title="Фильтр по полю"><i class="fa fa-filter"></i></button>
+                              <button type="button" id="{{ field.name }}_check" class="btn btn-df btn-outline-primary active"  data-group="{{ group.grouper.id }}" data-type="check" field_name="{{ field.name }}" data-toggle="button" aria-pressed="true" autocomplete="off" title="Выгружать"><i class="fa fa-check"></i></button>
+                              <button type="button" id="{{ field.name }}_filter" class="btn btn-df btn-outline-primary" data-group="{{ group.grouper.id }}" data-type="filter" field_name="{{ field.name }}" data-toggle="button" aria-pressed="true" autocomplete="off" title="Фильтр по полю"><i class="fa fa-filter"></i></button>
                               </div>
                           </div>
                           </div>
@@ -173,19 +185,9 @@ ul.select2-results__options
                               {% if field.type == 1 %}
                                 <input type="number" class="form-control data-input" autocomplete="off" id="input-{{ field.name }}-0" onkeypress="return isInteger(event)" field_name="{{ field.name }}">
                               {% elif field.type == 2 %}
-                                <input type="text" class="form-control data-input" autocomplete="off" id="input-{{ field.name }}-0" pattern="[0-9]+([\.,][0-9]+)?" onkeypress="return isDecimal(event)" field_name="{{ field.name }}">
+                                <input type="text" class="form-control data-input" autocomplete="off" id="input-{{ field.name }}-0" pattern="[0-9]+([\.][0-9]+)?" onkeypress="return isDecimal(event)" field_name="{{ field.name }}">
                               {% elif field.type == 3 %}
                                 <input type="text" class="form-control date-control data-input" autocomplete="off" id="input-{{ field.name }}-0" pattern="\d{1,2}.\d{1,2}.\d{4}" field_name="{{ field.name }}">
-                                <script>
-                                    //$( function() {
-                                    //    $( "#input-{{ field.name }}-0" ).datepicker({
-                                    //        language: 'ru',
-                                    //        dateFormat: "dd.mm.yy",
-                                    //        monthNames : ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
-                                    //        dayNamesMin : ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'],
-                                    //    });
-                                    //} );
-                                </script>
                               {% else %}
                                  <input type="text" class="form-control data-input" id="input-{{ field.name }}-0" field_name="{{ field.name }}">
                               {% endif %}
@@ -311,21 +313,7 @@ ul.select2-results__options
                                         e.preventDefault();
                                         return false;
                                     }
-
-
-                                    //newEntry.find('input').val('');
-                                    //controlForm.find('.entry:not(:last) .btn-add')
-                                    //    .removeClass('btn-add').addClass('btn-remove')
-                                    //    .removeClass('btn-success').addClass('btn-danger')
-                                    //    .html('<span class="glyphicon glyphicon-minus"></span>');
                                 });
-                                //.on('click', '.btn-remove', function(e)
-                                //{
-                                //    $(this).parents('.entry:first').remove();
-
-                                //   e.preventDefault();
-                                //    return false;
-                                //});
                             });
                             </script>
                         </div>
@@ -337,6 +325,44 @@ ul.select2-results__options
         </div>
     </div>
     </div>
+
+    <script>
+        $('#{{ group.grouper.id }}_gcheck').on('click', function () {
+            // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех полей
+            is_active = $('#{{ group.grouper.id }}_gcheck').hasClass('active');
+            if (is_active) {
+                $('.btn-df[data-type="check"][data-group="{{ group.grouper.id }}"]').removeClass('active');
+            } else {
+                 $('.btn-df[data-type="check"][data-group="{{ group.grouper.id }}"]').addClass('active');
+            };
+        });
+        $('#{{ group.grouper.id }}_gfilter').on('click', function () {
+            // При нажатии на кнопку Выбрать ВСЕ - выделяем или снимаем выделение со всех полей
+            is_active = $('#{{ group.grouper.id }}_gfilter').hasClass('active');
+            if (is_active) {
+                $('.btn-df[data-type="filter"][data-group="{{ group.grouper.id }}"]').removeClass('active');
+            } else {
+                 $('.btn-df[data-type="filter"][data-group="{{ group.grouper.id }}"]').each(function() {
+                         var field_name = $(this).attr('field_name');
+                         var cnt = flt_counts[field_name];
+                         var valid_flag = 1;
+                         for (var i = 0; i < cnt; i++) {
+                             input_data = $('#input-' + field_name + '-' + i).val();
+                             if (input_data == '' || input_data == null) {
+                                 valid_flag = 0;
+                                 break;
+                             };
+                         }
+                         if (valid_flag) {
+                             $('#' + field_name + '_filter').addClass('active');
+                         };
+                 });
+
+            };
+        });
+
+    </script>
+
     {% endfor %}
 </div>
 
