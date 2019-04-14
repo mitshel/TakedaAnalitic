@@ -1,17 +1,116 @@
- <div class="row">
+<div class="modal fade" tabindex="-1" role="dialog" id="modalFilterSave">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Сохранение фильтра</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <div class="form-group">
+            <label for="inputFilterName">Введите имя фильтра для сохранения</label>
+            <input type="text" class="form-control" id="inputFilterName" aria-describedby="filterHelp" placeholder="Фильтр">
+            <small id="filterHelp" class="form-text text-muted">Введите наименование фильтра, чтобы отличить его от других в Вашей таблице сохраненных фильтров.</small>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
+        <button type="button" class="btn btn-primary">Сохранить фильтр</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
  <div class="col-12">
      <div class="card ml-1 mr-1">
          <h6 class="card-header pt-1 pb-1" style="background-color: #ddddff;"><b>УПРАВЛЕНИЕ ЗАГРУЗКАМИ</b></h6>
          <div class="card-body p-1">
-             <a class="btn btn-primary" href="#" role="button" id="data_load_button"><i class="fa fa-table"></i> Загрузить данные</a>
-            <a class="btn btn-primary" href="#" role="button"><i class="fa fa-check"></i> Сохранить фильтр</a>
-            <a class="btn btn-danger" href="#" role="button"><i class="fa fa-times"></i> Сбросить фильтр</a>
+            <div class="col-12">
+                <br>
+                <table class="table table-sm table-hover display w-100 datatable display" width="100%" id="ta_flt_table">
+                <thead class="thead-light">
+                    <tr>
+                        <th>Имя фильтра</th>
+                        <th>Дата создания</th>
+                        <th>Операции</th>
+                    </tr>
+                </thead>
+                </table>
+            </div>
+         </div>
+         <div class="card-footer pl-1">
+            <div class="col-12">
+                 <a class="btn btn-primary" href="#" role="button" id="data_load_button"><i class="fa fa-table"></i> Загрузить данные</a>
+                 <a class="btn btn-primary" href="#" role="button" id="data_save_button"><i class="fa fa-check"></i> Сохранить фильтр</a>
+                 <a class="btn btn-danger" href="#" role="button" id="data_clear_button"><i class="fa fa-times"></i> Сбросить фильтр</a>
+            </div>
          </div>
      </div>
  </div>
  </div>
 
- <script>
+<script type="text/javascript">
+
+ var ta_flt_table = $('#ta_flt_table').DataTable({
+                "dom": 'r<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
+                select: true,
+                buttons: [],
+                "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                "pageLength": 10,
+                "columnDefs": [
+                    { "name": "name", "targets": 0, "visible": true, "searchable": true },
+                    { "name": "created", "targets": 1, "visible": true, "searchable": false,
+                        "render": function (data) { return data; },
+                    },
+                    { "name": "status", "targets": 2, "visible": true, "searchable": false }
+                ],
+                "processing": true,
+                "serverSide": true,
+                "ordering":  true,
+                "order": [[ 0,1 ]],
+                "ajax": {
+                    "url": "{% url 'data:filters' %}",
+                    "type": "POST",
+                    "data": function ( d ) {
+                        d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                    },
+                    //"success": function(data) { console.log(data); }
+                },
+                //"columns": [
+                //    { "data": 0 },
+                //    { "data": 1 },
+                //    { "data": 2 }
+                //],
+                "language": lang_russian
+            });
+
+    $(document).on('click', '#data_save_button', function(event) {
+        $('#modalFilterSave').modal('show');
+    });
+
+    $(document).on('click', '#data_clear_button', function(event) {
+        for (var idx in all_fields) {
+            field_name = all_fields[idx];
+            cnt = flt_counts[field_name];
+            for (var i = 1; i < cnt; i++) {
+                ig = '#input-group-' + field_name + '-' + i;
+                $(ig).remove();
+            };
+
+            input_element = $('#input-' + field_name + '-0' );
+            input_element.val(null);
+            if (input_element.hasClass('select-2')) { input_element.trigger('change'); };
+
+            $('#add-' + field_name + '-0' ).val(null);
+
+            flt_counts[field_name] = 1;
+            $('#' + field_name + '_filter').removeClass('active');
+            $('#' + field_name + '_check').addClass('active');
+        }
+    });
+
     $(document).on('click', '#data_load_button', function(event) {
         var query_dict = {};
         var fields_arr = [];

@@ -156,64 +156,20 @@ class WinnerOrg(models.Model):
         managed = False
         db_table = 'db_WinnerOrg'
 
-# class Hs(models.Model):
-#     Tender_ID = models.IntegerField(db_column='Tender_ID', null=False)
-#     ProcDt = models.DateTimeField(db_column='ProcDt', null=False)
-#     TenderPrice = models.FloatField(db_column='TenderPrice', null=True)
-#     StatusT_ID = models.IntegerField(db_column='StatusT_ID', null=False)
-#     FormT_ID = models.IntegerField(db_column='FormT_ID', null=False)
-#     cust_id = models.ForeignKey(Lpu, db_column='Cust_ID', db_index=True, null=True, on_delete=models.SET_NULL)
-#     ClaimDtBeg = models.DateTimeField(db_column='ClaimDtBeg', null=True)
-#     TendSYSDATE = models.DateTimeField(db_column='TendSYSDATE', null=False)
-#     Lot_ID = models.IntegerField(db_column='Lot_ID', null=False)
-#     PlanTYear = models.IntegerField(db_column='PlanTYear', null=True, db_index=True)
-#     #InnNx = models.IntegerField(db_column='InnNx', null=True, db_index=True)
-#     #TradeNx = models.IntegerField(db_column='TradeNx', null=True)
-#     InnNx = models.ForeignKey(InNR, db_column='InnNx', null=True, db_index=True, on_delete=models.SET_NULL)
-#     TradeNx = models.ForeignKey(TradeNR, db_column='TradeNx', null=True, db_index=True, on_delete=models.SET_NULL)
-#     Order_Price = models.FloatField(db_column='Order_Price', null=True)
-#     Order_Count = models.IntegerField(db_column='Order_Count', null=True)
-#     Order_Sum = models.FloatField(db_column='Order_Sum', null=True)
-#     Summa = models.FloatField(db_column='Summa', null=True)
-#     Ship_FinalPrice = models.FloatField(db_column='Ship_FinalPrice', null=True)
-#     Winner_ID = models.ForeignKey(WinnerOrg, db_column='Winner_ID', null=True, db_index=True, on_delete=models.SET_NULL)
-#
-#     market_name = models.CharField(max_length=32, db_column='market_name', null=True)
-#     market_id = models.IntegerField(db_column='market_id', db_index=True, null=True)
-#
-#     class Meta:
-#         managed = False
-#         db_table = 'Test_CACHE_{}'
+class Filters(models.Model):
+    user =  models.ForeignKey(User, verbose_name='Логин входа', null=True, blank=True, db_index=True, on_delete=models.SET_NULL)
+    name = models.CharField(max_length=256, null=False, blank=False, db_index=True)
+    fields_json = models.TextField(null=False, blank=False)
+    filters_json = models.TextField(null=False, blank=False)
+    created = models.DateTimeField(null=False, blank=False, auto_now_add=True)
+    updated = models.DateTimeField(null=True, blank=True, auto_now=True)
+    report_start = models.DateTimeField(null=True)
+    report_finish = models.DateTimeField(null=True)
+    status = models.IntegerField(null=False, default=0)
 
+    class Meta:
+        verbose_name = 'Фильтр'
+        verbose_name_plural = 'Фильтры'
 
-# def Hs_create(table_name):
-#     hs_model = type('Hs', (models.Model,), {
-#         '__module__': 'widgetpages.models',
-#         'Tender_ID' : models.IntegerField(db_column='Tender_ID', null=False),
-#         'ProcDt' : models.DateTimeField(db_column='ProcDt', null=False),
-#         'TenderPrice' : models.FloatField(db_column='TenderPrice', null=True),
-#         'StatusT_ID' : models.IntegerField(db_column='StatusT_ID', null=False),
-#         'FormT_ID' : models.IntegerField(db_column='FormT_ID', null=False),
-#         'cust_id' : models.ForeignKey(Lpu, db_column='Cust_ID', db_index=True, null=True, on_delete=models.SET_NULL),
-#         'ClaimDtBeg' : models.DateTimeField(db_column='ClaimDtBeg', null=True),
-#         'TendSYSDATE' : models.DateTimeField(db_column='TendSYSDATE', null=False),
-#         'Lot_ID' : models.IntegerField(db_column='Lot_ID', null=False),
-#         'PlanTYear' : models.IntegerField(db_column='PlanTYear', null=True, db_index=True),
-#         'InnNx' : models.ForeignKey(InNR, db_column='InnNx', null=True, db_index=True, on_delete=models.SET_NULL),
-#         'TradeNx' : models.ForeignKey(TradeNR, db_column='TradeNx', null=True, db_index=True, on_delete=models.SET_NULL),
-#         'Order_Price' : models.FloatField(db_column='Order_Price', null=True),
-#         'Order_Count' : models.IntegerField(db_column='Order_Count', null=True),
-#         'Order_Sum' : models.FloatField(db_column='Order_Sum', null=True),
-#         'Ship_FinalPrice' : models.FloatField(db_column='Ship_FinalPrice', null=True),
-#         'Winner_ID' : models.ForeignKey(WinnerOrg, db_column='Winner_ID', null=True, db_index=True, on_delete=models.SET_NULL),
-#
-#         'market_name' : models.CharField(max_length=32, db_column='market_name', null=True),
-#         'market_id' : models.IntegerField(db_column='market_id', db_index=True, null=True)
-#     })
-#
-#     hs_model._meta.managed  = False
-#     hs_model._meta.db_table = table_name
-#
-#     return hs_model
-
-
+    def __str__(self):
+         return self.name

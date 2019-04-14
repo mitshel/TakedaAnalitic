@@ -1,5 +1,5 @@
 from django.contrib import admin
-from db.models import Org, Employee, Market, Org_log
+from db.models import Org, Employee, Market, Org_log, Filters
 
 class Org_log_Inline(admin.TabularInline):
     model = Org_log
@@ -35,10 +35,13 @@ class Market_admin(admin.ModelAdmin):
     #fields = ('name', 'org', 'innrs','tmnrs')
     #filter_horizontal = ('innrs','tmnrs',)
 
+class Filters_admin(admin.ModelAdmin):
+    list_display = ('name','created', 'updated','user', 'status')
 
 admin.site.register(Org, Org_admin)
 admin.site.register(Employee, Employee_admin)
 admin.site.register(Market, Market_admin)
+admin.site.register(Filters, Filters_admin)
 
 admin.site.site_header = 'Администрирование BI Monitor'
 admin.site.site_title = 'Раздел администратора BI Monitor'

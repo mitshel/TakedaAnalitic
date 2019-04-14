@@ -12,17 +12,19 @@ from django.db.models import F
 from django.core import serializers
 from django.conf import settings
 from django.utils.cache import add_never_cache_headers
+from django_datatables_view.base_datatable_view import BaseDatatableView
+from django.utils.html import escape
 
 from .datafields import cache_metadata, get_fieldmeta
 from .datafields import fk_mnn, fk_tm
 from .datafields import ft_unknown, ft_none, ft_integer, ft_numeric, ft_date, ft_string, ft_fk
 from . import queries
 
-from db.models import InNR, TradeNR
+from db.models import InNR, TradeNR, Filters
 from db.rawmodel import RawModel, CachedRawModel
 
+from widgetpages.ajaxdatatabe import AjaxRawDatatableView
 from widgetpages.views import FiltersView
-from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv, fbudg, fdosg, fform
 
 class CacheMetaView(FiltersView):
     template_name = 'cache_fields.html'
@@ -50,6 +52,16 @@ class FkFieldView(View):
         # response = json.dumps([{'value':item['id'], 'caption':item['name']} for item in data])
         print(search_text,' > ',response)
         return JsonResponse(response)
+
+
+class FiltersAjaxTable(BaseDatatableView):
+    order_columns = ['name']
+    columns = ['name','created','status']
+    max_display_length = 500
+
+    def get_initial_queryset(self):
+        qs = Filters.objects.filter(user=self.request.user)
+        return qs
 
 class DownloadView(View):
     oper1map = {1:"=",2:"<>",3:">",4:">=",5:"<",6:"<="}

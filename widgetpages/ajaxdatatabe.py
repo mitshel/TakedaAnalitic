@@ -72,8 +72,9 @@ class AjaxRawDatatableView(BaseDatatableView):
                    'recordsFiltered': total_display_records,
                    'data': data
                    }
-
+            print(self.request.POST)
             return ret
+
         except Exception as e:
             return self.handle_exception(e)
 

@@ -128,7 +128,8 @@ var ta_competitions_table = $('#ta_competitions_table').DataTable({
                         d.view_id = '{{ view.id }}';
                         d.org_id = '{{ org_id }}';
                         d.csrfmiddlewaretoken = '{{ csrf_token }}';
-                    }
+                    },
+                    //"success": function(data) { console.log(data); }
                 },
                 "createdRow": function( row, data, dataIndex ) {
                     if ( data[2] == "ИТОГО" ) {
