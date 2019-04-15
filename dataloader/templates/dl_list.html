@@ -126,6 +126,7 @@
         $.ajax({
             type: 'POST',
             url: '{% url 'data:filter_save' %}',
+            async: false,
             //traditional: true,
             data: {
                 'name' : filter_name,
@@ -139,8 +140,9 @@
                     alert('Error loading data. ' + str);
             }
         });
-        ta_flt_table.ajax.reload( null, true );
         $('#modalFilterSave').modal('hide');
+        ta_flt_table.ajax.reload( null, true );
+
     });
 
     $(document).on('click', '#data_clear_button', function(event) {
