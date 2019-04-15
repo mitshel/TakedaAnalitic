@@ -63,6 +63,26 @@ class FiltersAjaxTable(BaseDatatableView):
         qs = Filters.objects.filter(user=self.request.user)
         return qs
 
+class FiltersSaveView(View):
+    def post(self, *args, **kwargs):
+        result = '1'
+        if self.request.is_ajax():
+            if self.request.POST:
+                fields = self.request.POST.get('fields', '')
+                filters = self.request.POST.get('filters', '')
+                name = self.request.POST.get('name', '')
+                print(self.request.POST)
+                print(fields)
+                print(filters)
+                Filters.objects.update_or_create(name=name, user=self.request.user, defaults ={ 'fields_json':json.dumps(fields), 'filters_json':json.dumps(filters), 'status':0})
+                result = '0'
+
+        response = HttpResponse()
+        response['Content-Type'] = "text/javascript"
+        response.write(json.dumps([{'result': result}]))
+        return response
+
+
 class DownloadView(View):
     oper1map = {1:"=",2:"<>",3:">",4:">=",5:"<",6:"<="}
     oper2map = {1: "like '%{}%'", 2: "not like '%{}%'", 3: "like '{}%'", 4: "like '%{}'", 5: "= '{}'", 6: "<> '{}'"}
@@ -201,8 +221,6 @@ class DownloadView(View):
     def post(self, *args, **kwargs):
         fields = self.request.POST.get('fields', '')
         filters = self.request.POST.get('filters', '')
-        print(fields)
-        print(filters)
         xlsx_data = self.WriteToExcel(fields, filters)
         xlsx_file_name = '{}_{}_{}.xlsx'.format('OUTPUT', 'test', datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         xlsx_file_path = os.path.join(settings.BI_TMP_FILES_DIR,xlsx_file_name)

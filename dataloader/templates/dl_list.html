@@ -10,13 +10,13 @@
       <div class="modal-body">
           <div class="form-group">
             <label for="inputFilterName">Введите имя фильтра для сохранения</label>
-            <input type="text" class="form-control" id="inputFilterName" aria-describedby="filterHelp" placeholder="Фильтр">
+            <input type="text" class="form-control" id="inputFilterName" aria-describedby="filterHelp" placeholder="Фильтр" autocomplete="False">
             <small id="filterHelp" class="form-text text-muted">Введите наименование фильтра, чтобы отличить его от других в Вашей таблице сохраненных фильтров.</small>
           </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
-        <button type="button" class="btn btn-primary">Сохранить фильтр</button>
+        <button type="button" class="btn btn-primary" id="btn_filter_save">Сохранить фильтр</button>
       </div>
     </div>
   </div>
@@ -78,42 +78,15 @@
                     },
                     //"success": function(data) { console.log(data); }
                 },
-                //"columns": [
-                //    { "data": 0 },
-                //    { "data": 1 },
-                //    { "data": 2 }
-                //],
                 "language": lang_russian
             });
 
-    $(document).on('click', '#data_save_button', function(event) {
-        $('#modalFilterSave').modal('show');
-    });
+     var query_dict = {};
+     var fields_arr = [];
 
-    $(document).on('click', '#data_clear_button', function(event) {
-        for (var idx in all_fields) {
-            field_name = all_fields[idx];
-            cnt = flt_counts[field_name];
-            for (var i = 1; i < cnt; i++) {
-                ig = '#input-group-' + field_name + '-' + i;
-                $(ig).remove();
-            };
-
-            input_element = $('#input-' + field_name + '-0' );
-            input_element.val(null);
-            if (input_element.hasClass('select-2')) { input_element.trigger('change'); };
-
-            $('#add-' + field_name + '-0' ).val(null);
-
-            flt_counts[field_name] = 1;
-            $('#' + field_name + '_filter').removeClass('active');
-            $('#' + field_name + '_check').addClass('active');
-        }
-    });
-
-    $(document).on('click', '#data_load_button', function(event) {
-        var query_dict = {};
-        var fields_arr = [];
+     function make_request_data () {
+        query_dict = {};
+        fields_arr = [];
         for (var idx in all_fields) {
             f = all_fields[idx];
             if ($('#' + f + '_check').hasClass('active')) fields_arr.push(f);
@@ -141,6 +114,58 @@
         }
         console.log(query_dict);
         console.log(fields_arr);
+    };
+
+    $(document).on('click', '#data_save_button', function(event) {
+        $('#modalFilterSave').modal('show');
+    });
+
+     $(document).on('click', '#btn_filter_save', function(event) {
+        filter_name = $('#inputFilterName').val();
+        make_request_data ();
+        $.ajax({
+            type: 'POST',
+            url: '{% url 'data:filter_save' %}',
+            //traditional: true,
+            data: {
+                'name' : filter_name,
+                'filters' : JSON.stringify(query_dict),
+                'fields' : JSON.stringify(fields_arr),
+                'csrfmiddlewaretoken' : '{{ csrf_token }}'
+            },
+            success: function (data) {
+            },
+            error: function (xhr, str) {
+                    alert('Error loading data. ' + str);
+            }
+        });
+        ta_flt_table.ajax.reload( null, true );
+        $('#modalFilterSave').modal('hide');
+    });
+
+    $(document).on('click', '#data_clear_button', function(event) {
+        for (var idx in all_fields) {
+            field_name = all_fields[idx];
+            cnt = flt_counts[field_name];
+            for (var i = 1; i < cnt; i++) {
+                ig = '#input-group-' + field_name + '-' + i;
+                $(ig).remove();
+            };
+
+            input_element = $('#input-' + field_name + '-0' );
+            input_element.val(null);
+            if (input_element.hasClass('select-2')) { input_element.trigger('change'); };
+
+            $('#add-' + field_name + '-0' ).val(null);
+
+            flt_counts[field_name] = 1;
+            $('#' + field_name + '_filter').removeClass('active');
+            $('#' + field_name + '_check').addClass('active');
+        }
+    });
+
+    $(document).on('click', '#data_load_button', function(event) {
+        make_request_data();
 
         $.ajax({
            type: "POST",
