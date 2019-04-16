@@ -6,7 +6,7 @@ import datetime
 import decimal
 
 from django.shortcuts import render, render_to_response, reverse, HttpResponse
-from django.views.generic import View, TemplateView
+from django.views.generic import View, TemplateView, DeleteView
 from django.http import JsonResponse
 from django.db.models import F
 from django.core import serializers
@@ -56,7 +56,7 @@ class FkFieldView(View):
 
 class FiltersAjaxTable(BaseDatatableView):
     order_columns = ['name']
-    columns = ['name','created','status']
+    columns = ['name','created','id']
     max_display_length = 500
 
     def get_initial_queryset(self):
@@ -82,6 +82,19 @@ class FiltersSaveView(View):
         response.write(json.dumps([{'result': result}]))
         return response
 
+class FiltersDeleteView(View):
+    def post(self, *args, **kwargs):
+        result = '1'
+        if self.request.is_ajax():
+            if self.request.POST:
+                id = self.request.POST.get('id', '0')
+                Filters.objects.filter(id=int(id)).delete()
+                result = '0'
+
+        response = HttpResponse()
+        response['Content-Type'] = "text/javascript"
+        response.write(json.dumps([{'result': result}]))
+        return response
 
 class DownloadView(View):
     oper1map = {1:"=",2:"<>",3:">",4:">=",5:"<",6:"<="}
