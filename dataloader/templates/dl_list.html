@@ -13,6 +13,8 @@
             <input type="text" class="form-control" id="inputFilterName" aria-describedby="filterHelp" placeholder="Фильтр" autocomplete="False">
             <small id="filterHelp" class="form-text text-muted">Введите наименование фильтра, чтобы отличить его от других в Вашей таблице сохраненных фильтров.</small>
           </div>
+          <input type="hidden" id="saveConfirmId" value="0">
+          <input type="hidden" id="savenConfirmType" value="1">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -78,41 +80,44 @@
 
 <script type="text/javascript">
 
- var ta_flt_table = $('#ta_flt_table').DataTable({
-                "dom": 'r<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
-                select: true,
-                buttons: [],
-                "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
-                "pageLength": 10,
-                "columnDefs": [
-                    { "name": "name", "targets": 0, "visible": true, "searchable": true },
-                    { "name": "created", "targets": 1, "visible": true, "searchable": false,
-                        "render": function (data) { return data; },
+     var ta_flt_table = $('#ta_flt_table').DataTable({
+                    "dom": 'r<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
+                    select: true,
+                    buttons: [],
+                    "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
+                    "pageLength": 10,
+                    "columnDefs": [
+                        { "name": "name", "targets": 0, "visible": true, "searchable": true },
+                        { "name": "created", "targets": 1, "visible": true, "searchable": false,
+                            "render": function (data) { return data; },
+                        },
+                        { "name": "id", "targets": 2, "visible": true, "searchable": false,
+                            "render": function (data, type, row, meta) {
+                                            data_suffix = " data-id='" + data + "' data-filtername='"+row[0]+"'></i>"
+                                            delete_icon = "<i class='far fa-trash-alt t1' style='color:red;cursor:pointer' title='Удалить фильтр' " + data_suffix;
+                                            edit_icon = "<i class='far fa-edit t2' style='color:blue;cursor:pointer' title='Изменить имя фильтра' " + data_suffix;
+                                            sync_icon = "<i class='fa fa-sync t3' style='color:blue;cursor:pointer' title='Загрузить фильтры'" + data_suffix;
+                                            excel_icon = "<i class='far fa-file-excel t4' style='color:gray;cursor:pointer' title='Сформировать Excel'" + data_suffix;
+                                            calendar_icon = "<i class='far fa-calendar-alt t4' style='color:gray;cursor:pointer' title='Расписание загрузки данных'" + data_suffix;
+                                            icons =  delete_icon + '&nbsp;' + edit_icon + '&nbsp;' + sync_icon + '&nbsp;' + excel_icon + '&nbsp;' + calendar_icon;
+                                            return icons;
+                                      },
+                        }
+                    ],
+                    "processing": true,
+                    "serverSide": true,
+                    "ordering":  true,
+                    "order": [[ 0, 1 ]],
+                    "ajax": {
+                        "url": "{% url 'data:filters' %}",
+                        "type": "POST",
+                        "data": function ( d ) {
+                            d.csrfmiddlewaretoken = '{{ csrf_token }}';
+                        },
+                        //"success": function(data) { console.log(data); }
                     },
-                    { "name": "status", "targets": 2, "visible": true, "searchable": false,
-                        "render": function (data, type, row) {
-                                        delete_icon = "<i class='fa fa-trash icon_delete' style='color:red; cursor:pointer' " +
-                                                      "aria-hidden='true' data-toggle='tooltip' data-placement='top' title='Удалить' data-id='" + data +
-                                                      "' data-filtername='"+row[0]+"'><\i>";
-                                        icons =  delete_icon
-                                        return icons;
-                                  },
-                    }
-                ],
-                "processing": true,
-                "serverSide": true,
-                "ordering":  true,
-                "order": [[ 0, 1 ]],
-                "ajax": {
-                    "url": "{% url 'data:filters' %}",
-                    "type": "POST",
-                    "data": function ( d ) {
-                        d.csrfmiddlewaretoken = '{{ csrf_token }}';
-                    },
-                    //"success": function(data) { console.log(data); }
-                },
-                "language": lang_russian
-            });
+                    "language": lang_russian
+                });
 
      var query_dict = {};
      var fields_arr = [];
@@ -149,14 +154,15 @@
         console.log(fields_arr);
     };
 
-     $(document).on('click', 'i.icon_delete', function(event) {
-        filter_name = $(this).attr('data-filtername')
-        filter_id = $(this).attr('data-id')
-        $('#operationConfirmFilterName').text( filter_name );
-        $('#operationConfirmId').val( filter_id );
-        $('#operationConfirmType').val( '1' );
-        $('#modalDeleteConfirm').modal('show');
+     $(document).on('click', '.t1', function(event) {
+             filter_name = $(this).attr('data-filtername')
+             filter_id = $(this).attr('data-id')
+             $('#operationConfirmFilterName').text(filter_name);
+             $('#operationConfirmId').val(filter_id);
+             $('#operationConfirmType').val('1');
+             $('#modalDeleteConfirm').modal('show');
     });
+
 
      $(document).on('click', '#buttonOperationConfirmed', function(event) {
         operation_id = $('#operationConfirmId').val();
@@ -175,6 +181,15 @@
             });
         };
         ta_flt_table.ajax.reload( null, true );
+    });
+
+      $(document).on('click', '.t2', function(event) {
+        filter_name = $(this).attr('data-filtername')
+        filter_id = $(this).attr('data-id')
+        $('#inputFilterName').text( filter_name );
+        $('#saveConfirmId').val( filter_id );
+        $('#saveConfirmType').val( '1' );
+        $('#modalFilterSave').modal('show');
     });
 
     $(document).on('click', '#data_save_button', function(event) {
@@ -250,4 +265,5 @@
 
     //ToolTip initialize
     $(function () { $('[data-toggle="tooltip"]').tooltip() })
+
  </script>
