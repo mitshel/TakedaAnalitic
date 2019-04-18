@@ -71,10 +71,16 @@ class FiltersSaveView(View):
                 fields = self.request.POST.get('fields', '')
                 filters = self.request.POST.get('filters', '')
                 name = self.request.POST.get('name', '')
+                id = int(self.request.POST.get('id', '0'))
+                save_type = int(self.request.POST.get('type', '0'))
                 print(self.request.POST)
                 print(fields)
                 print(filters)
-                Filters.objects.update_or_create(name=name, user=self.request.user, defaults ={ 'fields_json':json.dumps(fields), 'filters_json':json.dumps(filters), 'status':0})
+                if save_type == 3:
+                    Filters.objects.update_or_create(name=name, user=self.request.user, defaults ={ 'fields_json':json.dumps(fields), 'filters_json':json.dumps(filters), 'status':0})
+                elif save_type == 2:
+                    Filters.objects.filter(id=id).update(name=name)
+
                 result = '0'
 
         response = HttpResponse()

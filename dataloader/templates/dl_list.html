@@ -14,7 +14,7 @@
             <small id="filterHelp" class="form-text text-muted">Введите наименование фильтра, чтобы отличить его от других в Вашей таблице сохраненных фильтров.</small>
           </div>
           <input type="hidden" id="saveConfirmId" value="0">
-          <input type="hidden" id="savenConfirmType" value="1">
+          <input type="hidden" id="saveConfirmType" value="3">
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Закрыть</button>
@@ -94,8 +94,8 @@
                         { "name": "id", "targets": 2, "visible": true, "searchable": false,
                             "render": function (data, type, row, meta) {
                                             data_suffix = " data-id='" + data + "' data-filtername='"+row[0]+"'></i>"
-                                            delete_icon = "<i class='far fa-trash-alt t1' style='color:red;cursor:pointer' title='Удалить фильтр' " + data_suffix;
-                                            edit_icon = "<i class='far fa-edit t2' style='color:blue;cursor:pointer' title='Изменить имя фильтра' " + data_suffix;
+                                            delete_icon = "<i class='far fa-trash-alt i-delete' style='color:red;cursor:pointer' title='Удалить фильтр' " + data_suffix;
+                                            edit_icon = "<i class='far fa-edit i-edit' style='color:blue;cursor:pointer' title='Изменить имя фильтра' " + data_suffix;
                                             sync_icon = "<i class='fa fa-sync t3' style='color:blue;cursor:pointer' title='Загрузить фильтры'" + data_suffix;
                                             spinner_icon = "<i class='fas fa-spinner fa-spin t4' style='color:green;cursor:pointer' title='Сформировать Excel'" + data_suffix;
                                             calendar_icon = "<i class='far fa-calendar-alt t4' style='color:gray;cursor:pointer' title='Расписание формирования данных'" + data_suffix;
@@ -155,7 +155,7 @@
         console.log(fields_arr);
     };
 
-     $(document).on('click', '.t1', function(event) {
+     $(document).on('click', '.i-delete', function(event) {
              filter_name = $(this).attr('data-filtername')
              filter_id = $(this).attr('data-id')
              $('#operationConfirmFilterName').text(filter_name);
@@ -184,29 +184,43 @@
         ta_flt_table.ajax.reload( null, true );
     });
 
-      $(document).on('click', '.t2', function(event) {
+    $(document).on('click', '.i-edit', function(event) {
         filter_name = $(this).attr('data-filtername')
         filter_id = $(this).attr('data-id')
-        $('#inputFilterName').text( filter_name );
+        $('#inputFilterName').val( filter_name );
         $('#saveConfirmId').val( filter_id );
-        $('#saveConfirmType').val( '1' );
+        $('#saveConfirmType').val( '2' );
         $('#modalFilterSave').modal('show');
     });
 
     $(document).on('click', '#data_save_button', function(event) {
+        $('#inputFilterName').val(current_filter_name);
+        $('#saveConfirmId').val( 0 );
+        $('#saveConfirmType').val( '3' );
         $('#modalFilterSave').modal('show');
     });
 
      $(document).on('click', '#btn_filter_save', function(event) {
         filter_name = $('#inputFilterName').val();
-        make_request_data ();
+        save_id = $('#saveConfirmId').val();
+        save_type = $('#saveConfirmType').val();
+        query_dict = {}
+        fields_arr = []
+
+        if (save_type === '3')  {
+            make_request_data ();
+            current_filter_name = filter_name;
+        }
+
         $.ajax({
             type: 'POST',
             url: '{% url 'data:filter_save' %}',
             async: false,
             //traditional: true,
             data: {
+                'type' : save_type,
                 'name' : filter_name,
+                'id'   : save_id,
                 'filters' : JSON.stringify(query_dict),
                 'fields' : JSON.stringify(fields_arr),
                 'csrfmiddlewaretoken' : '{{ csrf_token }}'
@@ -217,9 +231,9 @@
                     alert('Error loading data. ' + str);
             }
         });
+
         $('#modalFilterSave').modal('hide');
         ta_flt_table.ajax.reload( null, true );
-
     });
 
     $(document).on('click', '#data_clear_button', function(event) {
