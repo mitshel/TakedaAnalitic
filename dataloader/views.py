@@ -5,6 +5,7 @@ import xlsxwriter
 import datetime
 import decimal
 
+from django.http import JsonResponse
 from django.shortcuts import render, render_to_response, reverse, HttpResponse
 from django.views.generic import View, TemplateView, DeleteView
 from django.http import JsonResponse
@@ -101,6 +102,24 @@ class FiltersDeleteView(View):
         response['Content-Type'] = "text/javascript"
         response.write(json.dumps([{'result': result}]))
         return response
+
+class FiltersLoadView(View):
+    def post(self, *args, **kwargs):
+        result = '1'
+        fields = '[]'
+        filters = '{}'
+        name = ''
+        if self.request.is_ajax():
+            if self.request.POST:
+                id = int(self.request.POST.get('id', '0'))
+                filter = Filters.objects.get(id=int(id))
+                filters = json.loads(filter.filters_json)
+                fields = json.loads(filter.fields_json)
+                name = filter.name
+                result = '0'
+        print(fields)
+        print(filters)
+        return JsonResponse({'result': result, 'name':name, 'fields': fields, 'filters': filters})
 
 class DownloadView(View):
     oper1map = {1:"=",2:"<>",3:">",4:">=",5:"<",6:"<="}

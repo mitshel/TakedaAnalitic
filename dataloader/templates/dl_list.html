@@ -24,7 +24,7 @@
   </div>
 </div>
 
-<div class="modal fade" tabindex="-1" role="dialog" role="dialog" id="modalDeleteConfirm">
+<div class="modal fade" tabindex="-1" role="dialog" role="dialog" id="modalOperationConfirm">
   <div class="modal-dialog modal-dialog-centered" role="document">
     <div class="modal-content">
       <div class="modal-header">
@@ -35,7 +35,7 @@
       </div>
       <div class="modal-body">
           <p style="text-align: center">
-              Вы уверены, что хотите удалить фильтр<br>
+             <span id="operationConfirmText"></span><br>
              <b>"<span id="operationConfirmFilterName"></span>"</b>
           </p>
           <input type="hidden" id="operationConfirmId" value="0">
@@ -96,7 +96,7 @@
                                             data_suffix = " data-id='" + data + "' data-filtername='"+row[0]+"'></i>"
                                             delete_icon = "<i class='far fa-trash-alt i-delete' style='color:red;cursor:pointer' title='Удалить фильтр' " + data_suffix;
                                             edit_icon = "<i class='far fa-edit i-edit' style='color:blue;cursor:pointer' title='Изменить имя фильтра' " + data_suffix;
-                                            sync_icon = "<i class='fa fa-sync t3' style='color:blue;cursor:pointer' title='Загрузить фильтры'" + data_suffix;
+                                            sync_icon = "<i class='fa fa-sync i-load' style='color:blue;cursor:pointer' title='Загрузить фильтры'" + data_suffix;
                                             spinner_icon = "<i class='fas fa-spinner fa-spin t4' style='color:green;cursor:pointer' title='Сформировать Excel'" + data_suffix;
                                             calendar_icon = "<i class='far fa-calendar-alt t4' style='color:gray;cursor:pointer' title='Расписание формирования данных'" + data_suffix;
                                             excel_icon = "<i class='far fa-file-excel t4' style='color:gray;cursor:pointer' title='Скачать Excel'" + data_suffix;
@@ -155,15 +155,111 @@
         console.log(fields_arr);
     };
 
+     function clear_filters_data () {
+        for (var idx in all_fields) {
+            field_name = all_fields[idx];
+            cnt = flt_counts[field_name];
+            for (var i = 1; i < cnt; i++) {
+                ig = '#input-group-' + field_name + '-' + i;
+                $(ig).remove();
+            };
+
+            input_element = $('#input-' + field_name + '-0' );
+            input_element.val(null);
+            if (input_element.hasClass('select-2')) { input_element.trigger('change'); };
+
+            $('#add-' + field_name + '-0' ).val(null);
+
+            flt_counts[field_name] = 1;
+            $('#' + field_name + '_filter').removeClass('active');
+            $('#' + field_name + '_check').addClass('active');
+        }
+     };
+
      $(document).on('click', '.i-delete', function(event) {
              filter_name = $(this).attr('data-filtername')
              filter_id = $(this).attr('data-id')
+             $('#operationConfirmText').text('Вы уверены, что хотите удалить фильтр');
              $('#operationConfirmFilterName').text(filter_name);
+             $('#buttonOperationConfirmed').text('Удалить');
              $('#operationConfirmId').val(filter_id);
              $('#operationConfirmType').val('1');
-             $('#modalDeleteConfirm').modal('show');
+             $('#modalOperationConfirm').modal('show');
     });
 
+      $(document).on('click', '.i-load', function(event) {
+             filter_name = $(this).attr('data-filtername');
+             filter_id = $(this).attr('data-id');
+             $('#operationConfirmText').text('Вы уверены, что хотите загрузить фильтр');
+             $('#operationConfirmFilterName').text(filter_name);
+             $('#buttonOperationConfirmed').text('Загрузить');
+             $('#operationConfirmId').val(filter_id);
+             $('#operationConfirmType').val('2');
+             $('#modalOperationConfirm').modal('show');
+    });
+
+     function set_filter_element(field_name, index, arr) {
+           op_id = 'selector-btn-' + field_name + '-' + index;
+           inp_id = 'input-' + field_name + '-' + index;
+           add_id = 'add-' + field_name + '-' + index;
+
+           op_val = parseInt(arr[0]);
+           add_val = parseInt(arr[2]);
+
+           $('#'+op_id).attr("action", );
+           $('#'+inp_id).val(arr[1]);
+           $('#'+add_id).val(arr[2]);
+
+           var pic = $('#'+op_id).parent().find('div.dropdown-menu').find('.dropdown-item[action="'+arr[0]+'"]').find("svg")[0].outerHTML;
+           $('#'+op_id).html(pic);
+     };
+
+     function add_filter_element(field_name, index, arr) {
+         if (index > 0) {
+            var idx = index;
+            var controlForm = $('#' + field_name + '_row'),
+                currentEntry = $('#input-group-' +  field_name + '-0'),
+                newEntry = $(currentEntry.clone());
+
+            newEntry.attr('id', 'input-group-' + field_name + '-' + idx);
+            newEntry.find('#selector-btn-' + field_name+ '-0').attr('id', 'selector-btn-' + field_name + '-' + idx);
+            newEntry.find('#add-' + field_name + '-0').attr('id', 'add-' + field_name + '-' + idx).attr('idx',idx);
+            newEntry.find('#input-' + field_name + '-0').attr('id', 'input-' + field_name + '-' + idx);
+            newEntry.find('button.dx-g-bs4-filter-selector-item').attr('parent', 'selector-btn-' + field_name + '-' + idx);
+            newEntry.find('#input-' + field_name + '-0').attr('id', 'input-' + field_name + '-' + idx);
+            newEntry.find('.data-input').removeClass('hasDatepicker').val('');
+            newEntry.appendTo(controlForm);
+
+            flt_counts[field_name] += 1;
+         };
+         set_filter_element(field_name, index, arr);
+     }
+
+     function load_filter(data) {
+         if (data['result'] != '0') {
+             alert('Ошибка на сервере при выполнении подготовки данных ' + JSON.stringify(data));
+             return;
+         }
+
+         console.log(data.filters);
+         clear_filters_data();
+         current_filter_name = data.name;
+         fields = JSON.parse(data.fields);
+         filters = JSON.parse(data.filters);
+         for (var idx in all_fields)  {
+             field_name = all_fields[idx];
+             if (fields.indexOf(field_name) == -1 )
+                 $('#' + field_name + '_check').removeClass('active')
+             else
+                 $('#' + field_name + '_check').addClass('active');
+
+             filter_arr = filters[field_name];
+             if (filter_arr) {
+                 for (var i in filter_arr) add_filter_element(field_name, i, filter_arr[i]);
+                 $('#' + field_name + '_filter').addClass('active');
+             };
+         };
+     };
 
      $(document).on('click', '#buttonOperationConfirmed', function(event) {
         operation_id = $('#operationConfirmId').val();
@@ -172,12 +268,17 @@
         //Delete filter
         if (operation_type === '1') {
              $.ajax({
-                type: 'POST',
-                url: "{% url 'data:filter_delete' %}",
-                async: false,
-                data: {
-                    'id' : operation_id,
-                    'csrfmiddlewaretoken' : '{{ csrf_token }}'
+                type: 'POST', url: "{% url 'data:filter_delete' %}",  async: false,
+                data: { 'id' : operation_id, 'csrfmiddlewaretoken' : '{{ csrf_token }}' }
+            });
+        } else
+        //Load filter
+        if (operation_type === '2') {
+             $.ajax({
+                type: 'POST', url: "{% url 'data:filter_load' %}",  async: false,
+                data: { 'id' : operation_id, 'csrfmiddlewaretoken' : '{{ csrf_token }}' },
+                success: function (data) {
+                    load_filter(data);
                 },
             });
         };
@@ -210,7 +311,7 @@
         if (save_type === '3')  {
             make_request_data ();
             current_filter_name = filter_name;
-        }
+        };
 
         $.ajax({
             type: 'POST',
@@ -237,24 +338,7 @@
     });
 
     $(document).on('click', '#data_clear_button', function(event) {
-        for (var idx in all_fields) {
-            field_name = all_fields[idx];
-            cnt = flt_counts[field_name];
-            for (var i = 1; i < cnt; i++) {
-                ig = '#input-group-' + field_name + '-' + i;
-                $(ig).remove();
-            };
-
-            input_element = $('#input-' + field_name + '-0' );
-            input_element.val(null);
-            if (input_element.hasClass('select-2')) { input_element.trigger('change'); };
-
-            $('#add-' + field_name + '-0' ).val(null);
-
-            flt_counts[field_name] = 1;
-            $('#' + field_name + '_filter').removeClass('active');
-            $('#' + field_name + '_check').addClass('active');
-        }
+        clear_filters_data ()
     });
 
     $(document).on('click', '#data_load_button', function(event) {
