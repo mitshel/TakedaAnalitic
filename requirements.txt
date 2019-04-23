@@ -11,3 +11,6 @@ django-debug-toolbar-template-timings
 python-memcached
 redis
 django-redis
+celery
+celery[redis]
+django-celery-results

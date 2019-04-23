@@ -54,6 +54,9 @@ INSTALLED_APPS = [
     'dataloader',
 ]
 
+if DEBUG:
+    INSTALLED_APPS += ['django_celery_results']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -120,6 +123,11 @@ if DEBUG:
             'LOCATION': 'bimonitor-cache',
         }
     }
+
+    CELERY_BROKER_URL = 'sqla+sqlite:///' + os.path.join(BASE_DIR, 'celery.db')
+    CELERY_RESULT_BACKEND = 'django-db'
+    CELERY_CACHE_BACKEND = 'default'
+
 else:
     # CACHES = {
     #     'default': {
@@ -127,11 +135,13 @@ else:
     #         'LOCATION': '127.0.0.1:11211',
     #     }
     # }
+    REDIS_HOST = 'localhost'
+    REDIS_PORT = '6379'
 
     CACHES = {
         'default': {
             'BACKEND': 'django_redis.cache.RedisCache',
-            'LOCATION': 'redis://127.0.0.1:6379/',
+            'LOCATION': 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/',
             'OPTIONS': {
                 'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             },
@@ -139,7 +149,10 @@ else:
         }
     }
 
-
+    BROKER_URL = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+    BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+    CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
+    CELERY_CACHE_BACKEND = 'default'
 
 # set this to False if you want to turn off pyodbc's connection pooling
 #DATABASE_CONNECTION_POOLING = False
