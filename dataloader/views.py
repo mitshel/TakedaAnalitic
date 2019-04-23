@@ -162,7 +162,7 @@ class DownloadView(View):
         return '( {} )'.format(filter)
 
     def create_filter_fk(self, field_name, f):
-        filter = "{} in ({})".format(field_name, ','.join(f[0][1]))
+        filter = "{} in ({})".format(field_name, ','.join(e['id'] for e in f[0][1]))
         return '( {} )'.format(filter)
 
     def create_filter(self, flt):
