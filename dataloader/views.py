@@ -4,6 +4,7 @@ import os
 import xlsxwriter
 import datetime
 import decimal
+import time
 
 from django.http import JsonResponse
 from django.shortcuts import render, render_to_response, reverse, HttpResponse
@@ -15,6 +16,9 @@ from django.conf import settings
 from django.utils.cache import add_never_cache_headers
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.utils.html import escape
+from django.utils import timezone
+
+from TakedaAnalitic.celery import app
 
 from .datafields import cache_metadata, get_fieldmeta
 from .datafields import fk_mnn, fk_tm
@@ -22,6 +26,7 @@ from .datafields import ft_unknown, ft_none, ft_integer, ft_numeric, ft_date, ft
 from . import queries
 
 from db.models import InNR, TradeNR, Filters
+from db import models
 from db.rawmodel import RawModel, CachedRawModel
 
 from widgetpages.ajaxdatatabe import AjaxRawDatatableView
@@ -57,12 +62,26 @@ class FkFieldView(View):
 
 class FiltersAjaxTable(BaseDatatableView):
     order_columns = ['name']
-    columns = ['name','created','id']
+    columns = ['name','created','report_start','report_finish', 'id', 'status', 'xls_url']
     max_display_length = 500
 
     def get_initial_queryset(self):
         qs = Filters.objects.filter(user=self.request.user)
         return qs
+
+    def render_column(self, row, column):
+        if column!='xls_url':
+            return super().render_column(row, column)
+        print(column)
+
+        value = getattr(row, column)
+
+        if not value:
+            value = self.none_string
+        else:
+            value = reverse('widgetpages:download_xls', kwargs={'file_name':value, 'remove':0})
+
+        return value
 
 class FiltersSaveView(View):
     def post(self, *args, **kwargs):
@@ -223,9 +242,12 @@ class DownloadView(View):
 
         fld = json.loads(fields) if fields else []
         flt = json.loads(filters) if filters else []
+        print(fld)
+        print(flt)
         if fld:
             xls_col_n = 0
             for idx_col, column in enumerate(fld):
+                print(idx_col, '>>>>>>>',column)
                 field_info = get_fieldmeta(column)
                 title = field_info.get('title',column)
                 width = field_info.get('width',10)
@@ -268,3 +290,68 @@ class DownloadView(View):
         response = {'download_url':reverse('widgetpages:download_xls', kwargs={'file_name':xlsx_file_name})}
         dump = json.dumps(response)
         return self.render_to_response(dump)
+
+
+@app.task
+def generate_xls(filter_id):
+    try:
+        f = Filters.objects.get(id=filter_id)
+    except:
+        f = None
+        return 1
+
+    try:
+        dv = DownloadView()
+        f.status = models.ST_LOAD
+        f.report_start = timezone.now()
+        f.save()
+        fields = json.loads(f.fields_json)
+        filters = json.loads(f.filters_json)
+        xlsx_data = dv.WriteToExcel(fields, filters)
+        xlsx_file_name = '{}_{}_{}.xlsx'.format('OUTPUT', 'test', datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        xlsx_file_path = os.path.join(settings.BI_TMP_FILES_DIR, xlsx_file_name)
+        fw = open(xlsx_file_path, 'wb')
+        fw.write(xlsx_data)
+        fw.close()
+        #time.sleep(10)
+        f.status = models.ST_SUCCESS
+        f.report_finish = timezone.now()
+        f.xls_url = xlsx_file_name
+    except:
+        f.status = models.ST_FAILED
+        f.xls_url = ""
+
+    f.save()
+    return
+
+class DownloadXlsView(View):
+    def render_to_response(self, context):
+        """ Returns a JSON response containing 'context' as payload
+        """
+        return self.get_json_response(context)
+
+    def get_json_response(self, content, **httpresponse_kwargs):
+        """ Construct an `HttpResponse` object.
+        """
+        response = HttpResponse(content,
+                                content_type='application/json',
+                                **httpresponse_kwargs)
+        add_never_cache_headers(response)
+        return response
+
+    def post(self, *args, **kwargs):
+        filter_id = int(self.request.POST.get('id', '0'))
+        try:
+            f = Filters.objects.get(id=filter_id)
+        except:
+            f = None
+            return self.render_to_response(json.dumps({'result': 'failed'}))
+
+        f.status = models.ST_LOAD
+        f.report_start = None
+        f.report_finish = None
+        f.save()
+
+        generate_xls.delay(filter_id)
+
+        return self.render_to_response(json.dumps({'result': 'success'}))

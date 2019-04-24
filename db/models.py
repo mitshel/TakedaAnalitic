@@ -9,6 +9,11 @@ DB_RECREATE = 2
 DB_OFFLINE = 3
 DB_ERROR = 4
 
+ST_NONE = 0
+ST_LOAD = 1
+ST_SUCCESS = 2
+ST_FAILED = 3
+
 SYNC_STATUS_CHOICES = (
     (DB_READY, 'БД в работе'),
     (DB_UPDATE, 'БД обновляется'),
@@ -165,7 +170,8 @@ class Filters(models.Model):
     updated = models.DateTimeField(null=True, blank=True, auto_now=True)
     report_start = models.DateTimeField(null=True)
     report_finish = models.DateTimeField(null=True)
-    status = models.IntegerField(null=False, default=0)
+    status = models.IntegerField(null=False, default=ST_NONE)
+    xls_url = models.CharField(max_length=128, null=True, blank=True)
 
     class Meta:
         verbose_name = 'Фильтр'

@@ -60,8 +60,11 @@
                 <thead class="thead-light">
                     <tr>
                         <th>Имя фильтра</th>
-                        <th>Дата создания</th>
+                        <th>Дата фильтра</th>
+                        <th>Начало создания отчета</th>
+                        <th>Конец создания отчета</th>
                         <th>Операции</th>
+                        <th>Status</th>
                     </tr>
                 </thead>
                 </table>
@@ -81,29 +84,34 @@
 <script type="text/javascript">
 
      var ta_flt_table = $('#ta_flt_table').DataTable({
-                    "dom": 'r<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
+                    "dom": '<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
                     select: true,
                     buttons: [],
                     "lengthMenu": [[10, 25, 50, 100], [10, 25, 50, 100]],
                     "pageLength": 10,
                     "columnDefs": [
                         { "name": "name", "targets": 0, "visible": true, "searchable": true },
-                        { "name": "created", "targets": 1, "visible": true, "searchable": false,
-                            "render": function (data) { return data; },
-                        },
-                        { "name": "id", "targets": 2, "visible": true, "searchable": false,
+                        { "name": "created", "targets": 1, "visible": true, "searchable": false, "render": function (data) { return data; }, },
+                        { "name": "report_start", "targets": 2, "visible": true, "searchable": false, "render": function (data) { return data; }, },
+                        { "name": "report_finish", "targets": 3, "visible": true, "searchable": false, "render": function (data) { return data; }, },
+                        { "name": "id", "targets": 4, "visible": true, "searchable": false,
                             "render": function (data, type, row, meta) {
+                                            var status = row[5];
+                                            spin_tag = ( status == 1 )?"fa-spin":"";
+                                            xls_color = ( status == 0 )?"gray":( status == 1 )?"gray":( status == 2 )?"green":"red";
                                             data_suffix = " data-id='" + data + "' data-filtername='"+row[0]+"'></i>"
                                             delete_icon = "<i class='far fa-trash-alt i-delete' style='color:red;cursor:pointer' title='Удалить фильтр' " + data_suffix;
                                             edit_icon = "<i class='far fa-edit i-edit' style='color:blue;cursor:pointer' title='Изменить имя фильтра' " + data_suffix;
                                             sync_icon = "<i class='fa fa-sync i-load' style='color:blue;cursor:pointer' title='Загрузить фильтры'" + data_suffix;
-                                            spinner_icon = "<i class='fas fa-spinner fa-spin t4' style='color:green;cursor:pointer' title='Сформировать Excel'" + data_suffix;
+                                            spinner_icon = "<i class='fas fa-spinner " + spin_tag + " i-loadxls' style='color:green;cursor:pointer' title='Сформировать Excel'" + data_suffix;
                                             calendar_icon = "<i class='far fa-calendar-alt t4' style='color:gray;cursor:pointer' title='Расписание формирования данных'" + data_suffix;
-                                            excel_icon = "<i class='far fa-file-excel t4' style='color:gray;cursor:pointer' title='Скачать Excel'" + data_suffix;
+                                            excel_icon = "<a href='"+row[6]+"'><i class='far fa-file-excel t4' style='color:" + xls_color + ";cursor:pointer' title='Скачать Excel'" + data_suffix + "</a>";
                                             icons =  delete_icon + '&nbsp;' + edit_icon + '&nbsp;' + sync_icon + '&nbsp;' + calendar_icon + '&nbsp;' + spinner_icon + '&nbsp;' + excel_icon;
                                             return icons;
                                       },
-                        }
+                        },
+                        { "name": "status", "targets": 5, "visible": true, "searchable": false },
+                        { "name": "xls_url", "targets": 6, "visible": false, "searchable": false }
                     ],
                     "processing": true,
                     "serverSide": true,
@@ -357,6 +365,7 @@
         $.ajax({
            type: "POST",
            url: "{% url 'data:dl' %}",
+           async: false,
             data: {
                 'filters' : JSON.stringify(query_dict),
                 'fields' : JSON.stringify(fields_arr),
@@ -372,7 +381,24 @@
         });
     });
 
+    $(document).on('click', '.i-loadxls', function(event) {
+        filter_id = $(this).attr('data-id');
+        $.ajax({
+           type: "POST",
+           //async: false,
+           url: "{% url 'data:dlxls' %}",
+            data: {
+                'id' : filter_id,
+                'csrfmiddlewaretoken' : '{{ csrf_token }}'
+            },
+           traditional: true
+        });
+        ta_flt_table.ajax.reload( null, true );
+    });
+
     //ToolTip initialize
     $(function () { $('[data-toggle="tooltip"]').tooltip() })
+
+    var timerId = setInterval(function() { ta_flt_table.ajax.reload( null, true ); }, 10000);
 
  </script>

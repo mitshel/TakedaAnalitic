@@ -13,4 +13,5 @@ urlpatterns = [
     path('fk/<str:fk_name>/', bi_login(views.FkFieldView.as_view()), name='fk'),
     path('fk/<str:fk_name>/<str:search_text>/', bi_login(views.FkFieldView.as_view()), name='fk'),
     path('dl/', bi_login(views.DownloadView.as_view()), name='dl'),
+    path('dlxls/', bi_login(views.DownloadXlsView.as_view()), name='dlxls'),
 ]

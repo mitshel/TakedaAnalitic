@@ -27,4 +27,5 @@ urlpatterns = [
     path('passport/', bi_login(views.PassportView.as_view()), name='passport'),
     path('passport/datatable/winners/', bi_login(views.PassportWinnersAjaxTable.as_view()), name='passport_winners_table'),
     path('download/<str:file_name>/', bi_login(views.DownloadXlsFile), name='download_xls'),
+    path('download/<str:file_name>/<int:remove>/', bi_login(views.DownloadXlsFile), name='download_xls'),
 ]

@@ -155,6 +155,10 @@ else:
     CELERY_RESULT_BACKEND = 'redis://' + REDIS_HOST + ':' + REDIS_PORT + '/0'
     CELERY_CACHE_BACKEND = 'default'
 
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+
 # set this to False if you want to turn off pyodbc's connection pooling
 #DATABASE_CONNECTION_POOLING = False
 

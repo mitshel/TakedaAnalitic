@@ -14,3 +14,4 @@ django-redis
 celery
 celery[redis]
 django-celery-results
+eventlet

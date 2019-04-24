@@ -16,7 +16,7 @@ from widgetpages import queries
 from db.rawmodel import RawModel, CachedRawModel
 from db.models import Lpu
 
-def DownloadAndRemoveFile(request, file_name, content_type):
+def DownloadAndRemoveFile(request, file_name, remove, content_type):
     file_path = os.path.join(settings.BI_TMP_FILES_DIR, file_name)
     response = HttpResponse()
     response["Content-Type"]='%s; name="%s"'%(content_type,file_name)
@@ -31,12 +31,12 @@ def DownloadAndRemoveFile(request, file_name, content_type):
     response["Content-Length"] = str(file_size)
     response.write(s)
     fo.close()
-    os.remove(file_path)
+    if remove: os.remove(file_path)
     return response
 
-def DownloadXlsFile(request, file_name):
+def DownloadXlsFile(request, file_name, remove=1):
     content_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-    return DownloadAndRemoveFile(request, file_name, content_type)
+    return DownloadAndRemoveFile(request, file_name, remove, content_type)
 
 class HomeView(OrgMixin, TemplateView):
     template_name = 'ta_hello.html'
