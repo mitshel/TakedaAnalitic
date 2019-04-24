@@ -256,6 +256,7 @@ class DownloadView(View):
                 xls_col_n += 1
 
             qs = CachedRawModel(queries.q_dl_table).filter(fields = ', '.join(fld), rows = settings.BI_MAX_DOWNLOAD_ROWS).filter(filters = self.create_filter(flt))
+            qs.cache_default_timeout = 3600
             print(qs.query)
             data = qs.open().fetchall()
             for idx_row, row in enumerate(data):
