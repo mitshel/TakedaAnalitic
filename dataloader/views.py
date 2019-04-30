@@ -21,11 +21,11 @@ from django.utils import timezone
 from TakedaAnalitic.celery import app
 
 from .datafields import cache_metadata, get_fieldmeta
-from .datafields import fk_mnn, fk_tm, fk_status
+from .datafields import fk_mnn, fk_tm, fk_status, fk_region, fk_lpu
 from .datafields import ft_unknown, ft_none, ft_integer, ft_numeric, ft_date, ft_string, ft_fk
 from . import queries
 
-from db.models import InNR, TradeNR, StatusT, Filters
+from db.models import InNR, TradeNR, StatusT, Region, Lpu, Filters
 from db import models
 from db.rawmodel import RawModel, CachedRawModel
 
@@ -56,6 +56,14 @@ class FkFieldView(View):
                 data = data.filter(name__contains=search_text)
         if kwargs['fk_name'] == fk_status :
             data = StatusT.objects.exclude(id=0).order_by('name').values('id','name').annotate(text=F('name'))
+            if search_text!='undefined':
+                data = data.filter(name__contains=search_text)
+        if kwargs['fk_name'] == fk_region :
+            data = Region.objects.filter(reg_id__lt=100).order_by('regnm').values('reg_id','regnm').annotate(id=F('reg_id'),text=F('regnm'))
+            if search_text!='undefined':
+                data = data.filter(name__contains=search_text)
+        if kwargs['fk_name'] == fk_lpu :
+            data = Lpu.objects.order_by('name').values('cust_id','name').annotate(id=F('cust_id'),text=F('name'))
             if search_text!='undefined':
                 data = data.filter(name__contains=search_text)
         response = dict({'results':list(data)})
