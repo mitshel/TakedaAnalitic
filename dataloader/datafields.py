@@ -19,18 +19,19 @@ gr_Order    = {'name': 'Заказ',  'id': 6}
 
 fk_mnn      = 'db_innr'
 fk_tm       = 'db_tmnr'
+fk_status   = 'db_statusT'
 
 cache_metadata = [
 #    'fname' : {'title' : 'fieldtitle', 'type' : ft_fk, 'fk' : 'foreignkey_ref', 'cache' : cache_tender, 'group' : gr_1},
 { 'name': 'PublDt', 'title' : 'Дата публикации', 'type' : ft_date, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'TendDt', 'title' : 'Дата проведения торгов', 'type' : ft_date, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'NotifNr', 'title' : 'Номер извещения', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 23},
-{ 'name': 'FZ_FK', 'title' : 'ФЗ', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 5},
+{ 'name': 'FZ_FK', 'title' : 'ФЗ', 'type' : ft_integer, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 5},
 { 'name': 'SrcInf', 'title' : 'Ссылка на извещение', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 40},
 { 'name': 'TendNm', 'title' : 'Наименование торгов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 30},
 { 'name': 'TenderPrice', 'title' : 'Начальная (максимальная) цена торгов', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
-{ 'name': 'SmallBusiness', 'title' : 'Торги для МБ', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 5},
-{ 'name': 'StatusT_Name', 'title' : 'Статус торгов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 15},
+{ 'name': 'SmallBusiness', 'title' : 'Торги для МБ', 'type' : ft_integer, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 5},
+{ 'name': 'StatusT_Name', 'title' : 'Статус торгов', 'type' : ft_fk, 'fk' : fk_status, 'fk_field' : 'StatusT_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 15},
 { 'name': 'FormT_Name', 'title' : 'Форма торгов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
 { 'name': 'FONm', 'title' : 'Федеральный округ проведения торгов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
 { 'name': 'RegNm', 'title' : 'Регион проведения торгов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},

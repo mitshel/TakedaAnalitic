@@ -21,11 +21,11 @@ from django.utils import timezone
 from TakedaAnalitic.celery import app
 
 from .datafields import cache_metadata, get_fieldmeta
-from .datafields import fk_mnn, fk_tm
+from .datafields import fk_mnn, fk_tm, fk_status
 from .datafields import ft_unknown, ft_none, ft_integer, ft_numeric, ft_date, ft_string, ft_fk
 from . import queries
 
-from db.models import InNR, TradeNR, Filters
+from db.models import InNR, TradeNR, StatusT, Filters
 from db import models
 from db.rawmodel import RawModel, CachedRawModel
 
@@ -52,6 +52,10 @@ class FkFieldView(View):
                 data = data.filter(name__contains=search_text)
         if kwargs['fk_name'] == fk_tm :
             data = TradeNR.objects.order_by('name').values('id','name').annotate(text=F('name'))
+            if search_text!='undefined':
+                data = data.filter(name__contains=search_text)
+        if kwargs['fk_name'] == fk_status :
+            data = StatusT.objects.exclude(id=0).order_by('name').values('id','name').annotate(text=F('name'))
             if search_text!='undefined':
                 data = data.filter(name__contains=search_text)
         response = dict({'results':list(data)})
@@ -189,6 +193,7 @@ class DownloadView(View):
         filter = []
         for column in flt.keys():
             field_info = get_fieldmeta(column)
+            print(field_info)
             if field_info['type'] == ft_date:
                 filter.append(self.create_filter_date(column, flt[column]))
 
@@ -199,7 +204,9 @@ class DownloadView(View):
                 filter.append(self.create_filter_string(column, flt[column]))
 
             if field_info['type'] == ft_fk:
-                filter.append(self.create_filter_fk(column, flt[column]))
+                fk_column_name = field_info.get('fk_field','')
+                fk_column_name = fk_column_name if fk_column_name else column
+                filter.append(self.create_filter_fk(fk_column_name, flt[column]))
 
         return ' and '.join(filter)
 
@@ -255,6 +262,7 @@ class DownloadView(View):
                 worksheet_s.write(4, xls_col_n, title, header)
                 worksheet_s.set_column(xls_col_n, xls_col_n, width)
                 xls_col_n += 1
+                print('ok')
 
             qs = CachedRawModel(queries.q_dl_table).filter(fields = ', '.join(fld), rows = settings.BI_MAX_DOWNLOAD_ROWS).filter(filters = self.create_filter(flt))
             qs.cache_default_timeout = 3600

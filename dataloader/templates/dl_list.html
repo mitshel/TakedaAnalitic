@@ -126,7 +126,7 @@
                                             sync_icon = "<i class='fa fa-sync i-load' style='color:blue;cursor:pointer' title='Загрузить фильтры'" + data_suffix;
                                             spinner_icon = "<i class='fas fa-spinner " + spin_tag + " i-loadxls' style='color:green;cursor:pointer' title='Сформировать Excel'" + data_suffix;
                                             calendar_icon = "<i class='far fa-calendar-alt t4' style='color:gray;cursor:pointer' title='Расписание формирования данных'" + data_suffix;
-                                            excel_icon = "<a href='"+row[6]+"'><i class='far fa-file-excel t4' style='color:" + xls_color + ";cursor:pointer' title='Скачать Excel'" + data_suffix + "</a>";
+                                            excel_icon = "<a href='"+row[6]+"'><i class='far fa-file-excel' style='color:" + xls_color + ";cursor:pointer' title='Скачать Excel'" + data_suffix + "</a>";
                                             icons =  delete_icon + '&nbsp;' + edit_icon + '&nbsp;' + sync_icon + '&nbsp;' + calendar_icon + '&nbsp;' + spinner_icon + '&nbsp;' + excel_icon;
                                             return icons;
                                       },
@@ -405,28 +405,6 @@
     $(document).on('click', '#data_clear_button', function(event) {
         clear_filters_data ()
     });
-
-    //$(document).on('click', '#data_load_button', function(event) {
-    //    make_request_data();
-    //
-    //    $.ajax({
-    //       type: "POST",
-    //       url: "{ % url 'data:dl' %}",
-    //       async: false,
-    //        data: {
-    //            'filters' : JSON.stringify(query_dict),
-    //            'fields' : JSON.stringify(fields_arr),
-    //            'csrfmiddlewaretoken' : '{ { csrf_token }}'
-    //        },
-    //       traditional: true,
-    //       //contentType: "application/json",
-    //       //dataType: "text",
-    //       success: function (data) {
-    //          var url = data.download_url;
-    //          window.location = url;
-    //       },
-    //   });
-    //});
 
     $(document).on('click', '.i-loadxls', function(event) {
         filter_id = $(this).attr('data-id');
