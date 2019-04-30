@@ -72,8 +72,8 @@
          </div>
          <div class="card-footer pl-1">
             <div class="col-12">
-                 <a class="btn btn-primary" href="#" role="button" id="data_load_button"><i class="fa fa-table"></i> Загрузить данные</a>
                  <a class="btn btn-primary" href="#" role="button" id="data_save_button"><i class="fa fa-check"></i> Сохранить фильтр</a>
+                 <a class="btn btn-primary" href="#" role="button" id="data_load_button"><i class="fa fa-table"></i> Сохранить фильтр и загрузить данные</a>
                  <a class="btn btn-danger" href="#" role="button" id="data_clear_button"><i class="fa fa-times"></i> Сбросить фильтр</a>
             </div>
          </div>
@@ -83,6 +83,27 @@
 
 <script type="text/javascript">
 
+    $.datetime = function(dateObject) {
+        if (!dateObject) {
+            return "";
+        }
+        var d = new Date(dateObject);
+        var day = d.getDate();
+        var month = d.getMonth() + 1;
+        var year = d.getFullYear();
+        if (day < 10) { day = "0" + day;  }
+        if (month < 10) { month = "0" + month; }
+        var hour = d.getHours();
+        var min = d.getMinutes();
+        var sec = d.getSeconds();
+        if (hour < 10) { hour = "0" + hour;  }
+        if (min < 10) { min = "0" + min;  }
+        if (sec < 10) { sec = "0" + sec;  }
+        var dt = day + "." + month + "." + year + " "+hour+":"+min+":"+sec;
+
+        return dt;
+    };
+
      var ta_flt_table = $('#ta_flt_table').DataTable({
                     "dom": '<"row col-12"<f><l><B>> <"col-12 p-0"t> <"row"<"col-6"i><"col-6"p>>',
                     //select: true,
@@ -91,9 +112,9 @@
                     "pageLength": 10,
                     "columnDefs": [
                         { "name": "name", "targets": 0, "visible": true, "searchable": true },
-                        { "name": "created", "targets": 1, "visible": true, "searchable": false, "render": function (data) { return data; }, },
-                        { "name": "report_start", "targets": 2, "visible": true, "searchable": false, "render": function (data) { return data; }, },
-                        { "name": "report_finish", "targets": 3, "visible": true, "searchable": false, "render": function (data) { return data; }, },
+                        { "name": "created", "targets": 1, "visible": true, "searchable": false, "render": function (data) { return $.datetime(data); }, },
+                        { "name": "report_start", "targets": 2, "visible": true, "searchable": false, "render": function (data) { return $.datetime(data); }, },
+                        { "name": "report_finish", "targets": 3, "visible": true, "searchable": false, "render": function (data) { return $.datetime(data); }, },
                         { "name": "id", "targets": 4, "visible": true, "searchable": false,
                             "render": function (data, type, row, meta) {
                                             var status = row[5];
@@ -279,6 +300,20 @@
          };
      };
 
+     function start_xls_generate (id, name) {
+            $.ajax({
+               type: "POST",
+               //async: false,
+               url: "{% url 'data:dlxls' %}",
+                data: {
+                    'id' : id,
+                    'name' : name,
+                    'csrfmiddlewaretoken' : '{{ csrf_token }}'
+                },
+               traditional: true
+            });
+     };
+
      $(document).on('click', '#buttonOperationConfirmed', function(event) {
         operation_id = $('#operationConfirmId').val();
         operation_type = $('#operationConfirmType').val();
@@ -319,6 +354,13 @@
         $('#modalFilterSave').modal('show');
     });
 
+    $(document).on('click', '#data_load_button', function(event) {
+        $('#inputFilterName').val(current_filter_name);
+        $('#saveConfirmId').val( 0 );
+        $('#saveConfirmType').val( '4' );
+        $('#modalFilterSave').modal('show');
+    });
+
      $(document).on('click', '#btn_filter_save', function(event) {
         filter_name = $('#inputFilterName').val();
         save_id = $('#saveConfirmId').val();
@@ -326,7 +368,7 @@
         query_dict = {}
         fields_arr = []
 
-        if (save_type === '3')  {
+        if ((save_type === '3') || (save_type === '4')) {
             make_request_data ();
             current_filter_name = filter_name;
         };
@@ -352,6 +394,11 @@
         });
 
         $('#modalFilterSave').modal('hide');
+
+        if (save_type === '4') {
+            start_xls_generate ('0', current_filter_name);
+        };
+
         ta_flt_table.ajax.reload( null, true );
     });
 
@@ -359,40 +406,31 @@
         clear_filters_data ()
     });
 
-    $(document).on('click', '#data_load_button', function(event) {
-        make_request_data();
-
-        $.ajax({
-           type: "POST",
-           url: "{% url 'data:dl' %}",
-           async: false,
-            data: {
-                'filters' : JSON.stringify(query_dict),
-                'fields' : JSON.stringify(fields_arr),
-                'csrfmiddlewaretoken' : '{{ csrf_token }}'
-            },
-           traditional: true,
-           //contentType: "application/json",
-           //dataType: "text",
-           success: function (data) {
-              var url = data.download_url;
-              window.location = url;
-           },
-        });
-    });
+    //$(document).on('click', '#data_load_button', function(event) {
+    //    make_request_data();
+    //
+    //    $.ajax({
+    //       type: "POST",
+    //       url: "{ % url 'data:dl' %}",
+    //       async: false,
+    //        data: {
+    //            'filters' : JSON.stringify(query_dict),
+    //            'fields' : JSON.stringify(fields_arr),
+    //            'csrfmiddlewaretoken' : '{ { csrf_token }}'
+    //        },
+    //       traditional: true,
+    //       //contentType: "application/json",
+    //       //dataType: "text",
+    //       success: function (data) {
+    //          var url = data.download_url;
+    //          window.location = url;
+    //       },
+    //   });
+    //});
 
     $(document).on('click', '.i-loadxls', function(event) {
         filter_id = $(this).attr('data-id');
-        $.ajax({
-           type: "POST",
-           //async: false,
-           url: "{% url 'data:dlxls' %}",
-            data: {
-                'id' : filter_id,
-                'csrfmiddlewaretoken' : '{{ csrf_token }}'
-            },
-           traditional: true
-        });
+        start_xls_generate (filter_id, '');
         ta_flt_table.ajax.reload( null, true );
     });
 

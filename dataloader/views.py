@@ -72,7 +72,6 @@ class FiltersAjaxTable(BaseDatatableView):
     def render_column(self, row, column):
         if column!='xls_url':
             return super().render_column(row, column)
-        print(column)
 
         value = getattr(row, column)
 
@@ -96,12 +95,14 @@ class FiltersSaveView(View):
                 print(self.request.POST)
                 print(fields)
                 print(filters)
-                if save_type == 3:
+                if save_type in (3,4):
                     Filters.objects.update_or_create(name=name, user=self.request.user, defaults ={ 'fields_json':json.dumps(fields), 'filters_json':json.dumps(filters), 'status':0})
                 elif save_type == 2:
                     Filters.objects.filter(id=id).update(name=name)
 
                 result = '0'
+
+                print('Save filter: ', name)
 
         response = HttpResponse()
         response['Content-Type'] = "text/javascript"
@@ -342,12 +343,17 @@ class DownloadXlsView(View):
 
     def post(self, *args, **kwargs):
         filter_id = int(self.request.POST.get('id', '0'))
+        filter_name = self.request.POST.get('name', '')
         try:
-            f = Filters.objects.get(id=filter_id)
+            if filter_id != 0:
+                f = Filters.objects.get(id=filter_id)
+            else:
+                f = Filters.objects.get(name=filter_name)
         except:
             f = None
             return self.render_to_response(json.dumps({'result': 'failed'}))
 
+        filter_id = f.id;
         f.status = models.ST_LOAD
         f.report_start = None
         f.report_finish = None
