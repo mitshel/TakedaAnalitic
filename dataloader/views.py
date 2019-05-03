@@ -21,11 +21,11 @@ from django.utils import timezone
 from TakedaAnalitic.celery import app
 
 from .datafields import cache_metadata, get_fieldmeta
-from .datafields import fk_mnn, fk_tm, fk_status, fk_region, fk_lpu
+from .datafields import fk_mnn, fk_tm, fk_status, fk_region, fk_lpu, fk_fo, fk_budgets, fk_winner
 from .datafields import ft_unknown, ft_none, ft_integer, ft_numeric, ft_date, ft_string, ft_fk
 from . import queries
 
-from db.models import InNR, TradeNR, StatusT, Region, Lpu, Filters
+from db.models import InNR, TradeNR, StatusT, Region, Lpu, FO, Budget, WinnerOrg, Filters
 from db import models
 from db.rawmodel import RawModel, CachedRawModel
 
@@ -48,24 +48,23 @@ class FkFieldView(View):
         search_text = kwargs.get('search_text', '')
         if kwargs['fk_name'] == fk_mnn :
             data = InNR.objects.order_by('name').values('id','name').annotate(text=F('name'))
-            if search_text!='undefined':
-                data = data.filter(name__contains=search_text)
         if kwargs['fk_name'] == fk_tm :
             data = TradeNR.objects.order_by('name').values('id','name').annotate(text=F('name'))
-            if search_text!='undefined':
-                data = data.filter(name__contains=search_text)
         if kwargs['fk_name'] == fk_status :
             data = StatusT.objects.exclude(id=0).order_by('name').values('id','name').annotate(text=F('name'))
-            if search_text!='undefined':
-                data = data.filter(name__contains=search_text)
         if kwargs['fk_name'] == fk_region :
             data = Region.objects.filter(reg_id__lt=100).order_by('regnm').values('reg_id','regnm').annotate(id=F('reg_id'),text=F('regnm'))
-            if search_text!='undefined':
-                data = data.filter(name__contains=search_text)
         if kwargs['fk_name'] == fk_lpu :
             data = Lpu.objects.order_by('name').values('cust_id','name').annotate(id=F('cust_id'),text=F('name'))
-            if search_text!='undefined':
-                data = data.filter(name__contains=search_text)
+        if kwargs['fk_name'] == fk_fo :
+            data = FO.objects.filter(id__lte=10).order_by('name').values('id','name').annotate(text=F('name'))
+        if kwargs['fk_name'] == fk_budgets :
+            data = Budget.objects.order_by('name').values('id','name').annotate(text=F('name'))
+        if kwargs['fk_name'] == fk_winner :
+            data = WinnerOrg.objects.order_by('name').values('id','name').annotate(text=F('name'))
+
+        if search_text!='undefined':
+            data = data.filter(name__contains=search_text)
         response = dict({'results':list(data)})
         # response = json.dumps([{'value':item['id'], 'caption':item['name']} for item in data])
         print(search_text,' > ',response)
@@ -194,7 +193,7 @@ class DownloadView(View):
         return '( {} )'.format(filter)
 
     def create_filter_fk(self, field_name, f):
-        filter = "{} in ({})".format(field_name, ','.join(e['id'] for e in f[0][1]))
+        filter = "{} in ({})".format(field_name, ','.join(e['id'] if e['id'].isnumeric() else "'"+e['id']+"'" for e in f[0][1]))
         return '( {} )'.format(filter)
 
     def create_filter(self, flt):

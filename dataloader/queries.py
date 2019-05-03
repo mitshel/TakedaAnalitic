@@ -16,6 +16,7 @@ from
 	t.FormT_ID,
 	t.FormT_Name,
 	t.FONm,
+	t.FO_ID,
 	t.RegNm,
 	t.City_ID,
 	t.City_Name,

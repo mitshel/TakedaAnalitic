@@ -121,6 +121,29 @@ class TradeNR(models.Model):
     def __str__(self):
          return  self.name
 
+class FO(models.Model):
+    id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
+    name = models.CharField(db_column='name', max_length=150, null=False, blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'db_fo'
+
+    def __str__(self):
+         return  self.name
+
+class Budget(models.Model):
+    id = models.CharField(db_column='id', max_length=1, primary_key=True, db_index=True, null=False, blank=False)
+    version = models.IntegerField(db_column='version', db_index=True, null=False, blank=False)
+    name = models.CharField(db_column='name', max_length=200, null=False, blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'db_budgets'
+
+    def __str__(self):
+         return  self.name
+
 class Market(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
     name = models.CharField(max_length=32, null=True, blank=True, verbose_name='Рынок')

@@ -22,6 +22,9 @@ fk_tm       = 'db_tmnr'
 fk_status   = 'db_statusT'
 fk_region   = 'db_region'
 fk_lpu      = 'db_lpu'
+fk_fo       = 'db_fo'
+fk_budgets  = 'db_budgets'
+fk_winner   = 'db_winnerorg'
 
 cache_metadata = [
 #    'fname' : {'title' : 'fieldtitle', 'type' : ft_fk, 'fk' : 'foreignkey_ref', 'cache' : cache_tender, 'group' : gr_1},
@@ -35,7 +38,7 @@ cache_metadata = [
 { 'name': 'SmallBusiness', 'title' : 'Торги для МБ', 'type' : ft_integer, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 5},
 { 'name': 'StatusT_Name', 'title' : 'Статус торгов', 'type' : ft_fk, 'fk' : fk_status, 'fk_field' : 'StatusT_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 15},
 { 'name': 'FormT_Name', 'title' : 'Форма торгов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
-{ 'name': 'FONm', 'title' : 'Федеральный округ проведения торгов', 'type' : ft_string, 'fk' : '','cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
+{ 'name': 'FONm', 'title' : 'Федеральный округ проведения торгов', 'type' : ft_fk, 'fk' : fk_fo, 'fk_field' : 'FO_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
 { 'name': 'RegNm', 'title' : 'Регион проведения торгов', 'type' : ft_fk, 'fk' : fk_region, 'fk_field' : 'Reg_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
 { 'name': 'City_Name', 'title' : 'Населенный пункт', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 15},
 { 'name': 'Org_CustINN', 'title' : 'ИНН заказчика торгов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
@@ -47,7 +50,7 @@ cache_metadata = [
 { 'name': 'ClaimReglament', 'title' : 'Место подачи заявок', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'ClaimDtBeg', 'title' : 'Дата начала подачи заявок', 'type' : ft_date, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'ClaimDtEnd', 'title' : 'Дата окончания подачи заявок', 'type' : ft_date, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
-{ 'name': 'Budgets_Name', 'title' : 'Тип бюджета', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
+{ 'name': 'Budgets_Name', 'title' : 'Тип бюджета', 'type' : ft_fk, 'fk' : fk_budgets, 'fk_field' : 'Budgets_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'TenderDocReglament', 'title' : 'Источник финансирования', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'PaymentReglament', 'title' : 'Порядок оплаты поставок товаров', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'Tender_Lot', 'title' : 'Количество лотов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
@@ -74,7 +77,7 @@ cache_metadata = [
 { 'name': 'MonoMNN', 'title' : 'Монопозиционный (по МНН) лот', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
 { 'name': 'SupplierGroup_Name', 'title' : 'Группа поставщиков', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1, 'width' : 10},
 { 'name': 'WinnerOrgINN', 'title' : 'ИНН победителя по протоколу', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1, 'width' : 10},
-{ 'name': 'WinnerOrg', 'title' : 'Победитель по протоколу', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1, 'width' : 10},
+{ 'name': 'WinnerOrg', 'title' : 'Победитель по протоколу', 'type' : ft_fk, 'fk' : fk_winner, 'fk_field': 'Winner_ID', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1, 'width' : 10},
 { 'name': 'WinnerInfo', 'title' : 'Сведения о победителе по протоколу', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1, 'width' : 10},
 { 'name': 'PriceMax', 'title' : 'Цена победителя по протоколу', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1, 'width' : 10},
 { 'name': 'SecondOrgINN', 'title' : 'ИНН второго участника лота', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Winner, 'visible' : 1, 'width' : 10},

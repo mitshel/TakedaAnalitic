@@ -142,6 +142,43 @@ left join [VM1-12\CURSORMAIN].[Cursor].[dbo].[Budgets] b on a.id=b.id and a.vers
 go
 
 --
+-- Создание и наполнение таблицы Федеральныз округов db_FO
+--
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('dbo.db_fo')
+            and   type = 'U')
+   drop table dbo.db_fo
+go
+
+CREATE TABLE [dbo].[db_fo](
+	[id] [int]  NOT NULL,
+	[name] [varchar](150) NOT NULL,
+ CONSTRAINT [PK_FO] PRIMARY KEY CLUSTERED
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+-- Обновляем ФО по ID
+update t1
+	set t1.name = t2.FO_Nm
+	from db_fo t1
+	inner join [VM1-12\CURSORMAIN].[Cursor].[dbo].[FO] as t2 on t1.id=t2.FO_ID
+go
+
+-- Добавляем новые ФО
+--
+insert into db_fo
+select DISTINCT FO_ID as id, FO_Nm as name
+from [VM1-12\CURSORMAIN].[Cursor].[dbo].[FO] a
+where not exists (select 1 from db_fo b where b.id=a.FO_ID)
+go
+-- (затронуто строк: 23)
+
+
+--
 -- Создание и наполнение таблицы МНН db_innr
 --
 if exists (select 1
