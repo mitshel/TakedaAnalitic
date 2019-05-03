@@ -25,6 +25,9 @@ fk_lpu      = 'db_lpu'
 fk_fo       = 'db_fo'
 fk_budgets  = 'db_budgets'
 fk_winner   = 'db_winnerorg'
+fk_unit     = 'db_unit'
+fk_formt    = 'db_formt'
+fk_bprog  = 'db_bprog'
 
 cache_metadata = [
 #    'fname' : {'title' : 'fieldtitle', 'type' : ft_fk, 'fk' : 'foreignkey_ref', 'cache' : cache_tender, 'group' : gr_1},
@@ -37,7 +40,7 @@ cache_metadata = [
 { 'name': 'TenderPrice', 'title' : 'Начальная (максимальная) цена торгов', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'SmallBusiness', 'title' : 'Торги для МБ', 'type' : ft_integer, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 5},
 { 'name': 'StatusT_Name', 'title' : 'Статус торгов', 'type' : ft_fk, 'fk' : fk_status, 'fk_field' : 'StatusT_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 15},
-{ 'name': 'FormT_Name', 'title' : 'Форма торгов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
+{ 'name': 'FormT_Name', 'title' : 'Форма торгов', 'type' : ft_fk, 'fk' : fk_formt, 'fk_field':'FormT_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
 { 'name': 'FONm', 'title' : 'Федеральный округ проведения торгов', 'type' : ft_fk, 'fk' : fk_fo, 'fk_field' : 'FO_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
 { 'name': 'RegNm', 'title' : 'Регион проведения торгов', 'type' : ft_fk, 'fk' : fk_region, 'fk_field' : 'Reg_ID', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 20},
 { 'name': 'City_Name', 'title' : 'Населенный пункт', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 15},
@@ -56,14 +59,14 @@ cache_metadata = [
 { 'name': 'Tender_Lot', 'title' : 'Количество лотов', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'Planned', 'title' : 'Наличие плана-графика', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'PrefRus', 'title' : 'Преимущества для ТС', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
-{ 'name': 'BudgetProg_Name', 'title' : 'Программа финансирования', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
+{ 'name': 'BudgetProg_Name', 'title' : 'Программа финансирования', 'type' : ft_fk, 'fk' : fk_bprog, 'fk_field':'BudgetProg_FK', 'cache' : cache_tender, 'group' : gr_Tender, 'visible' : 1, 'width' : 10},
 { 'name': 'LotNr', 'title' : 'Номер лота', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
 { 'name': 'LotStat', 'title' : 'Статус лота', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
 { 'name': 'ReasonFailure', 'title' : 'Комментарии к статусу Лота', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
 { 'name': 'LotNm', 'title' : 'Наименование лота', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
 { 'name': 'SpecCount', 'title' : 'Количество позиций в спецификации', 'type' : ft_integer, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
-{ 'name': 'LFONm', 'title' : 'Федеральный округ поставки лота', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
-{ 'name': 'LotRegNm', 'title' : 'Регион поставки лота', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
+{ 'name': 'LFONm', 'title' : 'Федеральный округ поставки лота', 'type' : ft_fk, 'fk' : fk_fo, 'fk_field': 'LFO_ID', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
+{ 'name': 'LotRegNm', 'title' : 'Регион поставки лота', 'type' : ft_fk, 'fk' : fk_region, 'fk_field': 'LotReg_ID', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
 { 'name': 'PriceStart', 'title' : 'Начальная (максимальная) цена лота', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
 { 'name': 'ConsigneeNm', 'title' : 'Грузополучатель', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
 { 'name': 'ConsigneeInfo', 'title' : 'Сведения о грузополучателе', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Lot, 'visible' : 1, 'width' : 10},
@@ -99,7 +102,7 @@ cache_metadata = [
 #{ 'name': 'TradeNx', 'title' : 'ТН ID', 'type' : ft_fk, 'fk' : fk_tm, 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1, 'width' : 10},
 { 'name': 'ProdNm', 'title' : 'Наименование позиции в спецификации', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1, 'width' : 10},
 { 'name': 'Form', 'title' : 'Характеристика товара', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1, 'width' : 10},
-{ 'name': 'ShortName', 'title' : 'Единица измерения', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1, 'width' : 10},
+{ 'name': 'ShortName', 'title' : 'Единица измерения', 'type' : ft_fk, 'fk' : fk_unit,'fk_field':'Unit_ID', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1, 'width' : 10},
 { 'name': 'Price', 'title' : 'Начальная цена позиции в спецификации', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1, 'width' : 10},
 { 'name': 'Num', 'title' : 'Количество по позиции в спецификации', 'type' : ft_integer, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1, 'width' : 10},
 { 'name': 'Summa', 'title' : 'Сумма по позиции в спецификации', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Spec, 'visible' : 1, 'width' : 10},
@@ -109,16 +112,16 @@ cache_metadata = [
 { 'name': 'ContractDate', 'title' : 'Дата подписания контракта', 'type' : ft_date, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
 { 'name': 'ContractPrice', 'title' : 'Цена контракта', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
 { 'name': 'ContractItemNm', 'title' : 'Наименование позиции контракта', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
-{ 'name': 'IntlName', 'title' : 'МНН контракт', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
-{ 'name': 'TradeName', 'title' : 'ТН контракт', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
+{ 'name': 'IntlName', 'title' : 'МНН контракт', 'type' : ft_fk, 'fk' : fk_mnn, 'fk_field':'IntlName_ID', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
+{ 'name': 'TradeName', 'title' : 'ТН контракт', 'type' : ft_fk, 'fk' : fk_tm, 'fk_field':'TradeName_ID', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
 { 'name': 'ItemForma', 'title' : 'Характеристика позиции контракта', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
 { 'name': 'ContractItemUnit', 'title' : 'Единица измерения по контракту', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
 { 'name': 'ContractItemPrice', 'title' : 'Цена позиции контракта', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
 { 'name': 'ContractItemCount', 'title' : 'Количество по позиции контракта', 'type' : ft_integer, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
 { 'name': 'ContractItemSum', 'title' : 'Сумма по позиции контракта', 'type' : ft_numeric, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
 { 'name': 'VendorName', 'title' : 'Производитель/страна позиции контракта', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Contract, 'visible' : 1, 'width' : 10},
-{ 'name': 'Order_InnR', 'title' : 'МНН (заказ)', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Order, 'visible' : 1, 'width' : 10},
-{ 'name': 'Order_TradeNmR', 'title' : 'ТН (заказ)', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Order, 'visible' : 1, 'width' : 10},
+{ 'name': 'Order_InnR', 'title' : 'МНН (заказ)', 'type' : ft_fk, 'fk' : fk_mnn, 'fk_field':'Order_InnNx', 'cache' : cache_tender, 'group' : gr_Order, 'visible' : 1, 'width' : 10},
+{ 'name': 'Order_TradeNmR', 'title' : 'ТН (заказ)', 'type' : ft_fk, 'fk' : fk_tm, 'fk_field':'Order_TradeNmNx', 'cache' : cache_tender, 'group' : gr_Order, 'visible' : 1, 'width' : 10},
 { 'name': 'Order_Form', 'title' : 'Лекарственная форма полная (заказ)', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Order, 'visible' : 1, 'width' : 10},
 { 'name': 'Order_Dosage', 'title' : 'Дозировка (заказ)', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Order, 'visible' : 1, 'width' : 10},
 { 'name': 'Order_Package', 'title' : 'Первичная упаковка (заказ)', 'type' : ft_string, 'fk' : '', 'cache' : cache_tender, 'group' : gr_Order, 'visible' : 1, 'width' : 10},

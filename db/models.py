@@ -144,6 +144,40 @@ class Budget(models.Model):
     def __str__(self):
          return  self.name
 
+class Unit(models.Model):
+    id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
+    name = models.CharField(db_column='name', max_length=40, null=False, blank=False)
+    shortname = models.CharField(db_column='shortname', max_length=40, null=False, blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'db_unit'
+
+    def __str__(self):
+         return  self.name
+
+class FormT(models.Model):
+    id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
+    name = models.CharField(db_column='name', max_length=50, null=False, blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'db_formt'
+
+    def __str__(self):
+         return  self.name
+
+class BProg(models.Model):
+    id = models.IntegerField(db_column='id', primary_key=True, db_index=True, null=False, blank=False)
+    name = models.CharField(db_column='name', max_length=200, null=False, blank=False)
+
+    class Meta:
+        managed = False
+        db_table = 'db_bprog'
+
+    def __str__(self):
+         return  self.name
+
 class Market(models.Model):
     org = models.ForeignKey(Org, on_delete=models.CASCADE, verbose_name='Организация')
     name = models.CharField(max_length=32, null=True, blank=True, verbose_name='Рынок')

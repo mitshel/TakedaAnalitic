@@ -21,11 +21,11 @@ from django.utils import timezone
 from TakedaAnalitic.celery import app
 
 from .datafields import cache_metadata, get_fieldmeta
-from .datafields import fk_mnn, fk_tm, fk_status, fk_region, fk_lpu, fk_fo, fk_budgets, fk_winner
+from .datafields import fk_mnn, fk_tm, fk_status, fk_region, fk_lpu, fk_fo, fk_budgets, fk_winner, fk_unit, fk_formt, fk_bprog
 from .datafields import ft_unknown, ft_none, ft_integer, ft_numeric, ft_date, ft_string, ft_fk
 from . import queries
 
-from db.models import InNR, TradeNR, StatusT, Region, Lpu, FO, Budget, WinnerOrg, Filters
+from db.models import InNR, TradeNR, StatusT, Region, Lpu, FO, Budget, WinnerOrg, Unit, FormT, BProg, Filters
 from db import models
 from db.rawmodel import RawModel, CachedRawModel
 
@@ -62,6 +62,12 @@ class FkFieldView(View):
             data = Budget.objects.order_by('name').values('id','name').annotate(text=F('name'))
         if kwargs['fk_name'] == fk_winner :
             data = WinnerOrg.objects.order_by('name').values('id','name').annotate(text=F('name'))
+        if kwargs['fk_name'] == fk_unit :
+            data = Unit.objects.exclude(id=0).order_by('shortname').values('id','shortname').annotate(text=F('shortname'))
+        if kwargs['fk_name'] == fk_formt :
+            data = FormT.objects.exclude(id=0).order_by('name').values('id','name').annotate(text=F('name'))
+        if kwargs['fk_name'] == fk_bprog :
+            data = BProg.objects.order_by('name').values('id','name').annotate(text=F('name'))
 
         if search_text!='undefined':
             data = data.filter(name__contains=search_text)
@@ -174,21 +180,21 @@ class DownloadView(View):
     def create_filter_date(self, field_name, f):
         filter = ''
         for row in f:
-            filter += "( {} {} CONVERT(DATETIME,'{}',104) ) {} ".format(field_name, self.oper1map[int(row[0])], row[1], self.logicmap[int(row[2])])
+            filter += "( {} {} CONVERT(DATETIME,'{}',104) ) {} ".format(field_name, self.oper1map[int(row[0])], row[1], self.logicmap[int(row[2] if row[2]!=None else 0)])
 
         return '( {} )'.format(filter)
 
     def create_filter_number(self, field_name, f):
         filter = ''
         for row in f:
-            filter += "( {} {} {} ) {} ".format(field_name, self.oper1map[int(row[0])], row[1], self.logicmap[int(row[2])])
+            filter += "( {} {} {} ) {} ".format(field_name, self.oper1map[int(row[0])], row[1], self.logicmap[int(row[2] if row[2]!=None else 0)])
 
         return '( {} )'.format(filter)
 
     def create_filter_string(self, field_name, f):
         filter = ''
         for row in f:
-            filter += "( {} {} ) {} ".format(field_name, self.oper2map[int(row[0])].format(row[1]), self.logicmap[int(row[2])])
+            filter += "( {} {} ) {} ".format(field_name, self.oper2map[int(row[0])].format(row[1]), self.logicmap[int(row[2] if row[2]!=None else 0)])
 
         return '( {} )'.format(filter)
 

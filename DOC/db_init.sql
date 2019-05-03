@@ -177,6 +177,114 @@ where not exists (select 1 from db_fo b where b.id=a.FO_ID)
 go
 -- (затронуто строк: 23)
 
+--
+-- Создание и наполнение таблицы форм торгов db_formt
+--
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('dbo.db_formt')
+            and   type = 'U')
+   drop table dbo.db_formt
+go
+
+CREATE TABLE [dbo].[db_formt](
+	[id] [int]  NOT NULL,
+	[name] [varchar](50) NOT NULL,
+ CONSTRAINT [PK_FORMT] PRIMARY KEY CLUSTERED
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+-- Обновляем формы торгов по ID
+update t1
+	set t1.name = t2.name
+	from db_formt t1
+	inner join [VM1-12\CURSORMAIN].[Cursor].[dbo].[FormT] as t2 on t1.id=t2.id
+go
+
+-- Добавляем новые формы торгов
+--
+insert into db_formt
+select DISTINCT id, name
+from [VM1-12\CURSORMAIN].[Cursor].[dbo].[FormT] a
+where not exists (select 1 from db_formt b where b.id=a.id)
+go
+-- (затронуто строк: 27)
+--
+-- Создание и наполнение таблицы бюджетных программ db_bprog
+--
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('dbo.db_bprog')
+            and   type = 'U')
+   drop table dbo.db_bprog
+go
+
+CREATE TABLE [dbo].[db_bprog](
+	[id] [int]  NOT NULL,
+	[name] [varchar](200) NOT NULL,
+ CONSTRAINT [PK_bprog] PRIMARY KEY CLUSTERED
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+-- Обновляем бюджетные программы
+update t1
+	set t1.name = t2.BudgetProg_Name
+	from db_bprog t1
+	inner join [VM1-12\CURSORMAIN].[Cursor].[dbo].[BudgetPrograms] as t2 on t1.id=t2.BudgetProg_ID
+go
+
+-- Добавляем новые бюджетные программы
+--
+insert into db_bprog
+select DISTINCT BudgetProg_ID as id, BudgetProg_Name as name
+from [VM1-12\CURSORMAIN].[Cursor].[dbo].[BudgetPrograms] a
+where not exists (select 1 from db_bprog b where b.id=a.BudgetProg_ID)
+go
+-- (затронуто строк: 9)
+
+--
+-- Создание и наполнение таблицы Единиц измерения db_unit
+--
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('dbo.db_unit')
+            and   type = 'U')
+   drop table dbo.db_unit
+go
+
+CREATE TABLE [dbo].[db_unit](
+	[id] [int]  NOT NULL,
+	[name] [varchar](40) NOT NULL,
+	[shortname] [varchar](10) NOT NULL,
+ CONSTRAINT [PK_unit] PRIMARY KEY CLUSTERED
+(
+	[id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+-- Обновляем Units по ID
+update t1
+	set t1.name = t2.unitsname, t1.shortname=t2.shortname
+	from db_unit t1
+	inner join [VM1-12\CURSORMAIN].[Cursor].[dbo].[Units] as t2 on t1.id=t2.units_id
+go
+
+-- Добавляем новые единицы измерения
+--
+insert into db_unit
+select DISTINCT UNITS_ID as id, unitsname as name, shortname
+from [VM1-12\CURSORMAIN].[Cursor].[dbo].[Units] a
+where not exists (select 1 from db_unit b where b.id=a.units_ID)
+go
+-- (затронуто строк: 43)
+
 
 --
 -- Создание и наполнение таблицы МНН db_innr
