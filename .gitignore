@@ -3,3 +3,4 @@ venv
 .idea\*
 *.pyc
 settings_db.py
+tmp\*
