@@ -46,6 +46,7 @@ class FkFieldView(View):
 
     def get(self, request, *args, **kwargs):
         search_text = kwargs.get('search_text', '')
+        custom_filter = False
         if kwargs['fk_name'] == fk_mnn :
             data = InNR.objects.order_by('name').values('id','name').annotate(text=F('name'))
         if kwargs['fk_name'] == fk_tm :
@@ -54,6 +55,9 @@ class FkFieldView(View):
             data = StatusT.objects.exclude(id=0).order_by('name').values('id','name').annotate(text=F('name'))
         if kwargs['fk_name'] == fk_region :
             data = Region.objects.filter(reg_id__lt=100).order_by('regnm').values('reg_id','regnm').annotate(id=F('reg_id'),text=F('regnm'))
+            if search_text!='undefined':
+                data = data.filter(regnm__contains=search_text)
+                custom_filter = True
         if kwargs['fk_name'] == fk_lpu :
             data = Lpu.objects.order_by('name').values('cust_id','name').annotate(id=F('cust_id'),text=F('name'))
         if kwargs['fk_name'] == fk_fo :
@@ -64,12 +68,15 @@ class FkFieldView(View):
             data = WinnerOrg.objects.order_by('name').values('id','name').annotate(text=F('name'))
         if kwargs['fk_name'] == fk_unit :
             data = Unit.objects.exclude(id=0).order_by('shortname').values('id','shortname').annotate(text=F('shortname'))
+            if search_text!='undefined':
+                data = data.filter(shortname__contains=search_text)
+                custom_filter = True
         if kwargs['fk_name'] == fk_formt :
             data = FormT.objects.exclude(id=0).order_by('name').values('id','name').annotate(text=F('name'))
         if kwargs['fk_name'] == fk_bprog :
             data = BProg.objects.order_by('name').values('id','name').annotate(text=F('name'))
 
-        if search_text!='undefined':
+        if search_text!='undefined' and not custom_filter:
             data = data.filter(name__contains=search_text)
         response = dict({'results':list(data)})
         # response = json.dumps([{'value':item['id'], 'caption':item['name']} for item in data])
@@ -316,7 +323,7 @@ class DownloadView(View):
 
 
 @app.task
-def generate_xls(filter_id):
+def generate_xls(filter_id, username):
     try:
         f = Filters.objects.get(id=filter_id)
     except:
@@ -331,15 +338,20 @@ def generate_xls(filter_id):
         fields = json.loads(f.fields_json)
         filters = json.loads(f.filters_json)
         xlsx_data = dv.WriteToExcel(fields, filters)
-        xlsx_file_name = '{}_{}_{}.xlsx'.format('OUTPUT', 'test', datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
+        xlsx_file_name = '{}_{}_{}.xlsx'.format('OUTPUT', username, datetime.datetime.now().strftime("%d%m%Y%H%M%S"))
         xlsx_file_path = os.path.join(settings.BI_TMP_FILES_DIR, xlsx_file_name)
         fw = open(xlsx_file_path, 'wb')
         fw.write(xlsx_data)
         fw.close()
         #time.sleep(10)
+        previous_xls = f.xls_url
         f.status = models.ST_SUCCESS
         f.report_finish = timezone.now()
         f.xls_url = xlsx_file_name
+        if previous_xls:
+            previous_xls_path = os.path.join(settings.BI_TMP_FILES_DIR, previous_xls)
+            if os.path.exists(previous_xls_path):
+                os.remove(previous_xls_path)
     except:
         f.status = models.ST_FAILED
         f.xls_url = ""
@@ -380,6 +392,6 @@ class DownloadXlsView(View):
         f.report_finish = None
         f.save()
 
-        generate_xls.delay(filter_id)
+        generate_xls.delay(filter_id, self.request.user.username)
 
         return self.render_to_response(json.dumps({'result': 'success'}))
