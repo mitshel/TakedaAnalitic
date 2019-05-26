@@ -229,6 +229,8 @@ class Filters(models.Model):
     report_finish = models.DateTimeField(null=True)
     status = models.IntegerField(null=False, default=ST_NONE)
     xls_url = models.CharField(max_length=128, null=True, blank=True)
+    sendmail_create = models.IntegerField(null=False, default=0)
+    sendmail_shedule = models.IntegerField(null=False, default=0)
 
     class Meta:
         verbose_name = 'Фильтр'

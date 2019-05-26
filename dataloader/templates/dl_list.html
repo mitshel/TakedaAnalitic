@@ -49,6 +49,30 @@
   </div>
 </div>
 
+<div class="modal fade" tabindex="-1" role="dialog" role="dialog" id="modalOperationGenerate">
+  <div class="modal-dialog modal-dialog-centered" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Подтверждение генерации отчета</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+          <p style="text-align: center">
+             <span id="operationGenerateText"></span><br>
+             <b>"<span id="operationGenerateFilterName"></span>"</b>
+          </p>
+          <input type="hidden" id="operationGenerateId" value="0">
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+        <button type="button" class="btn btn-primary" data-dismiss="modal" id="buttonOperationGenerate">Формировать отчет</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="row">
  <div class="col-12">
      <div class="card ml-1 mr-1">
@@ -230,6 +254,41 @@
              $('#modalOperationConfirm').modal('show');
     });
 
+      $(document).on('click', '.i-loadxls', function(event) {
+             filter_name = $(this).attr('data-filtername');
+             filter_id = $(this).attr('data-id');
+             $('#operationGenerateText').text('Подтвердите запуск генерации отчета.');
+             $('#operationGenerateFilterName').text(filter_name);
+             $('#operationGenerateId').val(filter_id);
+             $('#modalOperationGenerate').modal('show');
+    });
+
+    //$(document).on('click', '.i-loadxls', function(event) {
+    //    filter_id = $(this).attr('data-id');
+    //    start_xls_generate (filter_id, '');
+    //    ta_flt_table.ajax.reload( null, true );
+    //});
+
+     function start_xls_generate (id, name) {
+            $.ajax({
+               type: "POST",
+               //async: false,
+               url: "{% url 'data:dlxls' %}",
+                data: {
+                    'id' : id,
+                    'name' : name,
+                    'csrfmiddlewaretoken' : '{{ csrf_token }}'
+                },
+               traditional: true
+            });
+     };
+
+    $(document).on('click', '#buttonOperationGenerate', function(event) {
+        filter_id = $('#operationGenerateId').val();
+        start_xls_generate (filter_id, '');
+        ta_flt_table.ajax.reload( null, true );
+    });
+
      function set_filter_element(field_name, index, arr) {
            op_id = 'selector-btn-' + field_name + '-' + index;
            inp_id = 'input-' + field_name + '-' + index;
@@ -298,20 +357,6 @@
                  $('#' + field_name + '_filter').addClass('active');
              };
          };
-     };
-
-     function start_xls_generate (id, name) {
-            $.ajax({
-               type: "POST",
-               //async: false,
-               url: "{% url 'data:dlxls' %}",
-                data: {
-                    'id' : id,
-                    'name' : name,
-                    'csrfmiddlewaretoken' : '{{ csrf_token }}'
-                },
-               traditional: true
-            });
      };
 
      $(document).on('click', '#buttonOperationConfirmed', function(event) {
@@ -404,12 +449,6 @@
 
     $(document).on('click', '#data_clear_button', function(event) {
         clear_filters_data ()
-    });
-
-    $(document).on('click', '.i-loadxls', function(event) {
-        filter_id = $(this).attr('data-id');
-        start_xls_generate (filter_id, '');
-        ta_flt_table.ajax.reload( null, true );
     });
 
     //ToolTip initialize
