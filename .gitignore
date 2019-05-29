@@ -1,4 +1,5 @@
 venv
+venv36
 .idea
 .idea\*
 *.pyc

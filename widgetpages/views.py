@@ -13,11 +13,14 @@ from widgetpages.BIMonBaseViews import unique, extra_in_filter, OrgMixin, Filter
 from widgetpages.BIMonBaseViews import fempl,fmrkt,fyear,fstat,finnr,ftrnr,fwinr,fcust,fempa, fserv, fbudg, fdosg, fform
 from widgetpages import queries
 
+from dataloader.views import send_xlsx
+
 from db.rawmodel import RawModel, CachedRawModel
 from db.models import Lpu
 
 def DownloadAndRemoveFile(request, file_name, remove, content_type):
     file_path = os.path.join(settings.BI_TMP_FILES_DIR, file_name)
+    #send_xlsx('TEST', file_path, 'mitshel@mail.ru')
     response = HttpResponse()
     response["Content-Type"]='%s; name="%s"'%(content_type,file_name)
     response["Content-Disposition"] = 'attachment; filename="%s"'%(file_name)

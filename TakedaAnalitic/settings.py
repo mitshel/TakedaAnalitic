@@ -236,3 +236,18 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_COLLAPSED': True,
     'SQL_WARNING_THRESHOLD': 100,  # milliseconds
 }
+
+# EMAIL_HOST = "smtp.beget.com"
+# EMAIL_HOST_USER = "no-reply@yapokaju.ru"
+# EMAIL_HOST_PASSWORD = "hK%7ocuG"
+# EMAIL_PORT = 465
+# EMAIL_USE_SSL = True
+# SERVER_EMAIL = "no-reply@yapokaju.ru"
+# DEFAULT_FROM_EMAIL = "no-reply@yapokaju.ru"
+
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_PORT = 2525
+EMAIL_HOST_USER = "mitshel@list.ru"
+EMAIL_HOST_PASSWORD = "list-gluck-52"
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = "mitshel@list.ru"

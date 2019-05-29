@@ -273,7 +273,7 @@
     //    ta_flt_table.ajax.reload( null, true );
     //});
 
-     function start_xls_generate (id, name) {
+     function start_xls_generate (id, name, mail = 0) {
             $.ajax({
                type: "POST",
                //async: false,
@@ -281,6 +281,7 @@
                 data: {
                     'id' : id,
                     'name' : name,
+                    'mail' : mail,
                     'csrfmiddlewaretoken' : '{{ csrf_token }}'
                 },
                traditional: true
@@ -289,7 +290,8 @@
 
     $(document).on('click', '#buttonOperationGenerate', function(event) {
         filter_id = $('#operationGenerateId').val();
-        start_xls_generate (filter_id, '');
+        send_mail = $('#operationGenerateMail').val()?1:0;
+        start_xls_generate (filter_id, '', send_mail);
         ta_flt_table.ajax.reload( null, true );
     });
 

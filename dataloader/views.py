@@ -17,6 +17,7 @@ from django.utils.cache import add_never_cache_headers
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.utils.html import escape
 from django.utils import timezone
+from django.core.mail import EmailMessage, send_mail
 
 from TakedaAnalitic.celery import app
 
@@ -321,6 +322,25 @@ class DownloadView(View):
         dump = json.dumps(response)
         return self.render_to_response(dump)
 
+def send_xlsx(report_name, xlsx_file_path, email_to):
+    print('Send Email to {}. Filename: {}'.format(email_to, xlsx_file_path))
+    subject = "BIMonitor report"
+    text = 'Отчет ' + report_name
+    email = EmailMessage(subject, text, settings.DEFAULT_FROM_EMAIL, [email_to, ])
+    email.attach_file(xlsx_file_path)
+    email.send()
+    print('Email Sended')
+    return
+
+def send_xlsx_data(report_name, xlsx_file_name, xlsx_file_data, email_to):
+    print('Send Email to {}. Filename: {}'.format(email_to, xlsx_file_name))
+    subject = "BIMonitor report"
+    text = 'Отчет ' + report_name
+    email = EmailMessage(subject, text, settings.DEFAULT_FROM_EMAIL, [email_to, ])
+    email.attach(xlsx_file_name,xlsx_file_data, 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    email.send()
+    print('Email Sended')
+    return
 
 @app.task
 def generate_xls(filter_id, username):
@@ -332,6 +352,9 @@ def generate_xls(filter_id, username):
 
     try:
         dv = DownloadView()
+        send_mail = f.sendmail_create
+        email_to = f.user.email
+        report_name = f.name
         f.status = models.ST_LOAD
         f.report_start = timezone.now()
         f.save()
@@ -352,9 +375,13 @@ def generate_xls(filter_id, username):
             previous_xls_path = os.path.join(settings.BI_TMP_FILES_DIR, previous_xls)
             if os.path.exists(previous_xls_path):
                 os.remove(previous_xls_path)
-    except:
+        if send_mail and email_to:
+            send_xlsx(report_name, xlsx_file_path, email_to)
+            #send_xlsx_data(report_name, xlsx_file_name, xlsx_data, email_to)
+    except Exception as e:
         f.status = models.ST_FAILED
         f.xls_url = ""
+        print('Exception generated...'+ str(e))
 
     f.save()
     return
@@ -377,6 +404,7 @@ class DownloadXlsView(View):
     def post(self, *args, **kwargs):
         filter_id = int(self.request.POST.get('id', '0'))
         filter_name = self.request.POST.get('name', '')
+        mail = int(self.request.POST.get('mail', '0'))
         try:
             if filter_id != 0:
                 f = Filters.objects.get(id=filter_id)
@@ -390,6 +418,7 @@ class DownloadXlsView(View):
         f.status = models.ST_LOAD
         f.report_start = None
         f.report_finish = None
+        f.sendmail_create = mail;
         f.save()
 
         generate_xls.delay(filter_id, self.request.user.username)
